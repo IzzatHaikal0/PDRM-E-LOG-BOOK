@@ -17,7 +17,7 @@
     <div class="grid h-full max-w-lg {{ $gridCols }} mx-auto font-medium">
         
         {{-- 1. UTAMA (All Roles) --}}
-        <a href="" 
+        <a href="{{ route('Dashboard.Admin') }}" 
            class="nav-item {{ $baseClass }} {{ request()->routeIs('dashboard') ? $activeClass : $inactiveClass }}"
            data-target="dashboard">
             <svg class="w-6 h-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -30,7 +30,7 @@
         
         {{-- IF ADMIN: Show "Pengguna" --}}
         @if($role === 'admin')
-            <a href="#" 
+            <a href="{{ route('Admin.ListAnggota') }}"
                class="nav-item {{ $baseClass }} {{ request()->routeIs('users.*') ? $activeClass : $inactiveClass }}"
                data-target="users">
                 <svg class="w-6 h-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

@@ -31,7 +31,7 @@
 
                     {{-- 2. PENGGUNA (Admin Only) --}}
                     @if($role === 'admin')
-                        <a href="#" 
+                        <a href="{{ route('Admin.ListAnggota') }}"
                            class="inline-flex items-center px-4 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-blue-200 hover:text-white hover:border-blue-300 transition duration-150 ease-in-out">
                             Pengguna
                         </a>
