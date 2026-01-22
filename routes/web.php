@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\LogsController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -15,6 +16,8 @@ Route::get('/login', function() {
 // 2. The Login Logic Controller
 Route::post('/login', [LoginController::class, 'authenticate'])->name('login.submit');
 
+
+Route::get('/rekod/sejarah', [LogsController::class, 'index'])->name('logs.history');
 
 
 /*
@@ -90,6 +93,8 @@ Route::prefix('anggota')->group(function () {
     Route::get('/profil', function() {
         return view('Users.Profile');
     })->name('profile.show');
+
+    Route::get('/rekod/sejarah', [LogsController::class, 'index'])->name('logs.history');
 
 });
 
