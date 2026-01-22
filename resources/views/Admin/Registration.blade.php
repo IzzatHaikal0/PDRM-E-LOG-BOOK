@@ -54,7 +54,7 @@
 
                         <div>
                             <label for="badge_number" class="block text-sm font-medium text-gray-700 mb-1">Nombor Badan / ID</label>
-                            <input type="text" name="badge_number" id="badge_number" placeholder="Contoh: RF12345" 
+                            <input type="text" name="badge_number" id="badge_number" placeholder="Contoh: RF12345"
                                 class="block w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 sm:text-sm">
                         </div>
                     </div>

@@ -1,5 +1,7 @@
 @extends('layouts.guest')
 
+
+
 @section('content')
     <div class="text-center mb-8">
         <h2 class="text-2xl font-bold text-pdrm-blue tracking-tight">PDRM EP5</h2>
@@ -8,7 +10,18 @@
         </p>
     </div>
 
-    <form method="POST" action="{{ route('Dashboard.Admin') }}" class="space-y-5"> <!--change later to redirect to controller-->
+    
+@if ($errors->any())
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+    <form method="POST" action="{{ route('login.submit') }}" class="space-y-5"> <!--change later to redirect to controller-->
         @csrf
 
         <div class="relative group">

@@ -15,12 +15,15 @@
 <body class="font-sans antialiased bg-gray-50">
     <div class="min-h-screen">
         
+        {{-- Desktop Navigation (Hidden on Mobile) --}}
         <div class="hidden sm:block">
             @include('layouts.navigation')
         </div>
 
+        {{-- Mobile Top Header --}}
         @include('layouts.mobile-header')
 
+        {{-- Desktop Page Header --}}
         @isset($header)
             <header class="bg-white shadow hidden sm:block">
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -29,12 +32,31 @@
             </header>
         @endisset
 
+        {{-- Main Content --}}
         <main class="pt-20 pb-24 sm:pt-0 sm:pb-0">
             @yield('content')
         </main>
 
+        {{-- Mobile Bottom Navigation --}}
         <div class="sm:hidden">
-            @include('layouts.bottom-nav')
+            @php
+                // LOGIC TO CHOOSE NAV FILE
+                $showAdminNav = false;
+
+                if (Auth::check() && Auth::user()->role === 'admin') {
+                    // 1. If actually logged in as Admin -> Show Admin
+                    $showAdminNav = true;
+                } elseif (request()->is('admin*') || request()->routeIs('Dashboard.Admin') || request()->routeIs('Admin.*')) {
+                    // 2. UI TESTING FALLBACK: If URL has 'admin' -> Show Admin
+                    $showAdminNav = true;
+                }
+            @endphp
+
+            @if($showAdminNav)
+                @include('layouts.Adminbottom-nav')
+            @else
+                @include('layouts.Usersbottom-nav')
+            @endif
         </div>
         
     </div>
