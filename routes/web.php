@@ -57,7 +57,12 @@ Route::prefix('admin')->group(function () {
     Route::get('/profil', function() {
         return view('Admin.Profile'); // We will create this file next
     })->name('admin.profile');
-
+    Route::get('/kemaskini-anggota/{id}', function($id) {
+        return view('Admin.EditUser');
+    })->name('Admin.EditUser');
+    Route::get('/tetapan-sistem', function() {
+        return view('Admin.Settings');
+    })->name('Admin.Settings');
 });
 
 /*

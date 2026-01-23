@@ -7,7 +7,7 @@
 @endsection
 
 @section('content')
-{{-- MOCK DATA FOR UI TESTING --}}
+{{-- MOCK DATA --}}
 @php
     $stats = [
         ['label' => 'Inspektor', 'count' => 4, 'color' => 'bg-red-50 text-red-700', 'icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'],
@@ -55,7 +55,6 @@
     </div>
 
     <div class="bg-white p-4 rounded-t-xl shadow-sm border border-gray-100 border-b-0 flex flex-col md:flex-row gap-4 items-center justify-between">
-        
         <div class="relative w-full md:w-96">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -64,7 +63,6 @@
             </div>
             <input type="text" class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-1 focus:ring-blue-900 sm:text-sm" placeholder="Cari Nama, ID atau No. Tel...">
         </div>
-
         <div class="w-full md:w-auto flex items-center gap-2">
             <span class="text-xs text-gray-500 hidden md:block">Susun Ikut:</span>
             <select class="block w-full md:w-48 pl-3 pr-10 py-2 text-base border-gray-200 focus:outline-none focus:ring-blue-900 focus:border-blue-900 sm:text-sm rounded-lg">
@@ -79,11 +77,11 @@
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Anggota</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Pangkat / ID</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">No. Telefon</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
-                    <th scope="col" class="relative px-6 py-3"><span class="sr-only">Tindakan</span></th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Anggota</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Pangkat / ID</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">No. Telefon</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Tindakan</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
@@ -111,8 +109,7 @@
                     <td class="px-6 py-4 whitespace-nowrap">
                         @if($user['status'] == 'Aktif' || $user['status'] == 'Bertugas')
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                <svg class="-ml-0.5 mr-1.5 h-2 w-2 text-green-400" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3" /></svg>
-                                {{ $user['status'] }}
+                                <span class="h-2 w-2 rounded-full bg-green-400 mr-2"></span> {{ $user['status'] }}
                             </span>
                         @else
                              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
@@ -121,15 +118,25 @@
                         @endif
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <a href="#" class="text-blue-900 hover:text-blue-600 font-bold">Lihat</a>
+                        <div class="flex items-center justify-end gap-2">
+                            {{-- EDIT BUTTON --}}
+                            <a href="{{ route('Admin.EditUser', ['id' => $user['id']]) }}" class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 p-2 rounded-lg transition" title="Kemaskini">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                            </a>
+                            {{-- DELETE BUTTON --}}
+                            <button onclick="confirmDelete('{{ $user['name'] }}')" class="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition" title="Padam">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </div>
                     </td>
                 </tr>
                 @endforeach
             </tbody>
         </table>
+        {{-- Pagination Mockup --}}
         <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
             <div class="flex justify-between items-center">
-                <p class="text-xs text-gray-700">Menunjukkan <span class="font-medium">1</span> hingga <span class="font-medium">5</span> dari <span class="font-medium">97</span></p>
+                <p class="text-xs text-gray-700">Menunjukkan 1-5 dari 97</p>
                 <div class="flex gap-2">
                     <button class="px-3 py-1 border rounded text-xs hover:bg-gray-50">Sebelum</button>
                     <button class="px-3 py-1 border rounded text-xs hover:bg-gray-50">Seterusnya</button>
@@ -140,15 +147,16 @@
 
     <div class="md:hidden space-y-3">
         @foreach($users as $user)
-        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                 <div class="h-12 w-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-900 font-bold text-sm border border-blue-100">
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 relative">
+            <div class="flex items-start gap-3">
+                 <div class="h-12 w-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-900 font-bold text-sm border border-blue-100 flex-shrink-0">
                     {{ substr($user['name'], 0, 2) }}
                 </div>
-                <div>
-                    <h4 class="text-sm font-bold text-gray-900">{{ $user['name'] }}</h4>
-                    <p class="text-xs text-gray-500">{{ $user['rank'] }} &bull; {{ $user['id'] }}</p>
-                    <div class="mt-1 flex items-center gap-2">
+                <div class="flex-1 min-w-0">
+                    <h4 class="text-sm font-bold text-gray-900 truncate">{{ $user['name'] }}</h4>
+                    <p class="text-xs text-gray-500 mb-2">{{ $user['rank'] }} &bull; {{ $user['id'] }}</p>
+                    
+                    <div class="flex items-center gap-2 mb-3">
                          <span class="text-[10px] bg-gray-100 px-1.5 py-0.5 rounded text-gray-600">{{ $user['phone'] }}</span>
                          @if($user['status'] == 'Aktif' || $user['status'] == 'Bertugas')
                             <span class="h-2 w-2 rounded-full bg-green-500"></span>
@@ -156,12 +164,42 @@
                     </div>
                 </div>
             </div>
-            <a href="#" class="p-2 text-gray-400 hover:text-blue-900">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-            </a>
+            
+            <div class="flex items-center justify-end gap-2 border-t border-gray-50 pt-3 mt-1">
+                <a href="{{ route('Admin.EditUser', ['id' => $user['id']]) }}" class="flex-1 flex items-center justify-center px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 rounded-lg">
+                    Edit
+                </a>
+                <button onclick="confirmDelete('{{ $user['name'] }}')" class="flex-1 flex items-center justify-center px-3 py-1.5 text-xs font-medium text-red-700 bg-red-50 rounded-lg">
+                    Padam
+                </button>
+            </div>
         </div>
         @endforeach
     </div>
 
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmDelete(name) {
+        Swal.fire({
+            title: 'Anda pasti?',
+            text: "Adakah anda ingin memadam anggota: " + name + "?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, Padam!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire(
+                    'Berjaya!',
+                    'Anggota telah dipadam.',
+                    'success'
+                )
+            }
+        })
+    }
+</script>
 @endsection
