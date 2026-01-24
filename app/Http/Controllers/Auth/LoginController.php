@@ -43,9 +43,13 @@ class LoginController extends Controller
         $role = $request->input('role');
 
         if ($role === 'admin') {
-        return redirect()->route('Dashboard.Admin');
+            return redirect()->route('Admin.Dashboard');
+        }else if($role === 'anggota'){
+            return redirect()->route('dashboard');// remove this line if using real authentication
+        }else{
+            return redirect()->route('Penyelia.Dashboard');
         }
-        return redirect()->route('dashboard');// remove this line if using real authentication
+       
 
         // 4. If login fails
         return back()->withErrors([

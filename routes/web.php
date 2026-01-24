@@ -4,12 +4,14 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\LogsController;
 
+/*
 Route::get('/', function () {
     return view('welcome');
 });
+*/
 
 // 1. The Login Form Page
-Route::get('/login', function() {
+Route::get('/', function() {
     return view('UserLogin.login');
 })->name('login');
 
@@ -44,8 +46,8 @@ Route::get('/senarai-anggota', function() {
 Route::prefix('admin')->group(function () {
     
     Route::get('/dashboard', function() {
-        return view('Dashboard.Admin');     // resources/views/Dashboard/Admin.blade.php
-    })->name('Dashboard.Admin');
+        return view('Admin.Dashboard');     // resources/views/Dashboard/Admin.blade.php
+    })->name('Admin.Dashboard');
 
     Route::get('/daftar-pengguna', function() {
         return view('Admin.Registration');
@@ -103,4 +105,36 @@ Route::prefix('anggota')->group(function () {
 
 });
 
+
+/*
+|--------------------------------------------------------------------------
+| Penyelia (Supervisor) Routes (Prefix: /penyelia)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('penyelia')->group(function () {
+
+    // 1. Dashboard
+    // URL: /penyelia/dashboard
+    Route::get('/dashboard', function() {
+        return view('Penyelia.Dashboard'); 
+    })->name('Penyelia.Dashboard');
+
+    // 2. Sahkan (Verify Task)
+    // URL: /penyelia/sahkan-tugasan
+    Route::get('/penyelia/sahkan-tugasan', function() {
+        return view('Penyelia.VerifyList'); // Matches the file we just created
+    })->name('Penyelia.VerifyList');
+
+    // 3. Rekod (Create Log)
+    Route::get('/rekod/baru', function() {
+        return view('Penyelia.Logs.Create');
+    })->name('Penyelia.Logs.Create');
+
+    // 4. Sejarah (History)
+    Route::get('/rekod/sejarah', function() {
+        return view('Penyelia.Logs.History');
+    })->name('Penyelia.Logs.History');
+
+    Route::get('/rekod/sejarah', [LogsController::class, 'index'])->name('Penyelia.Logs.History');
+});
 

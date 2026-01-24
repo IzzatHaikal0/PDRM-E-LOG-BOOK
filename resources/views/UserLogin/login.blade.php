@@ -65,7 +65,7 @@
                     class="block w-full pl-11 pr-10 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-gray-700 focus:outline-none focus:bg-white focus:ring-2 focus:ring-pdrm-blue/20 focus:border-pdrm-blue transition-all duration-200 sm:text-sm appearance-none cursor-pointer">
                 <option value="" disabled selected>Jawatan</option>
                 <option value="admin">Admin</option>
-                <option value="officer">Pegawai</option>
+                <option value="penyelia">Penyelia</option>
                 <option value="staff">Anggota</option>
             </select>
             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">

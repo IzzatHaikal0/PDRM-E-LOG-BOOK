@@ -23,7 +23,7 @@
                     @php $role = 'admin'; @endphp
 
                     {{-- 1. UTAMA (Dashboard) --}}
-                    <a href="{{ route('Dashboard.Admin') }}" 
+                    <a href="{{ route('Admin.Dashboard') }}" 
                        class="inline-flex items-center px-4 pt-1 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out
                        {{ request()->routeIs('dashboard') ? 'border-white text-white' : 'border-transparent text-blue-200 hover:text-white hover:border-blue-300' }}">
                         Utama

@@ -40,20 +40,32 @@
         {{-- Mobile Bottom Navigation --}}
         <div class="sm:hidden">
             @php
-                // LOGIC TO CHOOSE NAV FILE
-                $showAdminNav = false;
+                // Default to User/Anggota navigation
+                $navType = 'user'; 
 
-                if (Auth::check() && Auth::user()->role === 'admin') {
-                    // 1. If actually logged in as Admin -> Show Admin
-                    $showAdminNav = true;
-                } elseif (request()->is('admin*') || request()->routeIs('Dashboard.Admin') || request()->routeIs('Admin.*')) {
-                    // 2. UI TESTING FALLBACK: If URL has 'admin' -> Show Admin
-                    $showAdminNav = true;
+                if (Auth::check()) {
+                    // 1. Real Logic: Check Database Role
+                    $role = strtolower(Auth::user()->role);
+                    
+                    if ($role === 'admin') {
+                        $navType = 'admin';
+                    } elseif ($role === 'penyelia' || $role === 'supervisor') {
+                        $navType = 'penyelia';
+                    }
+                } else {
+                    // 2. UI Testing Fallback: Check URL patterns
+                    if (request()->is('admin*') || request()->routeIs('Dashboard.Admin') || request()->routeIs('Admin.*')) {
+                        $navType = 'admin';
+                    } elseif (request()->is('penyelia*') || request()->routeIs('penyelia.*')) {
+                        $navType = 'penyelia';
+                    }
                 }
             @endphp
 
-            @if($showAdminNav)
+            @if($navType === 'admin')
                 @include('layouts.Adminbottom-nav')
+            @elseif($navType === 'penyelia')
+                @include('layouts.Penyeliabottom-nav')
             @else
                 @include('layouts.Usersbottom-nav')
             @endif
