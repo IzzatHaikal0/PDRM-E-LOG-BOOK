@@ -11,7 +11,7 @@
 
     <div class="mb-6">
         <h1 class="text-2xl font-bold text-[#00205B]">Daftar Anggota Baru</h1>
-        <p class="text-sm text-gray-500">Pilih kaedah pendaftaran: secara manual atau muat naik pukal (Bulk Upload).</p>
+        <p class="text-sm text-gray-500">Pilih kaedah pendaftaran: secara manual atau muat naik serentak.</p>
     </div>
 
     <div class="mb-6 border-b border-gray-200">
@@ -23,7 +23,7 @@
 
             <button onclick="switchTab('bulk')" id="tab-bulk" 
                 class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
-                Pendaftaran Pukal (Bulk)
+                Pendaftaran Serentak
             </button>
         </nav>
     </div>
@@ -119,7 +119,7 @@
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold text-white">Muat Naik Pukal</h3>
+                        <h3 class="text-lg font-bold text-white">Muat Naik Serentak</h3>
                         <p class="text-xs text-indigo-200">Import ramai anggota menggunakan fail Excel/CSV.</p>
                     </div>
                 </div>
@@ -128,8 +128,8 @@
             <div class="p-8">
                 <div class="mb-8 bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-start justify-between">
                     <div>
-                        <h4 class="text-sm font-bold text-blue-900 mb-1">Langkah 1: Muat Turun Templat</h4>
-                        <p class="text-xs text-blue-700">Sila gunakan templat rasmi untuk mengelakkan ralat data.</p>
+                        <h4 class="text-sm font-bold text-blue-900 mb-1">Langkah 1: Muat Turun Template</h4>
+                        <p class="text-xs text-blue-700">Sila gunakan template rasmi untuk mengelakkan ralat data.</p>
                     </div>
                     <a href="#" class="px-4 py-2 bg-white border border-blue-200 text-blue-700 text-xs font-bold rounded-lg hover:bg-blue-50 shadow-sm flex items-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>

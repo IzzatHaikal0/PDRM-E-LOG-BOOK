@@ -79,7 +79,7 @@ Route::prefix('anggota')->group(function () {
     // 1. Utama
     Route::get('/dashboard', function() {
         return view('Users.Dashboard');         // resources/views/User/dashboard.blade.php
-    })->name('dashboard');
+    })->name('Users.Dashboard');
 
     // 2. Hubungi (Contacts)
     Route::get('/hubungi', function() {

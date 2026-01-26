@@ -24,11 +24,80 @@
         </div>
     </div>
 
-    {{-- 2. ACTIONABLE STATS GRID --}}
+    {{-- 2. CALENDAR CARD (NEW FEATURE) --}}
+    <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-6">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-base font-bold text-gray-800 flex items-center gap-2">
+                <svg class="w-5 h-5 text-[#00205B]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                Rekod Tugasan Saya
+            </h3>
+            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Minggu Ini</span>
+        </div>
+
+        {{-- Calendar Grid (7 Days) --}}
+        <div class="grid grid-cols-7 gap-2 text-center">
+            @php
+                // Mock Logic for Calendar Days (Start from Monday to Sunday)
+                $days = [
+                    ['day' => 'Isnin', 'date' => '20', 'status' => 'green'],
+                    ['day' => 'Selasa', 'date' => '21', 'status' => 'green'],
+                    ['day' => 'Rabu', 'date' => '22', 'status' => 'red'], // Missed
+                    ['day' => 'Khamis', 'date' => '23', 'status' => 'green'],
+                    ['day' => 'Jumaat', 'date' => '24', 'status' => 'green'],
+                    ['day' => 'Sabtu', 'date' => '25', 'status' => 'green'],
+                    ['day' => 'Ahad', 'date' => '26', 'status' => 'today'], // Today (Assuming logged in now)
+                ];
+            @endphp
+
+            @foreach($days as $day)
+                <div class="flex flex-col items-center gap-1">
+                    <span class="text-[10px] text-gray-400 font-medium">{{ substr($day['day'], 0, 3) }}</span>
+                    
+                    {{-- Status Bubble --}}
+                    @if($day['status'] == 'green')
+                        <div class="w-8 h-8 rounded-full bg-green-100 border border-green-200 flex items-center justify-center text-xs font-bold text-green-700 shadow-sm">
+                            {{ $day['date'] }}
+                        </div>
+                    @elseif($day['status'] == 'red')
+                        <div class="w-8 h-8 rounded-full bg-red-100 border border-red-200 flex items-center justify-center text-xs font-bold text-red-700 shadow-sm relative group cursor-help">
+                            {{ $day['date'] }}
+                            {{-- Tooltip for Red --}}
+                            <div class="absolute bottom-full mb-1 hidden group-hover:block w-max bg-gray-800 text-white text-[9px] px-2 py-1 rounded">
+                                Tiada Rekod
+                            </div>
+                        </div>
+                    @elseif($day['status'] == 'today')
+                        {{-- Today (Active) --}}
+                        <div class="w-8 h-8 rounded-full bg-[#00205B] border border-[#00205B] flex items-center justify-center text-xs font-bold text-white shadow-lg ring-2 ring-blue-100 transform scale-110">
+                            {{ $day['date'] }}
+                        </div>
+                    @else
+                        {{-- Future / Gray --}}
+                        <div class="w-8 h-8 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center text-xs font-medium text-gray-400">
+                            {{ $day['date'] }}
+                        </div>
+                    @endif
+                </div>
+            @endforeach
+        </div>
+        
+        {{-- Legend --}}
+        <div class="flex items-center justify-center gap-4 mt-4 pt-3 border-t border-gray-50">
+            <div class="flex items-center gap-1.5">
+                <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                <span class="text-[10px] text-gray-500">Hadir / Ada Log</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+                <div class="w-2 h-2 rounded-full bg-red-500"></div>
+                <span class="text-[10px] text-gray-500">Tiada Rekod</span>
+            </div>
+        </div>
+    </div>
+
+    {{-- 3. ACTIONABLE STATS GRID --}}
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         
-        {{-- Card 1: Pending Verification (High Priority) --}}
-        {{-- Links to verification route --}}
+        {{-- Card 1: Pending Verification --}}
         <a href="{{ route('Penyelia.VerifyList') }}" class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition cursor-pointer">
             <div class="absolute right-0 top-0 w-16 h-16 bg-red-50 rounded-bl-full -mr-2 -mt-2 transition group-hover:bg-red-100"></div>
             <div>
@@ -78,14 +147,14 @@
         </div>
     </div>
 
-    {{-- 3. QUICK VERIFICATION LIST (Pending Items) --}}
+    {{-- 4. QUICK VERIFICATION LIST (Pending Items) --}}
     <div class="space-y-4 mb-8">
         <div class="flex items-center justify-between px-1">
             <h3 class="text-base font-bold text-gray-800 flex items-center gap-2">
                 Tugasan Menunggu Pengesahan
                 <span class="bg-red-100 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded-full">5</span>
             </h3>
-            <a href="#" class="text-xs font-bold text-blue-800 hover:text-blue-600 uppercase tracking-wide">Lihat Semua</a>
+            <a href="{{ route('Penyelia.VerifyList') }}" class="text-xs font-bold text-blue-800 hover:text-blue-600 uppercase tracking-wide">Lihat Semua</a>
         </div>
 
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden divide-y divide-gray-100">
@@ -148,7 +217,7 @@
         </div>
     </div>
 
-    {{-- 4. TEAM OVERVIEW TABLE (Desktop Only) --}}
+    {{-- 5. TEAM OVERVIEW TABLE (Desktop Only) --}}
     <div class="hidden md:block">
         <h3 class="text-base font-bold text-gray-800 mb-4">Senarai Anggota Bawah Seliaan</h3>
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-x-auto">

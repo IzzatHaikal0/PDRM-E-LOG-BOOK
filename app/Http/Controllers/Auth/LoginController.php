@@ -45,7 +45,7 @@ class LoginController extends Controller
         if ($role === 'admin') {
             return redirect()->route('Admin.Dashboard');
         }else if($role === 'anggota'){
-            return redirect()->route('dashboard');// remove this line if using real authentication
+            return redirect()->route('Users.Dashboard');// remove this line if using real authentication
         }else{
             return redirect()->route('Penyelia.Dashboard');
         }

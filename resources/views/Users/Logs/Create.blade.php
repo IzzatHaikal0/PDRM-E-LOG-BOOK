@@ -18,7 +18,8 @@
         </div>
     </div>
 
-    <form action="#" method="POST" class="space-y-5">
+    {{-- UPDATED: Added enctype for file uploads --}}
+    <form action="#" method="POST" enctype="multipart/form-data" class="space-y-5">
         @csrf
 
         {{-- 1. BALAI BERTUGAS (Read Only) --}}
@@ -32,7 +33,6 @@
                        disabled
                        class="block w-full px-4 py-3 bg-gray-100 border border-gray-200 rounded-xl text-gray-500 text-sm font-medium select-none cursor-not-allowed">
                 
-                {{-- Link to Profile to change this --}}
                 <div class="absolute inset-y-0 right-0 flex items-center pr-3">
                     <a href="{{ route('profile.show') }}" class="text-xs text-blue-600 font-bold hover:underline">
                         Tukar?
@@ -50,29 +50,12 @@
             <div class="relative">
                 <select id="area" name="area" class="block w-full pl-4 pr-10 py-3 bg-white border border-gray-200 rounded-xl focus:ring-blue-900 focus:border-blue-900 text-sm appearance-none">
                     <option value="" disabled selected>Sila Pilih Kawasan</option>
-
-                    {{-- EXAMPLE DATA LOOP --}}
-                    {{-- @foreach($activityAreas as $activityAreas) --}}
-                    {{-- <option value="{{ $activityAreas->id }}">{{ $activityAreas->name }}</option> --}}
-                    {{-- @endforeach --}}
-
-
                     <option value="Pos Pengawal">Pos Pengawal</option>
                     <option value="Kaunter Pertanyaan">Kaunter Pertanyaan / Kaunter Aduan</option>
                     <option value="Bilik penjara">Bilik penjara</option>
                     <option value="Bilik siasatan">Bilik siasatan</option>
-                    <option value="Bilik pegawai bertugas">Bilik pegawai bertugas</option>
-                    <option value="Bilik laporan polis">Bilik laporan polis</option>
-                    <option value="Bilik soal siasat">Bilik soal siasat</option>
                     <option value="Bilik Operasi">Bilik kawalan / bilik operasi</option>
-                    <option value="Bilik mesyuarat">Bilik mesyuarat</option>
                     <option value="Pejabat">Pejabat pentadbiran</option>
-                    <option value="Bilik fail">Bilik fail / rekod</option>
-                    <option value="Bilik senjata">Bilik senjata</option>
-                    <option value="Bilik CCTV">Bilik CCTV / pemantauan</option>
-                    <option value="Bilik rehat anggota">Bilik rehat anggota</option>
-                    <option value="Surau">Surau</option>
-                    <option value="Tandas">Tandas</option>
                     <option value="Lain-lain">Lain-lain</option>
                 </select>
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
@@ -89,12 +72,6 @@
             <div class="relative">
                 <select id="type" name="type" class="block w-full pl-4 pr-10 py-3 bg-white border border-gray-200 rounded-xl focus:ring-blue-900 focus:border-blue-900 text-sm appearance-none">
                     <option value="" disabled selected>Pilih Jenis Tugas</option>
-
-                    {{-- EXAMPLE DATA LOOP --}}
-                    {{-- @foreach($activityTypes as $activityTypes) --}}
-                    {{-- <option value="{{ $activityTypes->id }}">{{ $activityTypes->name }}</option> --}}
-                    {{-- @endforeach --}}
-
                     <option value="Rondaan MPV">Rondaan MPV</option>
                     <option value="Rondaan URB">Rondaan URB</option>
                     <option value="Bit/Pondok">Bit / Pondok Polis</option>
@@ -108,7 +85,7 @@
             </div>
         </div>
 
-        {{-- 4. TARIKH & MASA (Manual Input) --}}
+        {{-- 4. TARIKH & MASA --}}
         <div class="grid grid-cols-2 gap-4">
             <div>
                 <label for="date" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Tarikh</label>
@@ -122,7 +99,7 @@
             </div>
         </div>
 
-        {{-- 5. PEGAWAI PENYELIA (Dropdown from DB) --}}
+        {{-- 5. PEGAWAI PENYELIA --}}
         <div>
             <label for="officer_id" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
                 Pegawai Penyelia (Pengesah)
@@ -130,13 +107,6 @@
             <div class="relative">
                 <select id="officer_id" name="officer_id" class="block w-full pl-4 pr-10 py-3 bg-white border border-gray-200 rounded-xl focus:ring-blue-900 focus:border-blue-900 text-sm appearance-none">
                     <option value="" disabled selected>Pilih Pegawai</option>
-                    
-                    {{-- EXAMPLE DATA LOOP --}}
-                    {{-- @foreach($officers as $officer) --}}
-                    {{-- <option value="{{ $officer->id }}">{{ $officer->name }} ({{ $officer->rank }})</option> --}}
-                    {{-- @endforeach --}}
-
-                    {{-- Dummy Data for UI Testing --}}
                     <option value="1">Insp. Razak (Ketua Balai)</option>
                     <option value="2">Sjn. Mejar Halim (Kenyalang)</option>
                     <option value="3">Asp. Tiong (Pegawai Turus)</option>
@@ -157,6 +127,40 @@
                       class="block w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-blue-900 focus:border-blue-900 text-sm"></textarea>
         </div>
 
+        {{-- 7. GAMBAR SOKONGAN (NEW SECTION) --}}
+        <div>
+            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                Gambar Sokongan (Opsyenal)
+            </label>
+            
+            {{-- Image Upload Container --}}
+            <div class="w-full">
+                <label for="image_upload" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition relative overflow-hidden group">
+                    
+                    {{-- Default Placeholder --}}
+                    <div id="upload-placeholder" class="flex flex-col items-center justify-center pt-5 pb-6">
+                        <svg class="w-8 h-8 mb-2 text-gray-400 group-hover:text-blue-900 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <p class="mb-1 text-xs text-gray-500 font-medium">Klik untuk ambil/muat naik gambar</p>
+                        <p class="text-[10px] text-gray-400">JPG, PNG (Max 5MB)</p>
+                    </div>
+
+                    {{-- Image Preview (Hidden by default) --}}
+                    <img id="image-preview" class="hidden absolute inset-0 w-full h-full object-cover opacity-90" />
+                    
+                    {{-- Actual Input --}}
+                    <input id="image_upload" name="image" type="file" class="hidden" accept="image/*" onchange="previewImage(event)" />
+                </label>
+
+                {{-- Remove Button (Hidden by default) --}}
+                <div id="remove-btn-container" class="hidden mt-2 text-right">
+                    <button type="button" onclick="removeImage()" class="text-xs text-red-600 font-bold hover:underline flex items-center justify-end gap-1 ml-auto">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        Padam Gambar
+                    </button>
+                </div>
+            </div>
+        </div>
+
         {{-- SUBMIT BUTTON --}}
         <div class="pt-4">
             <button type="submit" class="w-full flex items-center justify-center gap-2 py-4 px-4 border border-transparent rounded-xl shadow-lg shadow-blue-900/20 text-sm font-bold text-white bg-[#00205B] hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-900 transition-all transform active:scale-[0.98]">
@@ -167,4 +171,41 @@
 
     </form>
 </div>
+
+{{-- JAVASCRIPT FOR IMAGE PREVIEW --}}
+<script>
+    function previewImage(event) {
+        const input = event.target;
+        const reader = new FileReader();
+        
+        reader.onload = function(){
+            const dataURL = reader.result;
+            const preview = document.getElementById('image-preview');
+            const placeholder = document.getElementById('upload-placeholder');
+            const removeBtn = document.getElementById('remove-btn-container');
+
+            preview.src = dataURL;
+            preview.classList.remove('hidden');
+            placeholder.classList.add('hidden');
+            removeBtn.classList.remove('hidden');
+        };
+        
+        if (input.files && input.files[0]) {
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function removeImage() {
+        const input = document.getElementById('image_upload');
+        const preview = document.getElementById('image-preview');
+        const placeholder = document.getElementById('upload-placeholder');
+        const removeBtn = document.getElementById('remove-btn-container');
+
+        input.value = ""; // Clear file input
+        preview.src = "";
+        preview.classList.add('hidden');
+        placeholder.classList.remove('hidden');
+        removeBtn.classList.add('hidden');
+    }
+</script>
 @endsection
