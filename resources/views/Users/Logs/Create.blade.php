@@ -130,7 +130,7 @@
         {{-- 7. GAMBAR SOKONGAN (NEW SECTION) --}}
         <div>
             <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
-                Gambar Sokongan (Opsyenal)
+                Gambar Sokongan (Optional)
             </label>
             
             {{-- Image Upload Container --}}
