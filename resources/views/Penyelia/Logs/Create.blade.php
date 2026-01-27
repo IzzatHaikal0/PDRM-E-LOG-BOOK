@@ -14,7 +14,8 @@
         <svg class="w-5 h-5 text-blue-800 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         <div>
             <p class="text-sm text-blue-900 font-medium">Pastikan butiran tepat.</p>
-            <p class="text-xs text-blue-700 mt-1">Log aktiviti perlu disahkan oleh pegawai penyelia yang dipilih.</p>
+            {{-- Updated text since user no longer selects supervisor manually --}}
+            <p class="text-xs text-blue-700 mt-1">Sila isi semua maklumat aktiviti yang diperlukan di bawah.</p>
         </div>
     </div>
 
@@ -99,21 +100,19 @@
             </div>
         </div>
 
-        {{-- 5. PEGAWAI PENYELIA --}}
-        <div>
-            <label for="officer_id" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                Pegawai Penyelia (Pengesah)
-            </label>
-            <div class="relative">
-                <select id="officer_id" name="officer_id" class="block w-full pl-4 pr-10 py-3 bg-white border border-gray-200 rounded-xl focus:ring-blue-900 focus:border-blue-900 text-sm appearance-none">
-                    <option value="" disabled selected>Pilih Pegawai</option>
-                    <option value="1">Insp. Razak (Ketua Balai)</option>
-                    <option value="2">Sjn. Mejar Halim (Kenyalang)</option>
-                    <option value="3">Asp. Tiong (Pegawai Turus)</option>
-                </select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                </div>
+        {{-- 5. STATUS TUGAS (OFF DUTY CHECKBOX) --}}
+        {{-- REPLACED: Pegawai Penyelia dropdown with Checkbox --}}
+        <div class="relative flex items-start py-4 px-4 bg-gray-50 border border-gray-200 rounded-xl">
+            <div class="flex items-center h-5">
+                <input id="is_off_duty" name="is_off_duty" type="checkbox" value="1" class="focus:ring-blue-900 h-4 w-4 text-blue-900 border-gray-300 rounded cursor-pointer">
+            </div>
+            <div class="ml-3 text-sm">
+                <label for="is_off_duty" class="font-bold text-gray-700 select-none cursor-pointer">
+                    Tugas Luar Waktu (Off Duty)
+                </label>
+                <p class="text-gray-500 text-xs mt-0.5">
+                    Tandakan jika aktiviti ini dilakukan di luar waktu bertugas rasmi.
+                </p>
             </div>
         </div>
 
@@ -127,7 +126,7 @@
                       class="block w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-blue-900 focus:border-blue-900 text-sm"></textarea>
         </div>
 
-        {{-- 7. GAMBAR SOKONGAN (NEW SECTION) --}}
+        {{-- 7. GAMBAR SOKONGAN --}}
         <div>
             <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
                 Gambar Sokongan (Optional)

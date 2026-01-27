@@ -15,7 +15,7 @@
 @section('content')
 <div class="py-4 px-4 max-w-lg mx-auto pb-24">
 
-    {{-- 1. MONTH SELECTOR (Static for now, can be made dynamic later) --}}
+    {{-- 1. MONTH SELECTOR --}}
     <div class="sticky top-20 z-10 mb-6">
         <div class="bg-white/80 backdrop-blur-md border border-gray-200 shadow-sm rounded-xl p-2 flex items-center justify-between">
             <button class="p-2 text-gray-400 hover:text-[#00205B]">
@@ -59,15 +59,18 @@
                                     $stripeColor = 'bg-yellow-400'; // Default Pending
                                     $badgeClass = 'bg-yellow-100 text-yellow-800';
                                     $statusText = 'Dalam Proses';
+                                    $canEdit = true; // Allow edit by default
 
                                     if($log->status == 'approved') {
                                         $stripeColor = 'bg-green-500';
                                         $badgeClass = 'bg-green-100 text-green-800';
                                         $statusText = 'Disahkan';
+                                        $canEdit = false; // Disable edit
                                     } elseif($log->status == 'rejected') {
                                         $stripeColor = 'bg-red-500';
                                         $badgeClass = 'bg-red-100 text-red-800';
                                         $statusText = 'Ditolak';
+                                        $canEdit = false; // Disable edit (usually)
                                     }
                                 @endphp
 
@@ -89,21 +92,34 @@
                                     </div>
                                     <p class="text-xs text-gray-500 line-clamp-2">{{ $log->remarks }}</p>
                                     
-                                    {{-- Officer or Rejection Reason --}}
-                                    <div class="mt-2">
-                                        @if($log->status == 'rejected')
-                                            <div class="flex items-start gap-1 p-2 bg-red-50 rounded border border-red-100">
-                                                <svg class="w-3 h-3 text-red-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                                <span class="text-[10px] text-red-700 leading-tight">{{ $log->rejection_reason ?? 'Tiada sebab dinyatakan.' }}</span>
-                                            </div>
-                                        @else
-                                            <div class="flex items-center gap-2">
-                                                <div class="flex items-center text-[10px] text-gray-400 bg-gray-50 px-2 py-1 rounded">
-                                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                    {{-- FOOTER: Officer Info OR Edit Button --}}
+                                    <div class="mt-3 flex items-end justify-between">
+                                        
+                                        {{-- Left Side: Status Details --}}
+                                        <div>
+                                            @if($log->status == 'rejected')
+                                                <div class="flex items-start gap-1 p-1.5 bg-red-50 rounded border border-red-100">
+                                                    <svg class="w-3 h-3 text-red-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                    <span class="text-[10px] text-red-700 leading-tight">{{ $log->rejection_reason ?? 'Tiada sebab.' }}</span>
+                                                </div>
+                                            @elseif($log->status == 'approved')
+                                                <div class="flex items-center gap-1 text-[10px] text-gray-400 bg-gray-50 px-2 py-1 rounded">
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                                                     {{ $log->officer->name ?? 'Pegawai' }}
                                                 </div>
-                                            </div>
+                                            @else
+                                                <span class="text-[10px] text-gray-400 italic">Menunggu semakan...</span>
+                                            @endif
+                                        </div>
+
+                                        {{-- Right Side: Edit Button (Only if Pending) --}}
+                                        @if($canEdit)
+                                            <a href="#" class="flex items-center gap-1 px-3 py-1.5 bg-gray-50 hover:bg-gray-100 text-gray-600 rounded-lg border border-gray-200 text-xs font-bold transition">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                                Ubah
+                                            </a>
                                         @endif
+
                                     </div>
                                 </div>
                             </div>
@@ -119,7 +135,7 @@
                     <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                 </div>
                 <p class="text-gray-500 font-medium text-sm">Tiada rekod aktiviti dijumpai.</p>
-                <a href="{{ route('logs.create') }}" class="mt-4 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-blue-100">
+                <a href="#" class="mt-4 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-blue-100">
                     + Rekod Baru
                 </a>
             </div>

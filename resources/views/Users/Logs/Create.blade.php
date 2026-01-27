@@ -14,11 +14,10 @@
         <svg class="w-5 h-5 text-blue-800 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         <div>
             <p class="text-sm text-blue-900 font-medium">Pastikan butiran tepat.</p>
-            <p class="text-xs text-blue-700 mt-1">Log aktiviti perlu disahkan oleh pegawai penyelia yang dipilih.</p>
+            <p class="text-xs text-blue-700 mt-1">Sila isi semua maklumat yang diperlukan di bawah.</p>
         </div>
     </div>
 
-    {{-- UPDATED: Added enctype for file uploads --}}
     <form action="#" method="POST" enctype="multipart/form-data" class="space-y-5">
         @csrf
 
@@ -99,21 +98,19 @@
             </div>
         </div>
 
-        {{-- 5. PEGAWAI PENYELIA --}}
-        <div>
-            <label for="officer_id" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                Pegawai Penyelia (Pengesah)
-            </label>
-            <div class="relative">
-                <select id="officer_id" name="officer_id" class="block w-full pl-4 pr-10 py-3 bg-white border border-gray-200 rounded-xl focus:ring-blue-900 focus:border-blue-900 text-sm appearance-none">
-                    <option value="" disabled selected>Pilih Pegawai</option>
-                    <option value="1">Insp. Razak (Ketua Balai)</option>
-                    <option value="2">Sjn. Mejar Halim (Kenyalang)</option>
-                    <option value="3">Asp. Tiong (Pegawai Turus)</option>
-                </select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                </div>
+        {{-- 5. STATUS TUGAS (OFF DUTY CHECKBOX) --}}
+        {{-- UPDATED: Replaced Officer Select with Checkbox --}}
+        <div class="relative flex items-start py-4 px-4 bg-gray-50 border border-gray-200 rounded-xl">
+            <div class="flex items-center h-5">
+                <input id="is_off_duty" name="is_off_duty" type="checkbox" value="1" class="focus:ring-blue-900 h-4 w-4 text-blue-900 border-gray-300 rounded cursor-pointer">
+            </div>
+            <div class="ml-3 text-sm">
+                <label for="is_off_duty" class="font-bold text-gray-700 select-none cursor-pointer">
+                    Tugas Luar Waktu (Off Duty)
+                </label>
+                <p class="text-gray-500 text-xs mt-0.5">
+                    Tandakan jika aktiviti ini dilakukan di luar waktu bertugas rasmi.
+                </p>
             </div>
         </div>
 
@@ -127,31 +124,26 @@
                       class="block w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-blue-900 focus:border-blue-900 text-sm"></textarea>
         </div>
 
-        {{-- 7. GAMBAR SOKONGAN (NEW SECTION) --}}
+        {{-- 7. GAMBAR SOKONGAN --}}
         <div>
             <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
                 Gambar Sokongan (Optional)
             </label>
             
-            {{-- Image Upload Container --}}
             <div class="w-full">
                 <label for="image_upload" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition relative overflow-hidden group">
                     
-                    {{-- Default Placeholder --}}
                     <div id="upload-placeholder" class="flex flex-col items-center justify-center pt-5 pb-6">
                         <svg class="w-8 h-8 mb-2 text-gray-400 group-hover:text-blue-900 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                         <p class="mb-1 text-xs text-gray-500 font-medium">Klik untuk ambil/muat naik gambar</p>
                         <p class="text-[10px] text-gray-400">JPG, PNG (Max 5MB)</p>
                     </div>
 
-                    {{-- Image Preview (Hidden by default) --}}
                     <img id="image-preview" class="hidden absolute inset-0 w-full h-full object-cover opacity-90" />
                     
-                    {{-- Actual Input --}}
                     <input id="image_upload" name="image" type="file" class="hidden" accept="image/*" onchange="previewImage(event)" />
                 </label>
 
-                {{-- Remove Button (Hidden by default) --}}
                 <div id="remove-btn-container" class="hidden mt-2 text-right">
                     <button type="button" onclick="removeImage()" class="text-xs text-red-600 font-bold hover:underline flex items-center justify-end gap-1 ml-auto">
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
@@ -201,7 +193,7 @@
         const placeholder = document.getElementById('upload-placeholder');
         const removeBtn = document.getElementById('remove-btn-container');
 
-        input.value = ""; // Clear file input
+        input.value = ""; 
         preview.src = "";
         preview.classList.add('hidden');
         placeholder.classList.remove('hidden');

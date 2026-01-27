@@ -31,6 +31,9 @@
     </script>
 </head>
 <body class="font-sans antialiased text-gray-900 bg-[#0a101f]">
+    
+    {{-- @include('layouts.splash-screen') --}}
+    
     <div class="min-h-screen flex flex-col justify-center items-center pt-6 sm:pt-0 bg-gradient-to-br from-[#0f172a] via-[#00205B] to-[#0f172a] relative overflow-hidden">
         
         <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-600 rounded-full mix-blend-screen filter blur-[100px] opacity-30 animate-blob"></div>

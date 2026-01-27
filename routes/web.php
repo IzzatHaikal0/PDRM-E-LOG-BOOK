@@ -101,6 +101,11 @@ Route::prefix('anggota')->group(function () {
         return view('Users.Profile');
     })->name('profile.show');
 
+    //6.Edit Profile
+    Route::get('/profile/ubah', function() {
+        return view('Users.EditProfile');
+    })->name('Users.EditProfile');
+
     Route::get('/rekod/sejarah', [LogsController::class, 'index'])->name('logs.history');
 
 });
@@ -134,6 +139,16 @@ Route::prefix('penyelia')->group(function () {
     Route::get('/rekod/sejarah', function() {
         return view('Penyelia.Logs.History');
     })->name('Penyelia.Logs.History');
+
+    // 5. Profil
+    Route::get('/profil', function() {
+        return view('Penyelia.Profile');
+    })->name('Penyelia.Profile');
+
+    //6.Edit Profile
+    Route::get('/profile/ubah', function() {
+        return view('Penyelia.EditProfile');
+    })->name('Penyelia.EditProfile');
 
     Route::get('/rekod/sejarah', [LogsController::class, 'index'])->name('Penyelia.Logs.History');
 });

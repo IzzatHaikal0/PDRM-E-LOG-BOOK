@@ -7,17 +7,16 @@
 @endsection
 
 @section('content')
-<div class="py-6 px-4 max-w-lg mx-auto pb-24">
+<div class="py-6 px-4 max-w-lg mx-auto pb-24 relative">
 
     {{-- 1. PROFILE HEADER CARD --}}
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6 text-center relative overflow-hidden">
-        {{-- Background Decoration --}}
+        {{-- Background Gradient --}}
         <div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-[#00205B] to-blue-900"></div>
         
         <div class="relative z-10 mt-8">
             <div class="w-24 h-24 bg-white p-1 rounded-full mx-auto shadow-lg">
                 <div class="w-full h-full bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold text-2xl overflow-hidden">
-                    {{-- Avatar Image or Initials --}}
                     @if(Auth::user() && Auth::user()->profile_photo_url)
                         <img src="{{ Auth::user()->profile_photo_url }}" class="w-full h-full object-cover">
                     @else
@@ -35,8 +34,7 @@
         </div>
     </div>
 
-    {{-- 2. TETAPAN PENUGASAN (Deployment Settings) --}}
-    {{-- This is where they change the Balai --}}
+    {{-- 2. TETAPAN PENUGASAN --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
         <div class="px-5 py-4 border-b border-gray-50 bg-gray-50/50 flex items-center gap-2">
             <svg class="w-5 h-5 text-[#00205B]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
@@ -44,10 +42,9 @@
         </div>
         
         <div class="p-5">
-            <form action="#" method="POST"> {{-- Point to update route later --}}
+            <form action="#" method="POST">
                 @csrf
                 @method('PUT')
-
                 <div class="space-y-4">
                     {{-- Balai Selection --}}
                     <div>
@@ -82,11 +79,19 @@
         </div>
     </div>
 
-    {{-- 3. MAKLUMAT PERIBADI (Read Only) --}}
+    {{-- 3. MAKLUMAT PERIBADI (Read Only with Edit Link) --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
-        <div class="px-5 py-4 border-b border-gray-50 bg-gray-50/50 flex items-center gap-2">
-            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-            <h4 class="font-bold text-gray-800 text-sm uppercase tracking-wide">Maklumat Peribadi</h4>
+        <div class="px-5 py-4 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                <h4 class="font-bold text-gray-800 text-sm uppercase tracking-wide">Maklumat Peribadi</h4>
+            </div>
+            
+            {{-- ADDED: Edit Link Button --}}
+            <a href="{{ route('Users.EditProfile') }}" class="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-1.5 rounded-lg transition flex items-center gap-1 text-xs font-bold">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                Ubah
+            </a>
         </div>
         
         <div class="p-5 space-y-4">
