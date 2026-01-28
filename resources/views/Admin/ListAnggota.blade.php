@@ -17,11 +17,11 @@
     ];
 
     $users = [
-        ['name' => 'Ahmad Albab', 'id' => 'RF12345', 'rank' => 'Inspektor', 'phone' => '012-3456789', 'status' => 'Aktif'],
-        ['name' => 'Siti Nurhaliza', 'id' => 'RF67890', 'rank' => 'Sarjan', 'phone' => '013-9876543', 'status' => 'Cuti'],
-        ['name' => 'Chong Wei', 'id' => 'RF11223', 'rank' => 'Koperal', 'phone' => '019-8877665', 'status' => 'Aktif'],
-        ['name' => 'Muthu Sami', 'id' => 'RF44556', 'rank' => 'L/Kpl', 'phone' => '017-3344556', 'status' => 'Bertugas'],
-        ['name' => 'Sarah Ali', 'id' => 'RF99887', 'rank' => 'Konstabel', 'phone' => '011-1234123', 'status' => 'Aktif'],
+        ['name' => 'Ahmad Albab', 'id' => 'RF12345', 'rank' => 'Inspektor', 'phone' => '012-3456789'],
+        ['name' => 'Siti Nurhaliza', 'id' => 'RF67890', 'rank' => 'Sarjan', 'phone' => '013-9876543'],
+        ['name' => 'Chong Wei', 'id' => 'RF11223', 'rank' => 'Koperal', 'phone' => '019-8877665'],
+        ['name' => 'Muthu Sami', 'id' => 'RF44556', 'rank' => 'L/Kpl', 'phone' => '017-3344556'],
+        ['name' => 'Sarah Ali', 'id' => 'RF99887', 'rank' => 'Konstabel', 'phone' => '011-1234123'],
     ];
 @endphp
 
@@ -80,7 +80,6 @@
                     <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Anggota</th>
                     <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Pangkat / ID</th>
                     <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">No. Telefon</th>
-                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
                     <th class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Tindakan</th>
                 </tr>
             </thead>
@@ -105,17 +104,6 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {{ $user['phone'] }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        @if($user['status'] == 'Aktif' || $user['status'] == 'Bertugas')
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                <span class="h-2 w-2 rounded-full bg-green-400 mr-2"></span> {{ $user['status'] }}
-                            </span>
-                        @else
-                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                {{ $user['status'] }}
-                            </span>
-                        @endif
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div class="flex items-center justify-end gap-2">
@@ -155,13 +143,6 @@
                 <div class="flex-1 min-w-0">
                     <h4 class="text-sm font-bold text-gray-900 truncate">{{ $user['name'] }}</h4>
                     <p class="text-xs text-gray-500 mb-2">{{ $user['rank'] }} &bull; {{ $user['id'] }}</p>
-                    
-                    <div class="flex items-center gap-2 mb-3">
-                         <span class="text-[10px] bg-gray-100 px-1.5 py-0.5 rounded text-gray-600">{{ $user['phone'] }}</span>
-                         @if($user['status'] == 'Aktif' || $user['status'] == 'Bertugas')
-                            <span class="h-2 w-2 rounded-full bg-green-500"></span>
-                         @endif
-                    </div>
                 </div>
             </div>
             

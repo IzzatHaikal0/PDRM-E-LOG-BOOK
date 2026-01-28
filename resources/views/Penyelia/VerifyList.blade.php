@@ -173,10 +173,27 @@
                     <p class="text-xs text-blue-600 mb-1">Anggota:</p>
                     <p class="text-sm font-bold text-blue-900" id="verify-anggota-name">Nama Anggota</p>
                 </div>
+                
                 <div>
                     <label class="block text-xs font-bold text-gray-700 mb-1">Ulasan Penyelia (Opsyenal)</label>
                     <textarea id="modal-comment" rows="3" class="w-full text-sm border-gray-200 rounded-lg focus:border-blue-900 focus:ring-blue-900 placeholder-gray-400" placeholder="Masukkan ulasan atau teguran..."></textarea>
                 </div>
+
+                {{-- SIGNATURE PAD SECTION --}}
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-2">Tandatangan Digital</label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 overflow-hidden">
+                        <canvas id="signaturePad" class="w-full h-40 bg-white cursor-crosshair"></canvas>
+                    </div>
+                    <div class="flex justify-between items-center mt-2">
+                        <button type="button" onclick="clearSignature()" class="text-xs text-red-600 hover:text-red-700 font-medium flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            Padam
+                        </button>
+                        <span class="text-[10px] text-gray-400">Sila tandatangan di ruang putih</span>
+                    </div>
+                </div>
+
                 <div class="flex items-center gap-2 p-2 border border-dashed border-gray-300 rounded bg-gray-50">
                     <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-600">SM</div>
                     <div class="text-[10px] text-gray-500">
@@ -185,6 +202,7 @@
                         <p class="text-xs text-gray-400">{{ now()->format('d M Y, H:i') }}</p>
                     </div>
                 </div>
+
                 <div class="flex gap-2 pt-2">
                     <button onclick="closeVerificationModal()" class="flex-1 px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-bold rounded-lg hover:bg-gray-50">Batal</button>
                     <button onclick="saveVerification()" class="flex-1 px-4 py-2 bg-green-600 text-white text-sm font-bold rounded-lg hover:bg-green-700 shadow-lg shadow-green-600/20">Sahkan & Simpan</button>
@@ -194,6 +212,7 @@
         </div>
     </div>
 </div>
+
 
 {{-- ==============================
      MODAL 2: BUTIRAN (DETAILS)
@@ -278,8 +297,11 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    let signaturePad = null;
+
     // --- MOCK DATA FOR DETAILS ---
     const mockTasks = {
         1: {
@@ -291,7 +313,6 @@
             date: "{{ now()->format('d M Y') }}",
             time: "10:30 AM",
             description: "Membuat rondaan di kawasan perumahan Taman Bahagia. Keadaan terkawal dan tiada aktiviti mencurigakan. Semakan log pintu masuk utama mendapati pengawal keselamatan bertugas dengan baik.",
-            // Using a placeholder image for demo
             image: "https://images.unsplash.com/photo-1595150266023-4475476a6665?q=80&w=600&auto=format&fit=crop" 
         },
         2: {
@@ -303,9 +324,39 @@
             date: "{{ now()->format('d M Y') }}",
             time: "09:15 AM",
             description: "Menerima laporan kehilangan kad pengenalan daripada orang awam. No Repot: MR/123/2026. Pengadu telah dinasihatkan untuk ke JPN bagi urusan penggantian.",
-            image: null // No image case
+            image: null
         }
     };
+
+    // --- SIGNATURE PAD FUNCTIONS ---
+    function initializeSignaturePad() {
+        const canvas = document.getElementById('signaturePad');
+        if (!canvas) return;
+
+        // Resize canvas to match display size
+        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        canvas.width = canvas.offsetWidth * ratio;
+        canvas.height = canvas.offsetHeight * ratio;
+        canvas.getContext("2d").scale(ratio, ratio);
+
+        signaturePad = new SignaturePad(canvas, {
+            backgroundColor: 'rgb(255, 255, 255)',
+            penColor: 'rgb(0, 32, 91)' // Match your theme color
+        });
+    }
+
+    function clearSignature() {
+        if (signaturePad) {
+            signaturePad.clear();
+        }
+    }
+
+    function getSignatureData() {
+        if (signaturePad && !signaturePad.isEmpty()) {
+            return signaturePad.toDataURL('image/png');
+        }
+        return null;
+    }
 
     // --- TAB SWITCHING ---
     function switchTab(tab) {
@@ -343,7 +394,6 @@
         const data = mockTasks[taskId];
         if (!data) return;
 
-        // Populate Data
         document.getElementById('detail-name').innerText = data.name;
         document.getElementById('detail-id').innerText = data.id;
         document.getElementById('detail-initials').innerText = data.initials;
@@ -353,7 +403,6 @@
         document.getElementById('detail-date').innerText = data.date;
         document.getElementById('detail-description').innerText = data.description;
 
-        // Handle Image
         const imgContainer = document.getElementById('detail-image-container');
         const noImage = document.getElementById('no-image-placeholder');
         const imgElement = document.getElementById('detail-image');
@@ -367,7 +416,6 @@
             noImage.classList.remove('hidden');
         }
 
-        // Show Modal
         document.getElementById('detailModal').classList.remove('hidden');
     }
 
@@ -381,14 +429,35 @@
         document.getElementById('verify-anggota-name').innerText = anggotaName;
         document.getElementById('modal-comment').value = ''; 
         document.getElementById('verifyModal').classList.remove('hidden');
+        
+        // Initialize signature pad after modal is visible
+        setTimeout(() => {
+            initializeSignaturePad();
+        }, 100);
     }
 
     function closeVerificationModal() {
         document.getElementById('verifyModal').classList.add('hidden');
+        if (signaturePad) {
+            signaturePad.clear();
+        }
     }
 
     function saveVerification() {
         const taskId = document.getElementById('verify-task-id').value;
+        const signatureData = getSignatureData();
+
+        // Validate signature
+        if (!signatureData) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Tandatangan Diperlukan',
+                text: 'Sila tandatangan sebelum mengesahkan.',
+                confirmButtonColor: '#00205B'
+            });
+            return;
+        }
+
         const supervisorName = "Sjn. Mejar Halim";
         const supervisorID = "8888";
         const now = new Date();
@@ -403,11 +472,11 @@
             timer: 1500,
             showConfirmButton: false
         }).then(() => {
-            updateCardUI(taskId, supervisorName, supervisorID, timeString);
+            updateCardUI(taskId, supervisorName, supervisorID, timeString, signatureData);
         });
     }
 
-    function updateCardUI(id, name, badgeId, time) {
+    function updateCardUI(id, name, badgeId, time, signatureImage) {
         document.getElementById(`stripe-${id}`).classList.remove('bg-yellow-400');
         document.getElementById(`stripe-${id}`).classList.add('bg-green-500');
 
@@ -421,7 +490,7 @@
         const signatureDiv = document.getElementById(`signature-${id}`);
         signatureDiv.classList.remove('hidden');
         signatureDiv.innerHTML = `
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col gap-2">
                 <div class="flex items-center text-[10px] text-gray-500 bg-gray-50 px-2 py-1.5 rounded border border-gray-100">
                     <svg class="w-3 h-3 mr-1.5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -430,6 +499,9 @@
                 </div>
                 <div class="flex justify-between items-center px-1">
                     <span class="text-[10px] text-gray-400">Tarikh: {{ now()->format('d M Y') }}, ${time}</span>
+                </div>
+                <div class="bg-white border border-gray-100 rounded p-2">
+                    <img src="${signatureImage}" alt="Tandatangan" class="h-16 w-auto mx-auto">
                 </div>
             </div>
         `;

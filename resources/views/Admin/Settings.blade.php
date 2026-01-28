@@ -24,6 +24,15 @@
         ['id' => 4, 'name' => 'Bilik Operasi'],
         ['id' => 5, 'name' => 'Lokap / Penjara'],
     ];
+
+    $ranks = [
+        ['id' => 1, 'name' => 'Konstabel (Konst)'],
+        ['id' => 2, 'name' => 'Lans Koperal (L/Kpl)'],
+        ['id' => 3, 'name' => 'Koperal (Kpl)'],
+        ['id' => 4, 'name' => 'Sarjan (Sjn)'],
+        ['id' => 5, 'name' => 'Sub-Inspektor (SI)'],
+        ['id' => 6, 'name' => 'Inspektor (Insp)'],
+    ];
 @endphp
 
 <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto pb-24">
@@ -33,7 +42,8 @@
         <p class="text-sm text-gray-500">Uruskan senarai pilihan untuk borang log anggota.</p>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    {{-- CHANGED: Updated grid to support 3 columns on large screens --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6">
 
         {{-- COLUMN 1: JENIS PENUGASAN --}}
         <div class="space-y-4">
@@ -89,7 +99,7 @@
                         <p class="text-xs text-gray-400">Pilihan 'Kawasan'</p>
                     </div>
                 </div>
-                <button onclick="openModal('add', 'Kawasan')" class="px-3 py-1.5 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-lg border border-indigo-100 hover:bg-indigo-100 transition flex items-center gap-1">
+                <button onclick="openModal('add', 'Kawasan')" class="px-3 py-1.5 bg-blue-50 text-blue-700 text-xs font-bold rounded-lg border border-blue-100 hover:bg-blue-100 transition flex items-center gap-1">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                     Tambah
                 </button>
@@ -119,15 +129,59 @@
             </div>
         </div>
 
+        {{-- COLUMN 3: SENARAI JAWATAN --}}
+        <div class="space-y-4">
+             <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                    <div class="p-2 bg-emerald-100 rounded-lg text-emerald-900">
+                        {{-- Badge Icon --}}
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-800">Senarai Jawatan</h3>
+                        <p class="text-xs text-gray-400">Pangkat & Gred</p>
+                    </div>
+                </div>
+                <button onclick="openModal('add', 'Jawatan')" class="px-3 py-1.5 bg-blue-50 text-blue-700 text-xs font-bold rounded-lg border border-blue-100 hover:bg-blue-100 transition flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Tambah
+                </button>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <ul class="divide-y divide-gray-100 max-h-[400px] overflow-y-auto">
+                    @foreach($ranks as $rank)
+                    <li class="px-4 py-3 flex items-center justify-between group hover:bg-gray-50 transition">
+                        <span class="text-sm font-medium text-gray-700">{{ $rank['name'] }}</span>
+                        <div class="flex items-center gap-2 opacity-50 group-hover:opacity-100 transition">
+                             <button onclick="openModal('edit', 'Jawatan', '{{ $rank['name'] }}', {{ $rank['id'] }})" class="text-blue-600 hover:bg-blue-50 p-1.5 rounded-md">
+                                <span class="sr-only">Edit {{ $rank['name'] }}</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            </button>
+                            <button onclick="deleteItem('{{ $rank['name'] }}')" class="text-red-600 hover:bg-red-50 p-1.5 rounded-md">
+                                <span class="sr-only">Padam {{ $rank['name'] }}</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </div>
+                    </li>
+                    @endforeach
+                </ul>
+                <div class="bg-gray-50 px-4 py-2 border-t border-gray-100 relative z-10">
+                    <p class="text-[10px] text-gray-400 text-center">{{ count($ranks) }} rekod</p>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
+{{-- MODAL (Reusable) --}}
 <div id="dataModal" style="display: none;" class="fixed inset-0 z-[100] w-screen h-screen overflow-hidden" role="dialog" aria-modal="true">
-    
     <div class="absolute inset-0 flex items-center justify-center p-4">
-        
-        <div class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" onclick="closeModal()"></div>
+        {{-- Backdrop --}}
+        <div class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
 
+        {{-- Panel --}}
         <div class="relative z-10 w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden ring-1 ring-black/5 transform transition-all">
             
             <div class="bg-gray-50 px-4 py-4 border-b border-gray-100 flex items-center gap-3">
@@ -168,7 +222,6 @@
         const input = document.getElementById('itemName');
         const methodField = document.getElementById('methodField');
 
-        // FORCE SHOW: Use 'block' display style
         modal.style.display = 'block'; 
 
         if (action === 'add') {
@@ -181,7 +234,6 @@
             methodField.innerHTML = '<input type="hidden" name="_method" value="PUT">';
         }
         
-        // Auto-focus input
         setTimeout(() => input.focus(), 100);
     }
 
