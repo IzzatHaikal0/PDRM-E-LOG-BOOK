@@ -68,11 +68,8 @@
                         <button onclick="openVerificationModal(1, 'Kpl. Abu Bakar')" class="flex-1 bg-[#00205B] text-white text-xs font-bold py-2 rounded-lg hover:bg-blue-900 transition shadow-sm">
                             Sahkan
                         </button>
-                        <button class="px-3 bg-white border border-gray-200 text-red-600 text-xs font-bold py-2 rounded-lg hover:bg-red-50 transition">
-                            Tolak
-                        </button>
                         {{-- BUTIRAN BUTTON: Calls viewTaskDetails(1) --}}
-                         <button onclick="viewTaskDetails(1)" class="px-3 bg-white border border-gray-200 text-gray-600 text-xs font-bold py-2 rounded-lg hover:bg-gray-50 transition">
+                         <button onclick="viewTaskDetails(1)" class="px-8 bg-white border border-blue-800 text-gray-600 text-xs font-bold py-2 rounded-lg hover:bg-gray-50 transition">
                             Butiran
                         </button>
                     </div>
@@ -110,11 +107,8 @@
                         <button onclick="openVerificationModal(2, 'L/Kpl Siti Aminah')" class="flex-1 bg-[#00205B] text-white text-xs font-bold py-2 rounded-lg hover:bg-blue-900 transition shadow-sm">
                             Sahkan
                         </button>
-                        <button class="px-3 bg-white border border-gray-200 text-red-600 text-xs font-bold py-2 rounded-lg hover:bg-red-50 transition">
-                            Tolak
-                        </button>
                         {{-- BUTIRAN BUTTON: Calls viewTaskDetails(2) --}}
-                         <button onclick="viewTaskDetails(2)" class="px-3 bg-white border border-gray-200 text-gray-600 text-xs font-bold py-2 rounded-lg hover:bg-gray-50 transition">
+                         <button onclick="viewTaskDetails(2)" class="px-8 bg-white border border-blue-800 text-gray-600 text-xs font-bold py-2 rounded-lg hover:bg-gray-50 transition">
                             Butiran
                         </button>
                     </div>

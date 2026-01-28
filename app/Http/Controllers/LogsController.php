@@ -9,7 +9,6 @@ use Carbon\Carbon;
 
 class LogsController extends Controller
 {
-    // --- TOGGLE THIS TO FALSE LATER TO USE REAL DATABASE ---
     public function index()
     {
         // --- TOGGLE THIS TO FALSE LATER TO USE REAL DATABASE ---
@@ -64,45 +63,50 @@ class LogsController extends Controller
                     'rejection_reason' => null,
                     'officer' => (object)['name' => 'Sjn. Mejar Halim']
                 ]
-            ])->groupBy('date'); // Group by date just like the real query
+            ])->groupBy('date');
 
         } else {
             // ==========================================
             // OPTION B: REAL DATABASE (REQUIRE AUTH)
             // ==========================================
-            $user_id = Auth::id() ?? 1; // Fallback to ID 1 if not logged in
+            $user = Auth::user();
             
-            $logs = ActivityLog::where('user_id', $user_id)
-                ->with('officer') 
-                ->orderBy('date', 'desc')
-                ->orderBy('time', 'desc')
-                ->get()
-                ->groupBy(function($val) {
-                    return Carbon::parse($val->date)->format('Y-m-d');
-                });
+            // If Supervisor, maybe fetch ALL pending logs or their specific unit's logs
+            if ($user && ($user->role === 'penyelia' || $user->role === 'admin')) {
+                // Example: Fetch all logs for verification (Adjust query as needed)
+                $logs = ActivityLog::with('user', 'officer') // Eager load user relationship
+                    ->orderBy('date', 'desc')
+                    ->orderBy('time', 'desc')
+                    ->get()
+                    ->groupBy(function($val) {
+                        return Carbon::parse($val->date)->format('Y-m-d');
+                    });
+            } else {
+                // If Anggota, fetch ONLY their own logs
+                $logs = ActivityLog::where('user_id', $user->id)
+                    ->with('officer') 
+                    ->orderBy('date', 'desc')
+                    ->orderBy('time', 'desc')
+                    ->get()
+                    ->groupBy(function($val) {
+                        return Carbon::parse($val->date)->format('Y-m-d');
+                    });
+            }
         }
 
+        // ==========================================
+        // DYNAMIC VIEW RETURN
+        // ==========================================
+        $user = Auth::user();
+
+        // Check if user is Supervisor or Admin
+        if ($user && ($user->role === 'penyelia')) {
+            // Return Supervisor View
+            // Ensure this view exists: resources/views/Supervisor/VerifyList.blade.php
+            return view('Penyelia.Logs.History', compact('logs')); 
+        }
+
+        // Default: Return Anggota View
         return view('Users.Logs.History', compact('logs'));
     }
-
-
-    
-    // Show the History Page
-    /*public function index()
-    {
-        // 1. Fetch logs for the logged-in user
-        // 2. Order by newest first
-        // 3. Get relationships (officer details) to avoid N+1 query performance issues
-        $logs = ActivityLog::where('user_id', Auth::id())
-            ->with('officer') 
-            ->orderBy('date', 'desc')
-            ->orderBy('time', 'desc')
-            ->get()
-            ->groupBy(function($val) {
-                // Group by Date for the UI (e.g., "Hari Ini", "Yesterday")
-                return Carbon::parse($val->date)->format('Y-m-d');
-            });
-
-        return view('Users.Logs.History', compact('logs'));
-    }*/
 }
