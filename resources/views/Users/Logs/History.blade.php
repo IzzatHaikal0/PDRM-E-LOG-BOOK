@@ -1,8 +1,5 @@
 @extends('layouts.app')
 
-{{-- We remove the separate header section to avoid layout issues. 
-     The title/search is now inside the main content below. --}}
-
 @section('content')
 <div class="py-6 px-4 max-w-lg mx-auto pb-24">
 
@@ -30,7 +27,7 @@
     <div class="flex p-1 mb-6 bg-gray-100 rounded-xl border border-gray-200">
         <button onclick="switchTab('pending')" id="tab-pending" 
                 class="flex-1 py-2.5 text-xs font-bold rounded-lg shadow-sm bg-white text-[#00205B] border border-gray-100 transition-all duration-200">
-            Belum Disahkan
+            Tugasan Semasa
         </button>
         <button onclick="switchTab('verified')" id="tab-verified" 
                 class="flex-1 py-2.5 text-xs font-medium rounded-lg text-gray-500 hover:text-gray-900 transition-all duration-200">
@@ -40,22 +37,24 @@
 
     {{-- 3. CONTENT AREA --}}
     
-    {{-- === VIEW A: PENDING (Belum Disahkan) === --}}
+    {{-- === VIEW A: PENDING / ONGOING === --}}
     <div id="view-pending" class="space-y-6 animate-fade-in">
         @php $hasPending = false; @endphp
 
         @foreach($logs as $date => $dailyLogs)
             @php
-                // Filter: Only show items that are NOT approved AND NOT rejected
-                $pendingItems = $dailyLogs->filter(fn($log) => $log->status !== 'approved' && $log->status !== 'rejected');
+                // Filter: Show 'ongoing' (needs end time) AND 'pending' (waiting approval)
+                // We exclude 'approved' and 'rejected'
+                $activeItems = $dailyLogs->filter(fn($log) => !in_array($log->status, ['approved', 'rejected']));
             @endphp
 
-            @if($pendingItems->isNotEmpty())
+            @if($activeItems->isNotEmpty())
                 @php $hasPending = true; @endphp
                 <div class="log-group">
                     {{-- Date Header --}}
                     <div class="flex items-center gap-2 mb-3 px-1">
-                        <span class="w-2 h-2 rounded-full bg-yellow-400"></span>
+                        {{-- Blue dot for active day --}}
+                        <span class="w-2 h-2 rounded-full bg-blue-500"></span>
                         <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider">
                             {{ \Carbon\Carbon::parse($date)->translatedFormat('d M Y, l') }}
                         </h3>
@@ -63,22 +62,29 @@
 
                     {{-- Cards List --}}
                     <div class="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden divide-y divide-gray-100">
-                        @foreach($pendingItems as $log)
-                            {{-- LOGIC: Check for "Off Duty" keywords --}}
+                        @foreach($activeItems as $log)
                             @php
                                 $isOffDuty = in_array($log->type, ['Cuti Sakit', 'Cuti Rehat', 'Kecemasan', 'Off Day']);
+                                // Check if status is specifically 'ongoing' (User hasn't put end time yet)
+                                $isOngoing = $log->status === 'ongoing'; 
                             @endphp
 
                             <div class="log-card-item p-4 flex gap-4 hover:bg-gray-50 transition relative overflow-hidden {{ $isOffDuty ? 'bg-red-50/30' : '' }}">
-                                {{-- Stripe Color --}}
-                                <div class="absolute left-0 top-0 bottom-0 w-1 {{ $isOffDuty ? 'bg-red-500' : 'bg-yellow-400' }}"></div>
+                                
+                                {{-- Stripe Color: Blue for Ongoing, Yellow for Pending, Red for OffDuty --}}
+                                @php
+                                    $stripeColor = 'bg-yellow-400';
+                                    if ($isOngoing) $stripeColor = 'bg-blue-500';
+                                    if ($isOffDuty) $stripeColor = 'bg-red-500';
+                                @endphp
+                                <div class="absolute left-0 top-0 bottom-0 w-1 {{ $stripeColor }}"></div>
 
-                                {{-- Time --}}
+                                {{-- Start Time --}}
                                 <div class="flex flex-col items-center gap-1 shrink-0 w-12 pt-1">
                                     <span class="text-sm font-bold {{ $isOffDuty ? 'text-red-600' : 'text-gray-900' }}">
                                         {{ \Carbon\Carbon::parse($log->time)->format('H:i') }}
                                     </span>
-                                    <span class="text-[10px] text-gray-400">JAM</span>
+                                    <span class="text-[10px] text-gray-400">MULA</span>
                                 </div>
 
                                 {{-- Details --}}
@@ -89,27 +95,67 @@
                                                 {{ $log->type }}
                                             </h4>
                                             @if($isOffDuty)
-                                                <span class="w-fit mt-0.5 px-1.5 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-600 border border-red-200 uppercase tracking-wide">
-                                                    OFF DUTY
-                                                </span>
+                                                <span class="w-fit mt-0.5 px-1.5 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-600 border border-red-200 uppercase tracking-wide">OFF DUTY</span>
                                             @endif
                                         </div>
                                         
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-yellow-100 text-yellow-800">
-                                            Dalam Proses
-                                        </span>
+                                        {{-- STATUS BADGE --}}
+                                        @if($isOngoing)
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800 animate-pulse">
+                                                Sedang Berjalan
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-yellow-100 text-yellow-800">
+                                                Dalam Proses
+                                            </span>
+                                        @endif
                                     </div>
+
                                     <p class="text-xs {{ $isOffDuty ? 'text-red-400' : 'text-gray-500' }} line-clamp-2 mt-1">
                                         {{ $log->remarks }}
                                     </p>
                                     
-                                    {{-- Edit Button (Visible for Pending) --}}
-                                    <div class="mt-3 flex items-end justify-end">
-                                        <a href="{{ route('logs.create') }}" class="flex items-center gap-1 px-3 py-1.5 bg-white hover:bg-gray-50 text-gray-700 rounded-lg border border-gray-200 text-xs font-bold transition shadow-sm">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                                            Ubah
-                                        </a>
+                                    {{-- === ACTION SECTION === --}}
+                                    <div class="mt-3">
+                                        @if($isOngoing)
+                                            {{-- [NEW] FORM TO INPUT END TIME --}}
+                                            <form action="{{ route('logs.end_task', $log->id) }}" method="POST" class="bg-blue-50 p-3 rounded-lg border border-blue-100 mt-2">
+                                                @csrf
+                                                @method('PATCH')
+                                                
+                                                <div class="flex flex-col gap-2">
+                                                    <label class="text-[10px] font-bold text-blue-800 uppercase">Masukkan Masa Tamat:</label>
+                                                    <div class="flex gap-2">
+                                                        <input type="time" name="end_time" required 
+                                                               value="{{ now()->format('H:i') }}"
+                                                               class="block w-full px-2 py-1.5 bg-white border border-blue-200 rounded-lg text-sm focus:ring-blue-900 focus:border-blue-900 shadow-sm">
+                                                        
+                                                        <button type="submit" class="px-3 py-1.5 bg-[#00205B] text-white text-xs font-bold rounded-lg hover:bg-blue-900 shadow-sm transition transform active:scale-95">
+                                                            Hantar
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </form>
+
+                                        @else
+                                            {{-- If submitted (Pending), show the End Time --}}
+                                            <div class="flex items-center gap-4">
+                                                @if($log->end_time)
+                                                    <div class="flex items-center gap-1 text-[10px] text-gray-500 bg-gray-50 px-2 py-1 rounded border border-gray-100">
+                                                        <span class="font-bold">Tamat:</span> {{ \Carbon\Carbon::parse($log->end_time)->format('H:i') }}
+                                                    </div>
+                                                @endif
+                                                
+                                                {{-- Edit Button (Still allow edit if needed while pending) --}}
+
+                                                <a href="{{ route('logs.create') }}" class="ml-auto flex items-center gap-1 px-3 py-1.5 bg-white hover:bg-gray-50 text-gray-700 rounded-lg border border-gray-200 text-xs font-bold transition shadow-sm">
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                                    Ubah
+                                                </a>
+                                            </div>
+                                        @endif
                                     </div>
+
                                 </div>
                             </div>
                         @endforeach
@@ -122,9 +168,9 @@
             {{-- Empty State --}}
             <div class="flex flex-col items-center justify-center py-12 text-center">
                 <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
-                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div>
-                <p class="text-gray-500 text-xs">Tiada tugasan menunggu pengesahan.</p>
+                <p class="text-gray-500 text-xs">Tiada tugasan semasa.</p>
                 <a href="{{ route('logs.create') }}" class="mt-4 text-xs font-bold text-blue-600 hover:underline">
                     + Tambah Rekod Baru
                 </a>
@@ -146,7 +192,7 @@
                 @php $hasVerified = true; @endphp
                 <div class="log-group">
                     <div class="flex items-center gap-2 mb-3 px-1">
-                        <span class="w-2 h-2 rounded-full bg-[#00205B]"></span>
+                        <span class="w-2 h-2 rounded-full bg-gray-400"></span>
                         <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider">
                             {{ \Carbon\Carbon::parse($date)->translatedFormat('d M Y, l') }}
                         </h3>
@@ -160,7 +206,6 @@
                                 $statusText = $log->status == 'approved' ? 'Disahkan' : 'Ditolak';
                                 $stripeColor = $log->status == 'approved' ? 'bg-green-500' : 'bg-red-500';
                                 
-                                // Off Duty makes the card Red/Warning style
                                 if($isOffDuty) $stripeColor = 'bg-red-500';
                             @endphp
 
@@ -168,44 +213,33 @@
                                 <div class="absolute left-0 top-0 bottom-0 w-1 {{ $stripeColor }}"></div>
 
                                 <div class="flex flex-col items-center gap-1 shrink-0 w-12 pt-1">
-                                    <span class="text-sm font-bold {{ $isOffDuty ? 'text-red-600' : 'text-gray-900' }}">
-                                        {{ \Carbon\Carbon::parse($log->time)->format('H:i') }}
-                                    </span>
-                                    <span class="text-[10px] text-gray-400">JAM</span>
+                                    <span class="text-sm font-bold text-gray-900">{{ \Carbon\Carbon::parse($log->time)->format('H:i') }}</span>
+                                    <span class="text-[10px] text-gray-400">MULA</span>
                                 </div>
 
                                 <div class="flex-1 min-w-0">
                                     <div class="flex justify-between items-start mb-1">
-                                        <div class="flex flex-col">
-                                            <h4 class="text-sm font-bold {{ $isOffDuty ? 'text-red-600' : 'text-gray-900' }} truncate">
-                                                {{ $log->type }}
-                                            </h4>
-                                            @if($isOffDuty)
-                                                <span class="w-fit mt-0.5 px-1.5 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-600 border border-red-200 uppercase tracking-wide">
-                                                    OFF DUTY
-                                                </span>
-                                            @endif
-                                        </div>
+                                        <h4 class="text-sm font-bold text-gray-900 truncate">{{ $log->type }}</h4>
                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium {{ $statusBadgeClass }}">
                                             {{ $statusText }}
                                         </span>
                                     </div>
-                                    <p class="text-xs {{ $isOffDuty ? 'text-red-400' : 'text-gray-500' }} line-clamp-2 mt-1">
-                                        {{ $log->remarks }}
-                                    </p>
+                                    <p class="text-xs text-gray-500 line-clamp-2 mt-1">{{ $log->remarks }}</p>
+                                    
+                                    {{-- Show End Time in History --}}
+                                    @if($log->end_time)
+                                    <div class="mt-2 text-[10px] text-gray-500 flex items-center gap-2">
+                                        <span class="font-bold">Tamat: {{ \Carbon\Carbon::parse($log->end_time)->format('H:i') }}</span>
+                                    </div>
+                                    @endif
 
-                                    {{-- Officer Stamp (No Edit Button) --}}
-                                    <div class="mt-3">
+                                    <div class="mt-2 text-[10px] text-gray-400 flex items-center gap-1">
                                         @if($log->status == 'approved')
-                                            <div class="inline-flex items-center gap-1 text-[10px] text-gray-400 bg-gray-50 px-2 py-1 rounded border border-gray-100">
-                                                <svg class="w-3 h-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                                {{ $log->officer->name ?? 'Disahkan oleh Penyelia' }}
-                                            </div>
-                                        @elseif($log->status == 'rejected')
-                                            <div class="flex items-start gap-1 p-1.5 bg-red-50 rounded border border-red-100">
-                                                <svg class="w-3 h-3 text-red-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                                <span class="text-[10px] text-red-700 leading-tight">{{ $log->rejection_reason ?? 'Ditolak. Sila hubungi penyelia.' }}</span>
-                                            </div>
+                                            <svg class="w-3 h-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                            {{ $log->officer->name ?? 'Disahkan' }}
+                                        @else
+                                            <svg class="w-3 h-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                            {{ $log->rejection_reason ?? 'Ditolak' }}
                                         @endif
                                     </div>
                                 </div>
@@ -259,7 +293,6 @@
 
     function filterLogs() {
         const input = document.getElementById('searchInput').value.toLowerCase();
-        // Detect visible container to only filter what user sees
         const activeViewId = document.getElementById('view-pending').classList.contains('hidden') ? 'view-verified' : 'view-pending';
         const container = document.getElementById(activeViewId);
         const cards = container.querySelectorAll('.log-card-item');

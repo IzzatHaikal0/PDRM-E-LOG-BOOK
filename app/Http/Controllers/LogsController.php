@@ -16,7 +16,7 @@ class LogsController extends Controller
 
         if ($testMode) {
             // ==========================================
-            // OPTION A: MOCK DATA (FOR UI TESTING)
+            //  DUMMY DATA (FOR UI TESTING)
             // ==========================================
             $logs = collect([
                 // 1. TODAY - Approved Log
@@ -24,6 +24,7 @@ class LogsController extends Controller
                     'id' => 1,
                     'date' => Carbon::today()->format('Y-m-d'),
                     'time' => '08:00:00',
+                    'end_time' => '16:00:00',
                     'type' => 'Lapor Masuk',
                     'status' => 'approved',
                     'remarks' => 'Melapor diri masuk tugas Sif A di Balai.',
@@ -35,6 +36,7 @@ class LogsController extends Controller
                     'id' => 2,
                     'date' => Carbon::today()->format('Y-m-d'),
                     'time' => '10:30:00',
+                    'end_time' => '12:00:00',
                     'type' => 'Rondaan MPV',
                     'status' => 'pending',
                     'remarks' => 'Rondaan sektor A dan B bersama Kpl. Muthu.',
@@ -46,6 +48,7 @@ class LogsController extends Controller
                     'id' => 3,
                     'date' => Carbon::yesterday()->format('Y-m-d'),
                     'time' => '14:00:00',
+                    'end_time' => '16:00:00',
                     'type' => 'Latihan Menembak',
                     'status' => 'rejected',
                     'remarks' => 'Latihan tahunan di lapang sasar.',
@@ -57,6 +60,7 @@ class LogsController extends Controller
                     'id' => 4,
                     'date' => Carbon::now()->subDays(2)->format('Y-m-d'),
                     'time' => '22:00:00',
+                    'end_time' => '23:00:00',
                     'type' => 'Tugas Pejabat',
                     'status' => 'approved',
                     'remarks' => 'Mengemaskini fail siasatan.',
@@ -67,7 +71,7 @@ class LogsController extends Controller
 
         } else {
             // ==========================================
-            // OPTION B: REAL DATABASE (REQUIRE AUTH)
+            // REAL DATABASE (REQUIRE AUTH)
             // ==========================================
             $user = Auth::user();
             
@@ -94,6 +98,8 @@ class LogsController extends Controller
             }
         }
 
+        
+
         // ==========================================
         // DYNAMIC VIEW RETURN
         // ==========================================
@@ -106,7 +112,19 @@ class LogsController extends Controller
             return view('Penyelia.Logs.History', compact('logs')); 
         }
 
+        
+
         // Default: Return Anggota View
         return view('Users.Logs.History', compact('logs'));
     }
+
+    public function updateEndTime(Request $request, $id)
+        {
+            $log = \App\Models\ActivityLog::findOrFail($id);
+            $log->update([
+                'end_time' => $request->end_time,
+                'status' => 'pending' // Change from 'ongoing' to 'pending' so officer can see it
+            ]);
+            return back()->with('success', 'Masa tamat direkodkan.');
+        }
 }

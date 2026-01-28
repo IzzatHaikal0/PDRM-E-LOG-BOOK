@@ -21,6 +21,10 @@ Route::post('/login', [LoginController::class, 'authenticate'])->name('login.sub
 
 Route::get('/rekod/sejarah', [LogsController::class, 'index'])->name('logs.history');
 
+Route::patch('/rekod/tamat/{id}', [LogsController::class, 'updateEndTime'])->name('logs.end_task');
+
+
+
 
 /*
 Route::get('/dashboard/admin', function() {

@@ -18,6 +18,7 @@ class ActivityLog extends Model
         'time',
         'remarks',
         'officer_id',
+        'end_time',
         'status',
         'rejection_reason',
     ];
