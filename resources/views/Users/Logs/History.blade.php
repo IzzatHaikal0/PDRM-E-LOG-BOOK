@@ -3,13 +3,22 @@
 @section('content')
 <div class="py-6 px-4 max-w-lg mx-auto pb-24">
 
-    {{-- 1. HEADER & SEARCH BAR --}}
+    {{-- 1. HEADER & ACTIONS --}}
     <div class="mb-6">
         <div class="flex items-center justify-between mb-4">
-            <h2 class="font-bold text-xl text-[#00205B]">Sejarah Aktiviti</h2>
-            <div class="text-xs text-gray-400">
-                {{ now()->translatedFormat('F Y') }}
+            {{-- Left Side: Title & Date --}}
+            <div>
+                <h2 class="font-bold text-xl text-[#00205B]">Sejarah Aktiviti</h2>
+                <div class="text-xs text-gray-400">
+                    {{ now()->translatedFormat('F Y') }}
+                </div>
             </div>
+
+            {{-- CHANGED: Redirects to Report Page --}}
+            <a href="{{ route('Users.Logs.Report') }}" class="flex items-center gap-2 px-4 py-2 bg-white border border-blue-200 text-blue-700 text-xs font-bold rounded-xl hover:bg-blue-50 transition shadow-sm active:scale-95">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                Laporan & Statistik
+            </a>
         </div>
 
         {{-- Search Input Area --}}
@@ -43,43 +52,32 @@
 
         @foreach($logs as $date => $dailyLogs)
             @php
-                // Filter: Show 'ongoing' (needs end time) AND 'pending' (waiting approval)
-                // We exclude 'approved' and 'rejected'
                 $activeItems = $dailyLogs->filter(fn($log) => !in_array($log->status, ['approved', 'rejected']));
             @endphp
 
             @if($activeItems->isNotEmpty())
                 @php $hasPending = true; @endphp
                 <div class="log-group">
-                    {{-- Date Header --}}
                     <div class="flex items-center gap-2 mb-3 px-1">
-                        {{-- Blue dot for active day --}}
                         <span class="w-2 h-2 rounded-full bg-blue-500"></span>
                         <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider">
                             {{ \Carbon\Carbon::parse($date)->translatedFormat('d M Y, l') }}
                         </h3>
                     </div>
 
-                    {{-- Cards List --}}
                     <div class="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden divide-y divide-gray-100">
                         @foreach($activeItems as $log)
                             @php
                                 $isOffDuty = in_array($log->type, ['Cuti Sakit', 'Cuti Rehat', 'Kecemasan', 'Off Day']);
-                                // Check if status is specifically 'ongoing' (User hasn't put end time yet)
                                 $isOngoing = $log->status === 'ongoing'; 
+                                $stripeColor = 'bg-yellow-400';
+                                if ($isOngoing) $stripeColor = 'bg-blue-500';
+                                if ($isOffDuty) $stripeColor = 'bg-red-500';
                             @endphp
 
                             <div class="log-card-item p-4 flex gap-4 hover:bg-gray-50 transition relative overflow-hidden {{ $isOffDuty ? 'bg-red-50/30' : '' }}">
-                                
-                                {{-- Stripe Color: Blue for Ongoing, Yellow for Pending, Red for OffDuty --}}
-                                @php
-                                    $stripeColor = 'bg-yellow-400';
-                                    if ($isOngoing) $stripeColor = 'bg-blue-500';
-                                    if ($isOffDuty) $stripeColor = 'bg-red-500';
-                                @endphp
                                 <div class="absolute left-0 top-0 bottom-0 w-1 {{ $stripeColor }}"></div>
 
-                                {{-- Start Time --}}
                                 <div class="flex flex-col items-center gap-1 shrink-0 w-12 pt-1">
                                     <span class="text-sm font-bold {{ $isOffDuty ? 'text-red-600' : 'text-gray-900' }}">
                                         {{ \Carbon\Carbon::parse($log->time)->format('H:i') }}
@@ -87,7 +85,6 @@
                                     <span class="text-[10px] text-gray-400">MULA</span>
                                 </div>
 
-                                {{-- Details --}}
                                 <div class="flex-1 min-w-0">
                                     <div class="flex justify-between items-start mb-1">
                                         <div class="flex flex-col">
@@ -99,7 +96,6 @@
                                             @endif
                                         </div>
                                         
-                                        {{-- STATUS BADGE --}}
                                         @if($isOngoing)
                                             <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800 animate-pulse">
                                                 Sedang Berjalan
@@ -115,14 +111,11 @@
                                         {{ $log->remarks }}
                                     </p>
                                     
-                                    {{-- === ACTION SECTION === --}}
                                     <div class="mt-3">
                                         @if($isOngoing)
-                                            {{-- [NEW] FORM TO INPUT END TIME --}}
                                             <form action="{{ route('logs.end_task', $log->id) }}" method="POST" class="bg-blue-50 p-3 rounded-lg border border-blue-100 mt-2">
                                                 @csrf
                                                 @method('PATCH')
-                                                
                                                 <div class="flex flex-col gap-2">
                                                     <label class="text-[10px] font-bold text-blue-800 uppercase">Masukkan Masa Tamat:</label>
                                                     <div class="flex gap-2">
@@ -136,9 +129,7 @@
                                                     </div>
                                                 </div>
                                             </form>
-
                                         @else
-                                            {{-- If submitted (Pending), show the End Time --}}
                                             <div class="flex items-center gap-4">
                                                 @if($log->end_time)
                                                     <div class="flex items-center gap-1 text-[10px] text-gray-500 bg-gray-50 px-2 py-1 rounded border border-gray-100">
@@ -146,8 +137,6 @@
                                                     </div>
                                                 @endif
                                                 
-                                                {{-- Edit Button (Still allow edit if needed while pending) --}}
-
                                                 <a href="{{ route('logs.create') }}" class="ml-auto flex items-center gap-1 px-3 py-1.5 bg-white hover:bg-gray-50 text-gray-700 rounded-lg border border-gray-200 text-xs font-bold transition shadow-sm">
                                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                                                     Ubah
@@ -155,7 +144,6 @@
                                             </div>
                                         @endif
                                     </div>
-
                                 </div>
                             </div>
                         @endforeach
@@ -165,7 +153,6 @@
         @endforeach
 
         @if(!$hasPending)
-            {{-- Empty State --}}
             <div class="flex flex-col items-center justify-center py-12 text-center">
                 <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
                     <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -184,7 +171,6 @@
 
         @foreach($logs as $date => $dailyLogs)
             @php
-                // Filter: Only show items that ARE approved OR rejected
                 $verifiedItems = $dailyLogs->filter(fn($log) => $log->status === 'approved' || $log->status === 'rejected');
             @endphp
 
@@ -192,7 +178,7 @@
                 @php $hasVerified = true; @endphp
                 <div class="log-group">
                     <div class="flex items-center gap-2 mb-3 px-1">
-                        <span class="w-2 h-2 rounded-full bg-gray-400"></span>
+                        <span class="w-2 h-2 rounded-full bg-[#00205B]"></span>
                         <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider">
                             {{ \Carbon\Carbon::parse($date)->translatedFormat('d M Y, l') }}
                         </h3>
@@ -205,7 +191,6 @@
                                 $statusBadgeClass = $log->status == 'approved' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
                                 $statusText = $log->status == 'approved' ? 'Disahkan' : 'Ditolak';
                                 $stripeColor = $log->status == 'approved' ? 'bg-green-500' : 'bg-red-500';
-                                
                                 if($isOffDuty) $stripeColor = 'bg-red-500';
                             @endphp
 
@@ -213,20 +198,25 @@
                                 <div class="absolute left-0 top-0 bottom-0 w-1 {{ $stripeColor }}"></div>
 
                                 <div class="flex flex-col items-center gap-1 shrink-0 w-12 pt-1">
-                                    <span class="text-sm font-bold text-gray-900">{{ \Carbon\Carbon::parse($log->time)->format('H:i') }}</span>
+                                    <span class="text-sm font-bold {{ $isOffDuty ? 'text-red-600' : 'text-gray-900' }}">
+                                        {{ \Carbon\Carbon::parse($log->time)->format('H:i') }}
+                                    </span>
                                     <span class="text-[10px] text-gray-400">MULA</span>
                                 </div>
 
                                 <div class="flex-1 min-w-0">
                                     <div class="flex justify-between items-start mb-1">
-                                        <h4 class="text-sm font-bold text-gray-900 truncate">{{ $log->type }}</h4>
+                                        <h4 class="text-sm font-bold {{ $isOffDuty ? 'text-red-600' : 'text-gray-900' }} truncate">
+                                            {{ $log->type }}
+                                        </h4>
                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium {{ $statusBadgeClass }}">
                                             {{ $statusText }}
                                         </span>
                                     </div>
-                                    <p class="text-xs text-gray-500 line-clamp-2 mt-1">{{ $log->remarks }}</p>
-                                    
-                                    {{-- Show End Time in History --}}
+                                    <p class="text-xs {{ $isOffDuty ? 'text-red-400' : 'text-gray-500' }} line-clamp-2 mt-1">
+                                        {{ $log->remarks }}
+                                    </p>
+
                                     @if($log->end_time)
                                     <div class="mt-2 text-[10px] text-gray-500 flex items-center gap-2">
                                         <span class="font-bold">Tamat: {{ \Carbon\Carbon::parse($log->end_time)->format('H:i') }}</span>
@@ -236,8 +226,8 @@
                                     <div class="mt-2 text-[10px] text-gray-400 flex items-center gap-1">
                                         @if($log->status == 'approved')
                                             <svg class="w-3 h-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                            {{ $log->officer->name ?? 'Disahkan' }}
-                                        @else
+                                            {{ $log->officer->name ?? 'Disahkan oleh Penyelia' }}
+                                        @elseif($log->status == 'rejected')
                                             <svg class="w-3 h-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                             {{ $log->rejection_reason ?? 'Ditolak' }}
                                         @endif
@@ -259,8 +249,32 @@
 
 </div>
 
-{{-- SCRIPT: TAB SWITCHING & SEARCH --}}
+{{-- SCRIPT: TAB SWITCHING, SEARCH & MOCK DOWNLOAD --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    // --- 1. MOCK DOWNLOAD FUNCTION (UI Only) ---
+    function mockDownloadPDF() {
+        Swal.fire({
+            title: 'Menjana PDF...',
+            text: 'Sila tunggu sebentar sementara dokumen anda disediakan.',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        setTimeout(() => {
+            Swal.fire({
+                icon: 'success',
+                title: 'Berjaya!',
+                text: 'Laporan aktiviti anda telah dimuat turun.',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }, 2000);
+    }
+
+    // --- 2. TAB SWITCHING ---
     function switchTab(tab) {
         const viewPending = document.getElementById('view-pending');
         const viewVerified = document.getElementById('view-verified');
@@ -291,6 +305,7 @@
         }
     }
 
+    // --- 3. FILTER LOGS ---
     function filterLogs() {
         const input = document.getElementById('searchInput').value.toLowerCase();
         const activeViewId = document.getElementById('view-pending').classList.contains('hidden') ? 'view-verified' : 'view-pending';

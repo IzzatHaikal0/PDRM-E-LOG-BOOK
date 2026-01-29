@@ -110,12 +110,14 @@ class LogsController extends Controller
             // Return Supervisor View
             // Ensure this view exists: resources/views/Supervisor/VerifyList.blade.php
             return view('Penyelia.Logs.History', compact('logs')); 
+        }else{
+             // Default: Return Anggota View
+            return view('Users.Logs.History', compact('logs'));
         }
 
         
 
-        // Default: Return Anggota View
-        return view('Users.Logs.History', compact('logs'));
+       
     }
 
     public function updateEndTime(Request $request, $id)

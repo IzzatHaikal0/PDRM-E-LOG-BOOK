@@ -114,6 +114,10 @@ Route::prefix('anggota')->group(function () {
     Route::get('/rekod/sejarah', [LogsController::class, 'index'])->name('logs.history');
     
     Route::get('/hubungi', [ContactsController::class, 'index'])->name('contacts');
+
+    Route::get('/rekod/sejarah/report', function() {
+        return view ('Users.Logs.Report');
+    })->name('Users.Logs.Report');
     
 });
 
