@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\LogsController;
+use App\Http\Controllers\ContactsController;
 
 /*
 Route::get('/', function () {
@@ -111,7 +112,9 @@ Route::prefix('anggota')->group(function () {
     })->name('Users.EditProfile');
 
     Route::get('/rekod/sejarah', [LogsController::class, 'index'])->name('logs.history');
-
+    
+    Route::get('/hubungi', [ContactsController::class, 'index'])->name('contacts');
+    
 });
 
 

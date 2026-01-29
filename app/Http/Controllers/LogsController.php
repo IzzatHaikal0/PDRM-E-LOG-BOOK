@@ -50,7 +50,7 @@ class LogsController extends Controller
                     'time' => '14:00:00',
                     'end_time' => '16:00:00',
                     'type' => 'Latihan Menembak',
-                    'status' => 'rejected',
+                    'status' => 'ongoing',
                     'remarks' => 'Latihan tahunan di lapang sasar.',
                     'rejection_reason' => 'Gambar kehadiran tidak jelas. Sila hantar semula.',
                     'officer' => (object)['name' => 'Asp. Tiong']
