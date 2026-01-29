@@ -162,5 +162,9 @@ Route::prefix('penyelia')->group(function () {
     })->name('Penyelia.EditProfile');
 
     Route::get('/rekod/sejarah', [LogsController::class, 'index'])->name('Penyelia.Logs.History');
+
+    Route::get('/rekod/sejarah/report', function() {
+        return view ('Penyelia.Logs.Report');
+    })->name('Penyelia.Logs.Report');
 });
 

@@ -29,16 +29,6 @@
 
         {{-- Form Area --}}
         <div class="space-y-4">
-            
-            {{-- Category Filter (Specific to Supervisor) --}}
-            <div>
-                <label class="text-[10px] font-bold text-gray-400 uppercase mb-1 block">Jenis Laporan</label>
-                <select class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-gray-700 focus:ring-[#00205B] focus:border-[#00205B]">
-                    <option value="summary">Ringkasan Keseluruhan (Unit)</option>
-                    <option value="detailed">Senarai Terperinci (Semua Anggota)</option>
-                    <option value="rejected">Senarai Tugasan Ditolak</option>
-                </select>
-            </div>
 
             {{-- Monthly Selector --}}
             <div id="selector-monthly">
