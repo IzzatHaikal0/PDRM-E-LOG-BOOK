@@ -34,50 +34,6 @@
         </div>
     </div>
 
-    {{-- 2. TETAPAN PENUGASAN --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
-        <div class="px-5 py-4 border-b border-gray-50 bg-gray-50/50 flex items-center gap-2">
-            <svg class="w-5 h-5 text-[#00205B]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-            <h4 class="font-bold text-gray-800 text-sm uppercase tracking-wide">Tetapan Penugasan</h4>
-        </div>
-        
-        <div class="p-5">
-            <form action="#" method="POST">
-                @csrf
-                @method('PUT')
-                <div class="space-y-4">
-                    {{-- Balai Selection --}}
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Balai Bertugas Semasa</label>
-                        <select name="balai" class="block w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-blue-900 focus:border-blue-900 text-sm">
-                            <option value="Balai Polis Muar" selected>Balai Polis Muar (IPD)</option>
-                            <option value="Balai Polis Parit Jawa">Balai Polis Parit Jawa</option>
-                            <option value="Balai Polis Pagoh">Balai Polis Pagoh</option>
-                            <option value="Pondok Polis Bukit Pasir">Pondok Polis Bukit Pasir</option>
-                        </select>
-                        <p class="text-[10px] text-gray-400 mt-1">Lokasi ini akan digunakan secara automatik dalam Log Harian.</p>
-                    </div>
-
-                    {{-- Unit Selection --}}
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Unit / Cawangan</label>
-                        <select name="unit" class="block w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-blue-900 focus:border-blue-900 text-sm">
-                            <option value="Cawangan Kereta Peronda (MPV)">Cawangan Kereta Peronda (MPV)</option>
-                            <option value="Unit Rondaan Bermotosikal (URB)">Unit Rondaan Bermotosikal (URB)</option>
-                            <option value="Tugas Am">Tugas Am (Balai)</option>
-                            <option value="Siasatan Jenayah">Siasatan Jenayah (JSJ)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="mt-4 flex justify-end">
-                    <button type="button" onclick="alert('Tetapan berjaya dikemaskini!')" class="px-4 py-2 bg-blue-50 text-blue-700 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-blue-100 transition">
-                        Simpan Perubahan
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     {{-- 3. MAKLUMAT PERIBADI (Read Only with Edit Link) --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-6 overflow-hidden">

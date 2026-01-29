@@ -26,7 +26,7 @@ class LogsController extends Controller
                     'time' => '08:00:00',
                     'end_time' => '16:00:00',
                     'type' => 'Lapor Masuk',
-                    'status' => 'approved',
+                    'status' => 'pending',
                     'remarks' => 'Melapor diri masuk tugas Sif A di Balai.',
                     'rejection_reason' => null,
                     'officer' => (object)['name' => 'Sistem']
@@ -38,7 +38,7 @@ class LogsController extends Controller
                     'time' => '10:30:00',
                     'end_time' => '12:00:00',
                     'type' => 'Rondaan MPV',
-                    'status' => 'pending',
+                    'status' => 'ongoing',
                     'remarks' => 'Rondaan sektor A dan B bersama Kpl. Muthu.',
                     'rejection_reason' => null,
                     'officer' => (object)['name' => 'Insp. Razak']

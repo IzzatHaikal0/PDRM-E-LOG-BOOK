@@ -17,11 +17,11 @@
     ];
 
     $users = [
-        ['name' => 'Ahmad Albab', 'id' => 'RF12345', 'rank' => 'Inspektor', 'phone' => '012-3456789'],
-        ['name' => 'Siti Nurhaliza', 'id' => 'RF67890', 'rank' => 'Sarjan', 'phone' => '013-9876543'],
-        ['name' => 'Chong Wei', 'id' => 'RF11223', 'rank' => 'Koperal', 'phone' => '019-8877665'],
-        ['name' => 'Muthu Sami', 'id' => 'RF44556', 'rank' => 'L/Kpl', 'phone' => '017-3344556'],
-        ['name' => 'Sarah Ali', 'id' => 'RF99887', 'rank' => 'Konstabel', 'phone' => '011-1234123'],
+        ['name' => 'Ahmad Albab', 'id' => 'RF12345', 'rank' => 'Inspektor', 'phone' => '012-3456789', 'badge' => 'I-1234'],
+        ['name' => 'Siti Nurhaliza', 'id' => 'RF67890', 'rank' => 'Sarjan', 'phone' => '013-9876543', 'badge' => 'S-5678'],
+        ['name' => 'Chong Wei', 'id' => 'RF11223', 'rank' => 'Koperal', 'phone' => '019-8877665', 'badge' => 'K-9900'],
+        ['name' => 'Muthu Sami', 'id' => 'RF44556', 'rank' => 'L/Kpl', 'phone' => '017-3344556', 'badge' => 'L-1122'],
+        ['name' => 'Sarah Ali', 'id' => 'RF99887', 'rank' => 'Konstabel', 'phone' => '011-1234123', 'badge' => 'K-3344'],
     ];
 @endphp
 
@@ -73,12 +73,15 @@
         </div>
     </div>
 
+    {{-- DESKTOP TABLE --}}
     <div class="hidden md:block bg-white shadow-sm border border-gray-100 rounded-b-xl overflow-hidden">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Anggota</th>
                     <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Pangkat / ID</th>
+                    {{-- NEW COLUMN: Nombor Badan --}}
+                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">No. Badan</th>
                     <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">No. Telefon</th>
                     <th class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Tindakan</th>
                 </tr>
@@ -102,16 +105,18 @@
                             {{ $user['rank'] }}
                         </span>
                     </td>
+                    {{-- NEW COLUMN DATA --}}
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700">
+                        {{ $user['badge'] }}
+                    </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {{ $user['phone'] }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div class="flex items-center justify-end gap-2">
-                            {{-- EDIT BUTTON --}}
                             <a href="{{ route('Admin.EditUser', ['id' => $user['id']]) }}" class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 p-2 rounded-lg transition" title="Kemaskini">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                             </a>
-                            {{-- DELETE BUTTON --}}
                             <button onclick="confirmDelete('{{ $user['name'] }}')" class="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition" title="Padam">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                             </button>
@@ -121,7 +126,6 @@
                 @endforeach
             </tbody>
         </table>
-        {{-- Pagination Mockup --}}
         <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
             <div class="flex justify-between items-center">
                 <p class="text-xs text-gray-700">Menunjukkan 1-5 dari 97</p>
@@ -133,6 +137,7 @@
         </div>
     </div>
 
+    {{-- MOBILE CARD VIEW --}}
     <div class="md:hidden space-y-3">
         @foreach($users as $user)
         <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 relative">
@@ -142,11 +147,13 @@
                 </div>
                 <div class="flex-1 min-w-0">
                     <h4 class="text-sm font-bold text-gray-900 truncate">{{ $user['name'] }}</h4>
-                    <p class="text-xs text-gray-500 mb-2">{{ $user['rank'] }} &bull; {{ $user['id'] }}</p>
+                    <p class="text-xs text-gray-500">{{ $user['rank'] }} &bull; {{ $user['id'] }}</p>
+                    {{-- Badge Number displayed here for mobile --}}
+                    <p class="text-xs text-gray-400 mt-1">No. Badan: <span class="font-semibold text-gray-600">{{ $user['badge'] }}</span></p>
                 </div>
             </div>
             
-            <div class="flex items-center justify-end gap-2 border-t border-gray-50 pt-3 mt-1">
+            <div class="flex items-center justify-end gap-2 border-t border-gray-50 pt-3 mt-3">
                 <a href="{{ route('Admin.EditUser', ['id' => $user['id']]) }}" class="flex-1 flex items-center justify-center px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 rounded-lg">
                     Edit
                 </a>

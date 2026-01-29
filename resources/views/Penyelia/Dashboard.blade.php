@@ -25,17 +25,30 @@
 
     {{-- 2. INTERACTIVE CALENDAR CARD --}}
     <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-6 relative overflow-hidden">
+        
+        {{-- Header with Navigation --}}
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-base font-bold text-gray-800 flex items-center gap-2">
                 <svg class="w-5 h-5 text-[#00205B]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                Rekod Tugasan Saya
+                Rekod Tugasan
             </h3>
-            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Minggu Ini</span>
+            
+            {{-- Week Navigation Controls --}}
+            <div class="flex items-center gap-1 bg-gray-50 rounded-lg p-0.5 border border-gray-100">
+                <button onclick="changeWeek('prev')" class="p-1 text-gray-400 hover:text-[#00205B] hover:bg-white rounded transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                </button>
+                <span class="text-[10px] font-bold text-gray-600 px-2 uppercase tracking-wide" id="currentWeekLabel">Minggu Ini</span>
+                <button onclick="changeWeek('next')" class="p-1 text-gray-400 hover:text-[#00205B] hover:bg-white rounded transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+            </div>
         </div>
 
         {{-- Calendar Grid --}}
-        <div class="grid grid-cols-7 gap-2 text-center">
+        <div class="grid grid-cols-7 gap-2 text-center transition-all duration-300" id="calendarGrid">
             @php
+                // Default View (Current Week)
                 $days = [
                     ['day' => 'Isnin', 'date' => '20', 'status' => 'green'],
                     ['day' => 'Selasa', 'date' => '21', 'status' => 'green'],
@@ -50,7 +63,7 @@
             @foreach($days as $day)
                 {{-- CLICKABLE CELL --}}
                 <div onclick="openDayModal('{{ $day['date'] }}', '{{ $day['status'] }}', '{{ $day['day'] }}')" 
-                     class="flex flex-col items-center gap-1 cursor-pointer group transition transform hover:scale-105 active:scale-95">
+                     class="calendar-cell flex flex-col items-center gap-1 cursor-pointer group transition transform hover:scale-105 active:scale-95">
                     
                     <span class="text-[10px] text-gray-400 font-medium group-hover:text-[#00205B]">{{ substr($day['day'], 0, 3) }}</span>
                     
@@ -88,7 +101,7 @@
         </div>
     </div>
 
-    {{-- 3. ACTIONABLE STATS GRID --}}
+    {{-- 3. ACTIONABLE STATS GRID (Unchanged) --}}
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         
         {{-- Card 1: Pending Verification --}}
@@ -216,8 +229,6 @@
 
         {{-- Panel --}}
         <div class="relative z-10 w-full max-w-sm bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
-            
-            {{-- Modal Header --}}
             <div class="bg-[#00205B] px-5 py-4 flex items-center justify-between shrink-0">
                 <div>
                     <p class="text-xs text-blue-200 font-medium uppercase tracking-wider" id="modal-day">ISNIN</p>
@@ -229,13 +240,7 @@
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
-
-            {{-- Modal Body (List of Tasks) --}}
-            <div class="p-5 overflow-y-auto" id="modal-task-list">
-                {{-- Content injected via JS --}}
-            </div>
-
-            {{-- Footer --}}
+            <div class="p-5 overflow-y-auto" id="modal-task-list"></div>
             <div class="bg-gray-50 px-5 py-3 border-t border-gray-100 shrink-0">
                 <button onclick="closeDayModal()" class="w-full bg-white border border-gray-300 text-gray-700 text-sm font-bold py-2.5 rounded-lg hover:bg-gray-100 transition">
                     Tutup
@@ -247,83 +252,144 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    // --- MOCK DATA FOR SUPERVISOR CALENDAR ---
-    // Reflects tasks a supervisor would do (Inspections, Meetings, Admin)
+    // --- CALENDAR WEEK NAVIGATION DATA ---
+    const calendarWeeks = {
+        'prev': [ // Previous Week
+            { day: 'Isnin', date: '13', status: 'green' },
+            { day: 'Selasa', date: '14', status: 'green' },
+            { day: 'Rabu', date: '15', status: 'green' },
+            { day: 'Khamis', date: '16', status: 'red' },
+            { day: 'Jumaat', date: '17', status: 'green' },
+            { day: 'Sabtu', date: '18', status: 'green' },
+            { day: 'Ahad', date: '19', status: 'green' }
+        ],
+        'curr': [ // Current Week
+            { day: 'Isnin', date: '20', status: 'green' },
+            { day: 'Selasa', date: '21', status: 'green' },
+            { day: 'Rabu', date: '22', status: 'red' },
+            { day: 'Khamis', date: '23', status: 'green' },
+            { day: 'Jumaat', date: '24', status: 'green' },
+            { day: 'Sabtu', date: '25', status: 'green' },
+            { day: 'Ahad', date: '26', status: 'today' }
+        ],
+        'next': [ // Next Week
+            { day: 'Isnin', date: '27', status: 'gray' },
+            { day: 'Selasa', date: '28', status: 'gray' },
+            { day: 'Rabu', date: '29', status: 'gray' },
+            { day: 'Khamis', date: '30', status: 'gray' },
+            { day: 'Jumaat', date: '31', status: 'gray' },
+            { day: 'Sabtu', date: '01', status: 'gray' },
+            { day: 'Ahad', date: '02', status: 'gray' }
+        ]
+    };
+
+    let currentWeekState = 'curr';
+
+    // --- CHANGE WEEK FUNCTION ---
+    function changeWeek(direction) {
+        const label = document.getElementById('currentWeekLabel');
+        const grid = document.getElementById('calendarGrid');
+
+        if (currentWeekState === 'curr') {
+            currentWeekState = direction === 'next' ? 'next' : 'prev';
+        } else if (currentWeekState === 'prev' && direction === 'next') {
+            currentWeekState = 'curr';
+        } else if (currentWeekState === 'next' && direction === 'prev') {
+            currentWeekState = 'curr';
+        } else {
+            return;
+        }
+
+        if (currentWeekState === 'curr') label.innerText = 'Minggu Ini';
+        else if (currentWeekState === 'prev') label.innerText = 'Minggu Lepas';
+        else label.innerText = 'Minggu Depan';
+
+        renderGrid(calendarWeeks[currentWeekState]);
+    }
+
+    function renderGrid(days) {
+        const grid = document.getElementById('calendarGrid');
+        grid.innerHTML = ''; 
+
+        days.forEach(day => {
+            let bubbleClass = '';
+            if (day.status === 'green') bubbleClass = 'bg-green-100 border-green-200 text-green-700 group-hover:bg-green-200';
+            else if (day.status === 'red') bubbleClass = 'bg-red-100 border-red-200 text-red-700 group-hover:bg-red-200';
+            else if (day.status === 'today') bubbleClass = 'bg-[#00205B] border-[#00205B] text-white shadow-lg ring-2 ring-blue-100 transform scale-110';
+            else bubbleClass = 'bg-gray-50 border-gray-100 text-gray-400';
+
+            const html = `
+                <div onclick="openDayModal('${day.date}', '${day.status}', '${day.day}')" 
+                     class="calendar-cell flex flex-col items-center gap-1 cursor-pointer group transition transform hover:scale-105 active:scale-95 animate-fade-in">
+                    <span class="text-[10px] text-gray-400 font-medium group-hover:text-[#00205B]">${day.day.substring(0, 3)}</span>
+                    <div class="w-8 h-8 rounded-full border flex items-center justify-center text-xs font-bold shadow-sm ${bubbleClass}">
+                        ${day.date}
+                    </div>
+                </div>
+            `;
+            grid.innerHTML += html;
+        });
+    }
+
+    // --- MOCK DATA FOR SUPERVISOR MODAL ---
     const mockDailyTasks = {
-        '20': [ // Green Date
+        '20': [
             { time: '08:00 AM', title: 'Lapor Masuk Penyelia', type: 'Sistem', status: 'Disahkan' },
             { time: '09:00 AM', title: 'Semakan Anggota (Roll Call)', type: 'Pentadbiran', status: 'Selesai' },
             { time: '02:00 PM', title: 'Pemantauan Sektor A', type: 'Penyeliaan', status: 'Disahkan' }
         ],
-        '21': [ // Green Date
+        '21': [
             { time: '08:00 AM', title: 'Lapor Masuk Penyelia', type: 'Sistem', status: 'Disahkan' },
             { time: '11:00 AM', title: 'Mesyuarat Ketua Balai', type: 'Mesyuarat', status: 'Selesai' }
         ],
-        '26': [ // Today
+        '26': [
             { time: '07:45 AM', title: 'Lapor Masuk Penyelia', type: 'Sistem', status: 'Menunggu' },
             { time: '10:00 AM', title: 'Semakan Buku Log MPV', type: 'Penyeliaan', status: 'Dalam Proses' }
         ]
     };
 
-    // --- CLICK HANDLER ---
+    // --- MODAL LOGIC ---
     function openDayModal(date, status, dayName) {
-        // 1. RED DATE LOGIC (No Record)
         if (status === 'red') {
-            Swal.fire({
-                icon: 'info',
-                title: 'Tiada Rekod',
-                text: 'Tiada log tugasan direkodkan pada tarikh ini.',
-                confirmButtonColor: '#00205B',
-                confirmButtonText: 'Tutup'
-            });
+            Swal.fire({ icon: 'info', title: 'Tiada Rekod', text: 'Tiada log tugasan direkodkan.', confirmButtonColor: '#00205B', confirmButtonText: 'Tutup' });
+            return;
+        }
+        if (status === 'gray') {
+             Swal.fire({ icon: 'info', title: 'Akan Datang', text: 'Tarikh ini belum tiba.', confirmButtonColor: '#00205B', confirmButtonText: 'Tutup' });
             return;
         }
 
-        // 2. GREEN/TODAY DATE LOGIC (Show Modal)
-        if (status === 'green' || status === 'today') {
-            const tasks = mockDailyTasks[date];
-            
-            // Set Header Info
-            document.getElementById('modal-day').innerText = dayName;
-            document.getElementById('modal-date').innerText = date;
-
-            // Generate List HTML
-            const listContainer = document.getElementById('modal-task-list');
-            
-            if (tasks && tasks.length > 0) {
-                let html = '<div class="relative border-l-2 border-gray-100 ml-3 space-y-6">';
-                
-                tasks.forEach(task => {
-                    // Status Badge Color
-                    let badgeClass = task.status === 'Disahkan' || task.status === 'Selesai' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-800';
-                    
-                    html += `
-                        <div class="relative pl-6">
-                            <span class="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-2 border-white bg-[#00205B] shadow-sm"></span>
-                            <div class="flex items-center justify-between mb-1">
-                                <span class="text-xs font-bold text-gray-400">${task.time}</span>
-                                <span class="text-[10px] px-2 py-0.5 rounded ${badgeClass} font-bold">${task.status}</span>
-                            </div>
-                            <h4 class="text-sm font-bold text-gray-900">${task.title}</h4>
-                            <p class="text-xs text-gray-500">${task.type}</p>
-                        </div>
-                    `;
-                });
-                
-                html += '</div>';
-                listContainer.innerHTML = html;
-            } else {
-                // Fallback
-                listContainer.innerHTML = '<p class="text-center text-gray-500 text-sm py-4">Maklumat tidak ditemui.</p>';
-            }
-
-            // Show Modal
-            document.getElementById('dayModal').classList.remove('hidden');
+        const tasks = mockDailyTasks[date];
+        document.getElementById('modal-day').innerText = dayName;
+        document.getElementById('modal-date').innerText = date;
+        const listContainer = document.getElementById('modal-task-list');
+        
+        if (tasks && tasks.length > 0) {
+            let html = '<div class="relative border-l-2 border-gray-100 ml-3 space-y-6">';
+            tasks.forEach(task => {
+                let badgeClass = task.status === 'Disahkan' || task.status === 'Selesai' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-800';
+                html += `<div class="relative pl-6"><span class="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-2 border-white bg-[#00205B] shadow-sm"></span><div class="flex items-center justify-between mb-1"><span class="text-xs font-bold text-gray-400">${task.time}</span><span class="text-[10px] px-2 py-0.5 rounded ${badgeClass} font-bold">${task.status}</span></div><h4 class="text-sm font-bold text-gray-900">${task.title}</h4><p class="text-xs text-gray-500">${task.type}</p></div>`;
+            });
+            html += '</div>';
+            listContainer.innerHTML = html;
+        } else {
+            listContainer.innerHTML = '<p class="text-center text-gray-500 text-sm py-4">Maklumat tidak ditemui.</p>';
         }
+        document.getElementById('dayModal').classList.remove('hidden');
     }
 
     function closeDayModal() {
         document.getElementById('dayModal').classList.add('hidden');
     }
 </script>
+
+<style>
+    @keyframes fade-in {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+        animation: fade-in 0.2s ease-out forwards;
+    }
+</style>
 @endsection
