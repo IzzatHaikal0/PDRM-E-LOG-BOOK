@@ -175,8 +175,8 @@
                 </div>
                 
                 <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1">Ulasan Penyelia (Opsyenal)</label>
-                    <textarea id="modal-comment" rows="3" class="w-full text-sm border-gray-200 rounded-lg focus:border-blue-900 focus:ring-blue-900 placeholder-gray-400" placeholder="Masukkan ulasan atau teguran..."></textarea>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Ulasan Penyelia (Optional)</label>
+                    <textarea id="modal-comment" rows="3" class="w-full text-sm border-gray-200 rounded-lg focus:border-blue-900 focus:ring-blue-900 placeholder-gray-400 border-2" placeholder="Masukkan ulasan atau teguran..."></textarea>
                 </div>
 
                 {{-- SIGNATURE PAD SECTION --}}
