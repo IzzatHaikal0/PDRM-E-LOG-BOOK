@@ -51,7 +51,7 @@
     </div>
 
     {{-- CHANGED: Updated grid to support 4 columns on extra large screens --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-1 gap-6">
 
         {{-- COLUMN 1: JENIS PENUGASAN --}}
         <div class="space-y-4">

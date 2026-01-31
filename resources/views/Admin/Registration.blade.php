@@ -43,30 +43,48 @@
             </div>
 
             <div class="p-6">
-                <form method="POST" action="#" class="space-y-6">
+                <form method="POST" action="{{ route('Admin.Registration.Store') }}" class="space-y-6">
                     @csrf
+
+                    {{-- NOTE: Old HTML Error Box removed. We use SweetAlert now. --}}
 
                     <div>
                         <h4 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
                             <span class="w-2 h-2 rounded-full bg-blue-600"></span> Maklumat Perkhidmatan
                         </h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
+                        {{-- SERVICE INFO GRID --}}
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            
+                            {{-- 1. ROLE DROPDOWN --}}
                             <div>
-                                <label for="rank" class="block text-sm font-medium text-gray-700 mb-1">Pangkat</label>
-                                <div class="relative">
-                                    <select id="rank" name="rank" class="block w-full pl-3 pr-10 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 sm:text-sm">
-                                        <option value="" disabled selected>Pilih Pangkat</option>
-                                        <option value="konstabel">Konstabel (Konst)</option>
-                                        <option value="lans_koperal">Lans Koperal (L/Kpl)</option>
-                                        <option value="koperal">Koperal (Kpl)</option>
-                                        <option value="sarjan">Sarjan (Sjn)</option>
-                                        <option value="inspektor">Inspektor (Insp)</option>
-                                    </select>
-                                </div>
+                                <label for="role" class="block text-sm font-medium text-gray-700 mb-1">Peranan Sistem</label>
+                                <select id="role" name="role" class="block w-full pl-3 pr-10 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 sm:text-sm">
+                                    <option value="anggota" {{ old('role') == 'anggota' ? 'selected' : '' }}>Anggota (User)</option>
+                                    <option value="penyelia" {{ old('role') == 'penyelia' ? 'selected' : '' }}>Penyelia (Supervisor)</option>
+                                    <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin (System)</option>
+                                </select>
                             </div>
+
+                            {{-- 2. PANGKAT DROPDOWN --}}
                             <div>
-                                <label for="badge_number" class="block text-sm font-medium text-gray-700 mb-1">Nombor Badan / ID</label>
-                                <input type="text" name="badge_number" id="badge_number" placeholder="Contoh: RF12345" class="block w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 sm:text-sm">
+                                <label for="pangkat_id" class="block text-sm font-medium text-gray-700 mb-1">Pangkat</label>
+                                <select id="pangkat_id" name="pangkat_id" class="block w-full pl-3 pr-10 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 sm:text-sm">
+                                    <option value="" disabled selected>Pilih Pangkat</option>
+                                    @foreach($pangkats as $pangkat)
+                                        <option value="{{ $pangkat->id }}" {{ old('pangkat_id') == $pangkat->id ? 'selected' : '' }}>
+                                            {{ $pangkat->pangkat_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('pangkat_id') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
+                            </div>
+
+                            {{-- 3. BADGE NUMBER --}}
+                            <div>
+                                <label for="no_badan" class="block text-sm font-medium text-gray-700 mb-1">Nombor Badan / ID</label>
+                                <input type="text" name="no_badan" id="no_badan" value="{{ old('no_badan') }}" placeholder="Contoh: RF12345" class="block w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 sm:text-sm">
+                                @error('no_badan') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                             </div>
                         </div>
                     </div>
@@ -77,32 +95,37 @@
                         <h4 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
                             <span class="w-2 h-2 rounded-full bg-blue-600"></span> Maklumat Peribadi
                         </h4>
+                        
+                        {{-- PERSONAL INFO GRID --}}
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="md:col-span-2">
                                 <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nama Penuh</label>
-                                <input type="text" name="name" id="name" placeholder="Nama seperti dalam Kad Pengenalan" class="block w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 sm:text-sm">
+                                <input type="text" name="name" id="name" value="{{ old('name') }}" placeholder="Nama seperti dalam Kad Pengenalan" class="block w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 sm:text-sm">
+                                @error('name') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                             </div>
                             <div>
-                                <label for="ic_number" class="block text-sm font-medium text-gray-700 mb-1">No. Kad Pengenalan</label>
-                                <input type="text" name="ic_number" id="ic_number" placeholder="Contoh: 880101-01-5555" class="block w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 sm:text-sm">
+                                <label for="no_ic" class="block text-sm font-medium text-gray-700 mb-1">No. Kad Pengenalan</label>
+                                <input type="text" name="no_ic" id="no_ic" value="{{ old('no_ic') }}" placeholder="Contoh: 880101-01-5555" class="block w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 sm:text-sm">
+                                @error('no_ic') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                             </div>
                             <div>
-                                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Nombor Telefon</label>
-                                <input type="tel" name="phone" id="phone" placeholder="Contoh: 012-3456789" class="block w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 sm:text-sm">
+                                <label for="no_telefon" class="block text-sm font-medium text-gray-700 mb-1">Nombor Telefon</label>
+                                <input type="tel" name="no_telefon" id="no_telefon" value="{{ old('no_telefon') }}" placeholder="Contoh: 012-3456789" class="block w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 sm:text-sm">
                             </div>
                             <div class="md:col-span-2">
                                 <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Alamat Emel</label>
-                                <input type="email" name="email" id="email" placeholder="nama@pdrm.gov.my" class="block w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 sm:text-sm">
+                                <input type="email" name="email" id="email" value="{{ old('email') }}" placeholder="nama@pdrm.gov.my" class="block w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 sm:text-sm">
+                                @error('email') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                             </div>
                             <div class="md:col-span-2">
                                 <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Alamat Tetap</label>
-                                <textarea id="address" name="address" rows="3" placeholder="Alamat kediaman semasa..." class="block w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 sm:text-sm"></textarea>
+                                <textarea id="address" name="address" rows="3" placeholder="Alamat kediaman semasa..." class="block w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 sm:text-sm">{{ old('address') }}</textarea>
                             </div>
                         </div>
                     </div>
 
                     <div class="pt-4 flex items-center justify-end gap-3">
-                        <button type="button" class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-4 focus:ring-gray-100">Batal</button>
+                        <a href="{{ route('Admin.Dashboard') }}" class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-4 focus:ring-gray-100">Batal</a>
                         <button type="submit" class="px-5 py-2.5 text-sm font-bold text-white bg-[#00205B] rounded-lg hover:bg-blue-900 focus:ring-4 focus:ring-blue-900/30 shadow-lg shadow-blue-900/30 transition transform hover:-translate-y-0.5">Simpan Maklumat</button>
                     </div>
                 </form>
@@ -110,9 +133,9 @@
         </div>
     </div>
 
+    {{-- BULK UPLOAD SECTION (Kept as is) --}}
     <div id="content-bulk" class="hidden">
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            
             <div class="bg-indigo-900 px-6 py-4">
                 <div class="flex items-center gap-3">
                     <div class="p-2 bg-white/10 rounded-lg text-white">
@@ -153,15 +176,6 @@
                         </div>
                     </div>
 
-                    <div class="text-xs text-gray-500 space-y-1 mb-6">
-                        <p class="font-semibold">Nota Penting:</p>
-                        <ul class="list-disc pl-4 space-y-1">
-                            <li>Pastikan format tarikh lahir adalah DD/MM/YYYY.</li>
-                            <li>Nombor Badan/ID mestilah unik untuk setiap anggota.</li>
-                            <li>Kolum 'Pangkat' mesti mengikut ejaan: <em>Konstabel, Lans Koperal, Koperal, Sarjan, Inspektor</em>.</li>
-                        </ul>
-                    </div>
-
                     <div class="flex justify-end">
                         <button type="submit" class="px-6 py-3 text-sm font-bold text-white bg-indigo-900 rounded-lg hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-900/30 shadow-lg shadow-indigo-900/20 transition transform hover:-translate-y-0.5">
                             Proses Fail
@@ -171,44 +185,69 @@
             </div>
         </div>
     </div>
-
 </div>
 
+{{-- SWEET ALERT SCRIPT SECTION --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     function switchTab(tab) {
-        // Elements
         const btnManual = document.getElementById('tab-manual');
         const btnBulk = document.getElementById('tab-bulk');
         const contentManual = document.getElementById('content-manual');
         const contentBulk = document.getElementById('content-bulk');
 
-        // Styles
         const activeClass = ['border-[#00205B]', 'text-[#00205B]', 'font-bold'];
         const inactiveClass = ['border-transparent', 'text-gray-500', 'font-medium'];
 
         if (tab === 'manual') {
-            // Show Manual, Hide Bulk
             contentManual.classList.remove('hidden');
             contentBulk.classList.add('hidden');
-
-            // Update Tab Styling
             btnManual.classList.add(...activeClass);
             btnManual.classList.remove(...inactiveClass);
-            
             btnBulk.classList.add(...inactiveClass);
             btnBulk.classList.remove(...activeClass);
         } else {
-            // Show Bulk, Hide Manual
             contentBulk.classList.remove('hidden');
             contentManual.classList.add('hidden');
-
-            // Update Tab Styling
             btnBulk.classList.add(...activeClass);
             btnBulk.classList.remove(...inactiveClass);
-
             btnManual.classList.add(...inactiveClass);
             btnManual.classList.remove(...activeClass);
         }
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        // 1. SUCCESS ALERT (With Password Display)
+        @if(session('success'))
+            Swal.fire({
+                title: 'Berjaya!',
+                text: "{{ session('success') }}",
+                icon: 'success',
+                confirmButtonColor: '#00205B',
+                confirmButtonText: 'OK'
+            });
+        @endif
+
+        // 2. ERROR ALERT
+        @if($errors->any())
+            let errorHtml = '<ul class="text-left text-sm list-disc pl-5">';
+            @foreach ($errors->all() as $error)
+                errorHtml += '<li>{{ $error }}</li>';
+            @endforeach
+            errorHtml += '</ul>';
+
+            Swal.fire({
+                title: 'Ralat Pendaftaran',
+                html: errorHtml,
+                icon: 'error',
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Semak Semula'
+            });
+
+            // Make sure we switch back to manual tab if there are errors
+            switchTab('manual');
+        @endif
+    });
 </script>
 @endsection

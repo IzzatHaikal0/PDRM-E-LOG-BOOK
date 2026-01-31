@@ -21,6 +21,14 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role', 
+        'no_badan',
+        'no_ic',
+        'no_telefon',
+        'alamat',
+        'umur',
+        'pangkat_id',
+        'gambar_profile',
     ];
 
     /**
@@ -44,5 +52,11 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function pangkat()
+    {
+        // Relationship: A User belongs to one Pangkat
+        return $this->belongsTo(Pangkat::class, 'pangkat_id', 'id');
     }
 }
