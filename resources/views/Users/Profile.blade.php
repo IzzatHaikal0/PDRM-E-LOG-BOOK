@@ -15,14 +15,31 @@
         <div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-[#00205B] to-blue-900"></div>
         
         <div class="relative z-10 mt-8">
-            <div class="w-24 h-24 bg-white p-1 rounded-full mx-auto shadow-lg">
-                <div class="w-full h-full bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold text-2xl overflow-hidden">
+            {{-- ADDED: 'group' class to handle hover effect --}}
+            <div class="w-24 h-24 bg-white p-1 rounded-full mx-auto shadow-lg relative group">
+                
+                {{-- Avatar Container --}}
+                <div class="w-full h-full bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold text-2xl overflow-hidden relative">
                     @if(Auth::user() && Auth::user()->profile_photo_url)
-                        <img src="{{ Auth::user()->profile_photo_url }}" class="w-full h-full object-cover">
+                        <img id="profileImagePreview" src="{{ Auth::user()->profile_photo_url }}" class="w-full h-full object-cover">
                     @else
-                        {{ substr(Auth::user()->name ?? 'Ahmad', 0, 2) }}
+                        <span id="profileInitials">{{ substr(Auth::user()->name ?? 'Ahmad', 0, 2) }}</span>
                     @endif
                 </div>
+
+                {{-- NEW: CHANGE PHOTO BUTTON OVERLAY --}}
+                <label for="photoInput" class="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition cursor-pointer z-20">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </label>
+
+                {{-- Hidden Form for File Input --}}
+                <form id="photoForm" action="#" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <input type="file" id="photoInput" name="photo" class="hidden" accept="image/*" onchange="previewImage(this)">
+                </form>
             </div>
             
             <h3 class="mt-3 text-xl font-bold text-gray-900">
@@ -35,7 +52,7 @@
     </div>
 
 
-    {{-- 3. MAKLUMAT PERIBADI (Read Only with Edit Link) --}}
+    {{-- 3. MAKLUMAT PERIBADI --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
         <div class="px-5 py-4 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
             <div class="flex items-center gap-2">
@@ -43,7 +60,6 @@
                 <h4 class="font-bold text-gray-800 text-sm uppercase tracking-wide">Maklumat Peribadi</h4>
             </div>
             
-            {{-- ADDED: Edit Link Button --}}
             <a href="{{ route('Users.EditProfile') }}" class="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-1.5 rounded-lg transition flex items-center gap-1 text-xs font-bold">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                 Ubah
@@ -90,4 +106,42 @@
     </div>
 
 </div>
+
+{{-- SCRIPT: IMAGE PREVIEW --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            
+            reader.onload = function(e) {
+                // Check if img exists, if not create it
+                let img = document.getElementById('profileImagePreview');
+                if (!img) {
+                    const container = document.getElementById('profileInitials').parentNode;
+                    container.innerHTML = `<img id="profileImagePreview" src="${e.target.result}" class="w-full h-full object-cover">`;
+                } else {
+                    img.src = e.target.result;
+                }
+
+                // Show success alert (Mock)
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Gambar profil dikemaskini'
+                });
+                
+                // For real backend: document.getElementById('photoForm').submit();
+            }
+            
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
 @endsection

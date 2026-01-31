@@ -55,6 +55,12 @@
                     <option value="Bilik siasatan">Bilik siasatan</option>
                     <option value="Bilik Operasi">Bilik kawalan / bilik operasi</option>
                     <option value="Pejabat">Pejabat pentadbiran</option>
+                    <option value="Rondaan MPV">Rondaan MPV</option>
+                    <option value="Rondaan URB">Rondaan URB</option>
+                    <option value="Bit/Pondok">Bit / Pondok Polis</option>
+                    <option value="Tugas Pejabat">Tugas Pejabat</option>
+                    <option value="Operasi Khas">Operasi Khas</option>
+                    <option value="Latihan">Latihan / Kursus</option>
                     <option value="Lain-lain">Lain-lain</option>
                 </select>
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">

@@ -15,18 +15,37 @@
         <div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-[#00205B] to-blue-900"></div>
         
         <div class="relative z-10 mt-8">
-            <div class="w-24 h-24 bg-white p-1 rounded-full mx-auto shadow-lg relative">
-                <div class="w-full h-full bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold text-2xl overflow-hidden">
-                    {{-- Avatar --}}
+            {{-- ADDED: 'group' class here to handle hover effects --}}
+            <div class="w-24 h-24 bg-white p-1 rounded-full mx-auto shadow-lg relative group">
+                
+                {{-- Avatar Container --}}
+                <div class="w-full h-full bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold text-2xl overflow-hidden relative">
                     @if(Auth::user() && Auth::user()->profile_photo_url)
-                        <img src="{{ Auth::user()->profile_photo_url }}" class="w-full h-full object-cover">
+                        {{-- Added ID for preview update --}}
+                        <img id="profileImagePreview" src="{{ Auth::user()->profile_photo_url }}" class="w-full h-full object-cover">
                     @else
-                        {{ substr(Auth::user()->name ?? 'Razak', 0, 2) }}
+                        <span id="profileInitials">{{ substr(Auth::user()->name ?? 'Razak', 0, 2) }}</span>
                     @endif
                 </div>
+
+                {{-- === [START] CHANGE PHOTO BUTTON === --}}
+                {{-- This label acts as the button. It appears on hover. --}}
+                <label for="photoInput" class="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition cursor-pointer z-20">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </label>
+
+                {{-- Hidden Input Field --}}
+                <form id="photoForm" action="#" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <input type="file" id="photoInput" name="photo" class="hidden" accept="image/*" onchange="previewImage(this)">
+                </form>
+                {{-- === [END] CHANGE PHOTO BUTTON === --}}
                 
-                {{-- SUPERVISOR BADGE (Gold Star) --}}
-                <div class="absolute bottom-0 right-0 bg-yellow-400 border-4 border-white rounded-full p-1.5 text-white shadow-sm" title="Akaun Penyelia">
+                {{-- Supervisor Badge --}}
+                <div class="absolute bottom-0 right-0 bg-yellow-400 border-4 border-white rounded-full p-1.5 text-white shadow-sm pointer-events-none z-10" title="Akaun Penyelia">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
                 </div>
             </div>
@@ -35,22 +54,19 @@
                 {{ Auth::user()->name ?? 'Insp. Razak Bin Karim' }}
             </h3>
             
-            {{-- Rank & Badge Number --}}
             <p class="text-sm text-gray-500 font-medium mb-2">
                 {{ Auth::user()->rank ?? 'Inspektor' }} • {{ Auth::user()->badge_number ?? 'G/12999' }}
             </p>
 
-            {{-- Role Badge --}}
             <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 tracking-wide">
                 PEGAWAI PENYELIA
             </span>
         </div>
     </div>
 
-    {{-- 2. TETAPAN PENYELIAAN (Supervisor Specific) --}}
+    {{-- 2. TETAPAN PENYELIAAN --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
         <div class="px-5 py-4 border-b border-gray-50 bg-gray-50/50 flex items-center gap-2">
-            {{-- Shield Icon for Supervision --}}
             <svg class="w-5 h-5 text-[#00205B]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
             <h4 class="font-bold text-gray-800 text-sm uppercase tracking-wide">Tetapan Penyeliaan</h4>
         </div>
@@ -61,8 +77,6 @@
                 @method('PUT')
 
                 <div class="space-y-5">
-                    
-                    {{-- Jurisdiction Selection --}}
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Zon Jagaan Semasa</label>
                         <select name="zone" class="block w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-blue-900 focus:border-blue-900 text-sm">
@@ -74,21 +88,17 @@
                         <p class="text-[10px] text-gray-400 mt-1">Log aktiviti dari zon ini akan dihantar kepada anda untuk pengesahan.</p>
                     </div>
 
-                    {{-- Notification Toggle --}}
                     <div class="flex items-center justify-between py-1">
                         <div>
                             <label class="block text-sm font-bold text-gray-700">Notifikasi Log Baru</label>
                             <p class="text-[11px] text-gray-400">Terima emel apabila anggota hantar log.</p>
                         </div>
-                        
-                        {{-- Styled Toggle Switch --}}
                         <label for="toggle" class="flex items-center cursor-pointer relative">
                             <input type="checkbox" id="toggle" class="sr-only">
                             <div class="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full"></div>
                             <span class="toggle-circle absolute left-0.5 top-0.5 bg-white w-5 h-5 rounded-full transition shadow-sm"></span>
                         </label>
                     </div>
-
                 </div>
 
                 <div class="mt-6 flex justify-end">
@@ -100,15 +110,13 @@
         </div>
     </div>
 
-    {{-- 3. MAKLUMAT PERIBADI (Read Only with Link to Edit) --}}
+    {{-- 3. MAKLUMAT PERIBADI --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
         <div class="px-5 py-4 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                 <h4 class="font-bold text-gray-800 text-sm uppercase tracking-wide">Maklumat Peribadi</h4>
             </div>
-
-            {{-- LINK TO EDIT PAGE --}}
             <a href="{{ route('Penyelia.EditProfile') }}" class="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-1.5 rounded-lg transition flex items-center gap-1 text-xs font-bold">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                 Ubah
@@ -126,12 +134,10 @@
                     <p class="text-sm font-semibold text-gray-800">019-9988776</p>
                 </div>
             </div>
-            
             <div>
                 <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Jawatan Rasmi</label>
                 <p class="text-sm font-semibold text-gray-800">Ketua Polis Balai (KPB) - IPD Muar</p>
             </div>
-
             <div>
                 <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Emel Rasmi</label>
                 <p class="text-sm font-semibold text-gray-800">razak.karim@pdrm.gov.my</p>
@@ -154,10 +160,45 @@
 
 </div>
 
-{{-- CSS for Custom Toggle --}}
+{{-- SCRIPT & STYLES --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            
+            reader.onload = function(e) {
+                // Check if img exists, if not create it
+                let img = document.getElementById('profileImagePreview');
+                if (!img) {
+                    const container = document.getElementById('profileInitials').parentNode;
+                    container.innerHTML = `<img id="profileImagePreview" src="${e.target.result}" class="w-full h-full object-cover">`;
+                } else {
+                    img.src = e.target.result;
+                }
+
+                // Show success alert (Mock)
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Gambar profil dikemaskini'
+                });
+            }
+            
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+
 <style>
     #toggle:checked + .toggle-bg {
-        background-color: #00205B; /* PDRM Blue */
+        background-color: #00205B;
         border-color: #00205B;
     }
     #toggle:checked + .toggle-bg + .toggle-circle {
