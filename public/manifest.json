@@ -1,0 +1,25 @@
+{
+    "name": "PDRM EP45",
+    "short_name": "PDRM",
+    "description": "Sistem Logbook Digital PDRM",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#FFFFFF",
+    "theme_color": "#00205B",
+    "scope": "/",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "/images/icons/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/images/icons/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}

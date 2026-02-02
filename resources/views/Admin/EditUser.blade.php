@@ -75,7 +75,7 @@
                         {{-- No Badan --}}
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Nombor Badan</label>
-                            <input type="text" name="no_badan" value="{{ old('no_badan', $user->no_badan) }}" class="block w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg sm:text-sm">
+                            <input type="text" name="no_badan" value="{{ old('no_badan', $user->no_badan) }}" class="block w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg sm:text-sm readonly">
                         </div>
                     </div>
                 </div>
