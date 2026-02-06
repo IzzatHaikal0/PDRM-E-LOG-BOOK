@@ -21,26 +21,6 @@
     <form action="#" method="POST" enctype="multipart/form-data" class="space-y-5">
         @csrf
 
-        {{-- 1. BALAI BERTUGAS (Read Only) --}}
-        <div>
-            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                Balai Tempat Bertugas
-            </label>
-            <div class="relative">
-                <input type="text" 
-                       value="{{ Auth::user()->balai ?? 'Balai Polis Pekan' }}" 
-                       disabled
-                       class="block w-full px-4 py-3 bg-gray-100 border border-gray-200 rounded-xl text-gray-500 text-sm font-medium select-none cursor-not-allowed">
-                
-                <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                    <a href="{{ route('profile.show') }}" class="text-xs text-blue-600 font-bold hover:underline">
-                        Tukar?
-                    </a>
-                </div>
-            </div>
-            <p class="text-[10px] text-gray-400 mt-1"> *Tetapan ini hanya boleh ditukar di Profil.</p>
-        </div>
-
         {{-- 2. KAWASAN BERTUGAS --}}
         <div>
             <label for="area" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">

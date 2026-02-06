@@ -5,7 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\LogsController;
 use App\Http\Controllers\ContactsController;
 use App\Http\Controllers\RegistrationController; 
-
+use App\Http\Controllers\ProfileController;
 /*
 |--------------------------------------------------------------------------
 | 1. Public Routes (Login & Logout)
@@ -87,14 +87,12 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         Route::patch('/rekod/tamat/{id}', [LogsController::class, 'updateEndTime'])->name('logs.end_task');
 
         // 5. Profil
-        Route::get('/profil', function() {
-            return view('Users.Profile');
-        })->name('Users.Profile');
+        Route::get('/profil', [ProfileController::class, 'index'])->name('Users.Profile');
 
         // 6. Edit Profile
-        Route::get('/profile/ubah', function() {
-            return view('Users.EditProfile');
-        })->name('Users.EditProfile');
+        Route::get('/profile/ubah/{id}', [ProfileController::class, 'view_edit_form'])->name('Users.EditProfile');
+
+        Route::put('/profile/ubah/{id}/simpan', [ProfileController::class, 'update_profile'])->name('Users.UpdateProfile');
     });
 
     /*
@@ -127,9 +125,7 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         })->name('Penyelia.Logs.Report');
 
         // 5. Profil
-        Route::get('/profil', function() {
-            return view('Penyelia.Profile');
-        })->name('Penyelia.Profile');
+        Route::get('/profil', [ProfileController::class, 'index'])->name('Penyelia.Profile');
 
         // 6. Edit Profile
         Route::get('/profile/ubah', function() {

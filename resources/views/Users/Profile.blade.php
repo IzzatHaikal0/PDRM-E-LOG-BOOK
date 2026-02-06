@@ -15,19 +15,20 @@
         <div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-[#00205B] to-blue-900"></div>
         
         <div class="relative z-10 mt-8">
-            {{-- ADDED: 'group' class to handle hover effect --}}
             <div class="w-24 h-24 bg-white p-1 rounded-full mx-auto shadow-lg relative group">
                 
                 {{-- Avatar Container --}}
                 <div class="w-full h-full bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold text-2xl overflow-hidden relative">
-                    @if(Auth::user() && Auth::user()->profile_photo_url)
-                        <img id="profileImagePreview" src="{{ Auth::user()->profile_photo_url }}" class="w-full h-full object-cover">
+                    {{-- Check for 'gambar_profile' in your DB --}}
+                    @if($user->gambar_profile)
+                        <img id="profileImagePreview" src="{{ asset('storage/' . $user->gambar_profile) }}" class="w-full h-full object-cover">
                     @else
-                        <span id="profileInitials">{{ substr(Auth::user()->name ?? 'Ahmad', 0, 2) }}</span>
+                        {{-- Generate Initials if no image --}}
+                        <span id="profileInitials">{{ substr($user->name, 0, 2) }}</span>
                     @endif
                 </div>
 
-                {{-- NEW: CHANGE PHOTO BUTTON OVERLAY --}}
+                {{-- CHANGE PHOTO BUTTON --}}
                 <label for="photoInput" class="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition cursor-pointer z-20">
                     <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
@@ -42,11 +43,13 @@
                 </form>
             </div>
             
+            {{-- DISPLAY NAME & RANK --}}
             <h3 class="mt-3 text-xl font-bold text-gray-900">
-                {{ Auth::user()->name ?? 'Kpl. Ahmad Albab' }}
+                {{ $user->name }}
             </h3>
             <p class="text-sm text-gray-500 font-medium">
-                {{ Auth::user()->rank ?? 'Koperal' }} • {{ Auth::user()->badge_number ?? 'RF12345' }}
+                {{-- Use optional chaining for Pangkat in case it's null --}}
+                {{ $user->pangkat->pangkat_name ?? 'Tiada Pangkat' }} • {{ $user->no_badan ?? '-' }}
             </p>
         </div>
     </div>
@@ -59,8 +62,8 @@
                 <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                 <h4 class="font-bold text-gray-800 text-sm uppercase tracking-wide">Maklumat Peribadi</h4>
             </div>
-            
-            <a href="{{ route('Users.EditProfile') }}" class="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-1.5 rounded-lg transition flex items-center gap-1 text-xs font-bold">
+
+            <a href="{{ route('Users.EditProfile', $user->id) }}" class="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-1.5 rounded-lg transition flex items-center gap-1 text-xs font-bold">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                 Ubah
             </a>
@@ -70,23 +73,23 @@
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">No. Kad Pengenalan</label>
-                    <p class="text-sm font-semibold text-gray-800">880101-01-5555</p>
+                    <p class="text-sm font-semibold text-gray-800">{{ $user->no_ic }}</p>
                 </div>
                 <div>
                     <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">No. Telefon</label>
-                    <p class="text-sm font-semibold text-gray-800">012-3456789</p>
+                    <p class="text-sm font-semibold text-gray-800">{{ $user->no_telefon }}</p>
                 </div>
             </div>
             
             <div>
                 <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Emel Rasmi</label>
-                <p class="text-sm font-semibold text-gray-800">ahmad.albab@pdrm.gov.my</p>
+                <p class="text-sm font-semibold text-gray-800">{{ $user->email }}</p>
             </div>
 
             <div>
                 <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Alamat Tetap</label>
                 <p class="text-sm font-semibold text-gray-800 leading-relaxed">
-                    No. 12, Jalan Bunga Raya 4, Taman Cempaka, 84000 Muar, Johor.
+                    {{ $user->alamat ?? 'Alamat belum dikemaskini.' }}
                 </p>
             </div>
         </div>
@@ -124,7 +127,7 @@
                     img.src = e.target.result;
                 }
 
-                // Show success alert (Mock)
+                // Show success alert
                 const Toast = Swal.mixin({
                     toast: true,
                     position: 'top-end',
@@ -134,10 +137,11 @@
                 });
                 Toast.fire({
                     icon: 'success',
-                    title: 'Gambar profil dikemaskini'
+                    title: 'Gambar dipilih. Sila tekan Simpan.' // Note: Changed text because AJAX upload isn't connected yet
                 });
                 
-                // For real backend: document.getElementById('photoForm').submit();
+                // For real backend, you would uncomment this:
+                // document.getElementById('photoForm').submit();
             }
             
             reader.readAsDataURL(input.files[0]);
