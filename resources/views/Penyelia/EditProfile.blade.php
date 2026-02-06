@@ -3,7 +3,7 @@
 @section('header')
     <div class="flex items-center gap-2">
         {{-- Back Button --}}
-        <a href="{{ route('profile.show') }}" class="p-1 -ml-1 text-gray-400 hover:text-gray-600">
+        <a href="{{ route('Penyelia.Profile') }}" class="p-1 -ml-1 text-gray-400 hover:text-gray-600">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         </a>
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -102,7 +102,7 @@
                     Simpan Perubahan
                 </button>
                 
-                <a href="{{ route('profile.show') }}" class="w-full flex justify-center items-center py-3.5 px-4 border border-gray-200 rounded-xl text-sm font-bold text-gray-600 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 transition-all active:scale-[0.98]">
+                <a href="{{ route('Penyelia.Profile') }}" class="w-full flex justify-center items-center py-3.5 px-4 border border-gray-200 rounded-xl text-sm font-bold text-gray-600 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 transition-all active:scale-[0.98]">
                     Batal
                 </a>
             </div>

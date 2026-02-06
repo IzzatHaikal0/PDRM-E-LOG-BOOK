@@ -64,52 +64,6 @@
         </div>
     </div>
 
-    {{-- 2. TETAPAN PENYELIAAN --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
-        <div class="px-5 py-4 border-b border-gray-50 bg-gray-50/50 flex items-center gap-2">
-            <svg class="w-5 h-5 text-[#00205B]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-            <h4 class="font-bold text-gray-800 text-sm uppercase tracking-wide">Tetapan Penyeliaan</h4>
-        </div>
-        
-        <div class="p-5">
-            <form action="#" method="POST">
-                @csrf
-                @method('PUT')
-
-                <div class="space-y-5">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Zon Jagaan Semasa</label>
-                        <select name="zone" class="block w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-blue-900 focus:border-blue-900 text-sm">
-                            <option value="all" selected>Semua Sektor (IPD Muar)</option>
-                            <option value="sector_a">Sektor A (Bandar)</option>
-                            <option value="sector_b">Sektor B (Parit Jawa)</option>
-                            <option value="mpv_unit">Unit MPV Sahaja</option>
-                        </select>
-                        <p class="text-[10px] text-gray-400 mt-1">Log aktiviti dari zon ini akan dihantar kepada anda untuk pengesahan.</p>
-                    </div>
-
-                    <div class="flex items-center justify-between py-1">
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700">Notifikasi Log Baru</label>
-                            <p class="text-[11px] text-gray-400">Terima emel apabila anggota hantar log.</p>
-                        </div>
-                        <label for="toggle" class="flex items-center cursor-pointer relative">
-                            <input type="checkbox" id="toggle" class="sr-only">
-                            <div class="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full"></div>
-                            <span class="toggle-circle absolute left-0.5 top-0.5 bg-white w-5 h-5 rounded-full transition shadow-sm"></span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="mt-6 flex justify-end">
-                    <button type="button" onclick="alert('Tetapan penyeliaan dikemaskini!')" class="px-4 py-2 bg-blue-50 text-blue-700 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-blue-100 transition">
-                        Simpan Perubahan
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     {{-- 3. MAKLUMAT PERIBADI --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
         <div class="px-5 py-4 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
@@ -146,7 +100,7 @@
     </div>
 
     {{-- 4. LOGOUT BUTTON --}}
-    <form method="POST" action="#">
+    <form method="POST" action="{{ route('logout') }}">
         @csrf
         <button type="submit" class="w-full flex items-center justify-center gap-2 p-4 bg-white border border-red-100 rounded-2xl shadow-sm hover:bg-red-50 transition group">
             <svg class="w-5 h-5 text-red-500 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>

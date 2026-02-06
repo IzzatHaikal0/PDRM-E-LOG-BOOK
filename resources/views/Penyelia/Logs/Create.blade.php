@@ -35,7 +35,7 @@
                        class="block w-full px-4 py-3 bg-gray-100 border border-gray-200 rounded-xl text-gray-500 text-sm font-medium select-none cursor-not-allowed">
                 
                 <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                    <a href="{{ route('profile.show') }}" class="text-xs text-blue-600 font-bold hover:underline">
+                    <a href="#" class="text-xs text-blue-600 font-bold hover:underline">
                         Tukar?
                     </a>
                 </div>
