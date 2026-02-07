@@ -21,6 +21,11 @@ class ActivityLog extends Model
         'end_time',
         'status',
         'rejection_reason',
+        'images',
+    ];
+
+    protected $casts = [
+    'images' => 'array',
     ];
 
     // Relationship: Who submitted this log?

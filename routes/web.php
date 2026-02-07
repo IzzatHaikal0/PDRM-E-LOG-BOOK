@@ -18,6 +18,7 @@ Route::get('/', function() {
 
 Route::post('/login', [LoginController::class, 'authenticate'])->name('login.submit');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::patch('/logs/batch-submit', [App\Http\Controllers\LogsController::class, 'submitBatch'])->name('logs.batch_submit');
 
 /*
 |--------------------------------------------------------------------------

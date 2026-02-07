@@ -67,6 +67,7 @@ class LogsController extends Controller
                     'rejection_reason' => null,
                     'officer' => (object)['name' => 'Sjn. Mejar Halim']
                 ]
+                
             ])->groupBy('date');
 
         } else {
@@ -120,6 +121,58 @@ class LogsController extends Controller
        
     }
 
+    public function create()
+    {
+        return view('Users.Logs.Create');
+    }
+
+    // 2. HANDLE THE FORM SUBMISSION (WITH IMAGES)
+    public function store(Request $request)
+    {
+        // A. Validation
+        $request->validate([
+            'area' => 'required',
+            'type' => 'required',
+            'date' => 'required|date',
+            'time' => 'required',
+            'officer_id' => 'required',
+            'remarks' => 'required',
+            'images.*' => 'image|mimes:jpeg,png,jpg|max:5120', // Max 5MB per image
+            'images' => 'max:8', // Max 8 files total
+        ]);
+
+        // B. Handle Image Uploads
+        $imagePaths = [];
+
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                // Store in 'storage/app/public/log_evidence'
+                // Make sure you ran: php artisan storage:link
+                $path = $image->store('log_evidence', 'public');
+                $imagePaths[] = $path;
+            }
+        }
+
+        // C. Save to Database
+        ActivityLog::create([
+            'user_id' => Auth::id() ?? 1, // Fallback for test mode
+            'balai' => Auth::check() ? Auth::user()->balai : 'Balai Muar', // Fallback
+            'area' => $request->area,
+            'type' => $request->type,
+            'date' => $request->date,
+            'time' => $request->time,
+            'end_time' => null, // Empty initially
+            'officer_id' => $request->officer_id,
+            'remarks' => $request->remarks,
+            'status' => 'ongoing', // Default status
+            'images' => $imagePaths, // Laravel casts this array to JSON automatically
+        ]);
+
+        return redirect()->route('logs.history')->with('success', 'Laporan berjaya dihantar!');
+    }
+
+
+    // 3. UPDATE END TIME
     public function updateEndTime(Request $request, $id)
         {
             $log = \App\Models\ActivityLog::findOrFail($id);
@@ -128,5 +181,23 @@ class LogsController extends Controller
                 'status' => 'pending' // Change from 'ongoing' to 'pending' so officer can see it
             ]);
             return back()->with('success', 'Masa tamat direkodkan.');
+        }
+
+    public function submitBatch(Request $request)
+        {
+            // 1. Validate
+            $request->validate([
+                'log_ids' => 'required|array',
+                'log_ids.*' => 'exists:activity_logs,id' // Ensure IDs exist in DB
+            ]);
+
+            // 2. Update Status
+            // We update all IDs in the array to 'pending'
+            \App\Models\ActivityLog::whereIn('id', $request->log_ids)
+                ->update(['status' => 'pending']);
+
+            // 3. Redirect
+            $count = count($request->log_ids);
+            return back()->with('success', "$count laporan berjaya dihantar ke penyelia.");
         }
 }

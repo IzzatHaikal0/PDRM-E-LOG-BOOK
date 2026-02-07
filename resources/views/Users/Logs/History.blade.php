@@ -15,6 +15,50 @@
                 'officer' => null,
                 'rejection_reason' => null
             ],
+
+            (object) [
+                'id' => 107,
+                'time' => '10:45:00',
+                'type' => 'Kawalan Trafik',
+                'remarks' => 'Melakukan kawalan lalu lintas di persimpangan lampu isyarat utama berikutan kerosakan teknikal.',
+                'status' => 'draft',
+                'end_time' => null,
+                'officer' => null,
+                'rejection_reason' => null
+            ],
+            (object) [
+                'id' => 108,
+                'time' => '14:20:00',
+                'type' => 'Siasatan Kes',
+                'remarks' => 'Menemubual saksi kejadian kes kecurian di Blok C. Saksi memberikan keterangan mengenai suspek.',
+                'status' => 'draft',
+                'end_time' => null,
+                'officer' => null,
+                'rejection_reason' => null
+            ],
+            (object) [
+                'id' => 109,
+                'time' => '16:30:00',
+                'type' => 'Tugas Khas',
+                'remarks' => 'Mengiringi penghantaran dokumen penting ke Pejabat Daerah. Cuaca hujan lebat.',
+                'status' => 'draft',
+                'end_time' => null,
+                'officer' => null,
+                'rejection_reason' => null
+            ],
+            (object) [
+                'id' => 110,
+                'time' => '20:00:00',
+                'type' => 'Rondaan Berkenderaan',
+                'remarks' => 'Rondaan menggunakan MPV di sekitar kawasan industri. Tiada aktiviti mencurigakan dikesan setakat ini.',
+                'status' => 'draft',
+                'end_time' => null,
+                'officer' => null,
+                'rejection_reason' => null
+            ],
+
+
+            
             
             // EXAMPLE 2: Desk duty that is still ongoing/drafted
             (object) [
@@ -39,7 +83,18 @@
                 'status' => 'approved',
                 'end_time' => '10:00:00',
                 'officer' => (object)['name' => 'Sjn. Mejar Halim']
-            ]
+            ],
+
+            (object) [
+                'id' => 110,
+                'time' => '20:00:00',
+                'type' => 'Rondaan Berkenderaan',
+                'remarks' => 'Rondaan menggunakan MPV di sekitar kawasan industri. Tiada aktiviti mencurigakan dikesan setakat ini.',
+                'status' => 'draft',
+                'end_time' => null,
+                'officer' => null,
+                'rejection_reason' => null
+            ],
         ])
     ];
 @endphp
@@ -100,12 +155,32 @@
             @if($draftItems->isNotEmpty())
                 @php $hasDrafts = true; @endphp
                 <div class="log-group">
-                    <div class="flex items-center gap-2 mb-3 px-1">
+                    {{-- [UPDATED] Date Header with Bulk Action --}}
+                <div class="flex items-center justify-between mb-3 px-1">
+                    {{-- Left: Date Label --}}
+                    <div class="flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-gray-400"></span>
                         <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider">
                             {{ \Carbon\Carbon::parse($date)->translatedFormat('d M Y, l') }}
                         </h3>
                     </div>
+
+                    {{-- Right: Bulk Send Button --}}
+                    <form action="{{ route('logs.batch_submit') }}" method="POST">
+                        @csrf
+                        @method('PATCH')
+                        
+                        {{-- Hidden Inputs: Collect all IDs in this group --}}
+                        @foreach($draftItems as $draft)
+                            <input type="hidden" name="log_ids[]" value="{{ $draft->id }}">
+                        @endforeach
+
+                        <button type="submit" class="flex items-center gap-1.5 px-3 py-1.5 bg-[#00205B] text-white rounded-lg shadow-sm hover:bg-blue-900 transition active:scale-95">
+                            <span class="text-[10px] font-bold uppercase tracking-wide">Hantar Semua ({{ $draftItems->count() }})</span>
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </button>
+                    </form>
+                </div>
 
                     <div class="bg-white border border-gray-200 border-dashed rounded-2xl shadow-sm overflow-hidden divide-y divide-gray-100">
                         @foreach($draftItems as $log)

@@ -13,10 +13,24 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->string('no_badan')->nullable()->unique(); // Badge No
             $table->string('name');
+            $table->string('no_ic')->nullable()->unique();    // IC No
+            $table->string('no_telefon')->nullable();         // Phone No
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->text('alamat')->nullable();               // Address
+            $table->integer('umur')->nullable();               // Age
+            
+            // Pangkat Relationship
+            // Note: 'pangkats' table must be created in a migration with an earlier timestamp
+            $table->foreignId('pangkat_id')
+                ->nullable()
+                ->constrained('pangkats')
+                ->nullOnDelete();
+
+            $table->string('gambar_profile')->nullable();     // Profile Picture Path
             $table->rememberToken();
             $table->timestamps();
         });

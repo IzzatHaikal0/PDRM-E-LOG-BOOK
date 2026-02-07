@@ -29,19 +29,10 @@
             <div class="relative">
                 <select id="area" name="area" class="block w-full pl-4 pr-10 py-3 bg-white border border-gray-200 rounded-xl focus:ring-blue-900 focus:border-blue-900 text-sm appearance-none">
                     <option value="" disabled selected>Sila Pilih Kawasan</option>
-                    <option value="Pos Pengawal">Pos Pengawal</option>
-                    <option value="Kaunter Pertanyaan">Kaunter Pertanyaan / Kaunter Aduan</option>
-                    <option value="Bilik penjara">Bilik penjara</option>
-                    <option value="Bilik siasatan">Bilik siasatan</option>
-                    <option value="Bilik Operasi">Bilik kawalan / bilik operasi</option>
-                    <option value="Pejabat">Pejabat pentadbiran</option>
-                    <option value="Rondaan MPV">Rondaan MPV</option>
-                    <option value="Rondaan URB">Rondaan URB</option>
-                    <option value="Bit/Pondok">Bit / Pondok Polis</option>
-                    <option value="Tugas Pejabat">Tugas Pejabat</option>
-                    <option value="Operasi Khas">Operasi Khas</option>
-                    <option value="Latihan">Latihan / Kursus</option>
-                    <option value="Lain-lain">Lain-lain</option>
+                    <option value="Kawasan Luar">Kawasan Luar</option>
+                    <option value="Kawasan Dalam">Kawasan Dalam</option>
+                    
+                    
                 </select>
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -57,12 +48,24 @@
             <div class="relative">
                 <select id="type" name="type" class="block w-full pl-4 pr-10 py-3 bg-white border border-gray-200 rounded-xl focus:ring-blue-900 focus:border-blue-900 text-sm appearance-none">
                     <option value="" disabled selected>Pilih Jenis Tugas</option>
+                    <option value="Pos Pengawal">Pos Pengawal</option>
                     <option value="Rondaan MPV">Rondaan MPV</option>
                     <option value="Rondaan URB">Rondaan URB</option>
                     <option value="Bit/Pondok">Bit / Pondok Polis</option>
                     <option value="Tugas Pejabat">Tugas Pejabat</option>
                     <option value="Operasi Khas">Operasi Khas</option>
                     <option value="Latihan">Latihan / Kursus</option>
+                    <option value="Kaunter Pertanyaan">Kaunter Pertanyaan / Kaunter Aduan</option>
+                    <option value="Bilik penjara">Bilik penjara</option>
+                    <option value="Bilik senjata">Bilik senjata</option>
+                    <option value="Bilik siasatan">Bilik siasatan</option>
+                    <option value="Bilik Operasi">Bilik kawalan / bilik operasi</option>
+                    <option value="Pejabat">Pejabat pentadbiran</option>
+                    <option value="Bit/Pondok">Bit / Pondok Polis</option>
+                    <option value="Tugas Pejabat">Tugas Pejabat</option>
+                    <option value="Operasi Khas">Operasi Khas</option>
+                    <option value="Latihan">Latihan / Kursus</option>
+                    <option value="Lain-lain">Lain-lain</option>
                 </select>
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -112,29 +115,30 @@
 
         {{-- 7. GAMBAR SOKONGAN --}}
         <div>
-            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
-                Gambar Sokongan (Optional)
-            </label>
+            <div class="flex justify-between items-center mb-2">
+                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">
+                    Gambar Sokongan (Optional)
+                </label>
+                <span id="image-count" class="text-[10px] font-bold text-gray-400">0/8 Gambar</span>
+            </div>
             
-            <div class="w-full">
-                <label for="image_upload" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition relative overflow-hidden group">
+            <div class="w-full space-y-3">
+                {{-- Upload Box --}}
+                <label for="image_upload" id="dropzone" class="flex flex-col items-center justify-center w-full h-24 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition relative overflow-hidden group">
                     
-                    <div id="upload-placeholder" class="flex flex-col items-center justify-center pt-5 pb-6">
-                        <svg class="w-8 h-8 mb-2 text-gray-400 group-hover:text-blue-900 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        <p class="mb-1 text-xs text-gray-500 font-medium">Klik untuk ambil/muat naik gambar</p>
-                        <p class="text-[10px] text-gray-400">JPG, PNG (Max 5MB)</p>
+                    <div class="flex flex-col items-center justify-center pt-2 pb-3">
+                        <svg class="w-6 h-6 mb-1 text-gray-400 group-hover:text-blue-900 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <p class="text-xs text-gray-500 font-medium">Tambah Gambar</p>
+                        <p class="text-[9px] text-gray-400">Max 8 gambar (JPG/PNG)</p>
                     </div>
 
-                    <img id="image-preview" class="hidden absolute inset-0 w-full h-full object-cover opacity-90" />
-                    
-                    <input id="image_upload" name="image" type="file" class="hidden" accept="image/*" onchange="previewImage(event)" />
+                    {{-- Input: Note the 'multiple' and name='images[]' --}}
+                    <input id="image_upload" name="images[]" type="file" class="hidden" accept="image/*" multiple onchange="handleFiles(this.files)" />
                 </label>
 
-                <div id="remove-btn-container" class="hidden mt-2 text-right">
-                    <button type="button" onclick="removeImage()" class="text-xs text-red-600 font-bold hover:underline flex items-center justify-end gap-1 ml-auto">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        Padam Gambar
-                    </button>
+                {{-- Preview Grid --}}
+                <div id="preview-container" class="grid grid-cols-4 gap-2">
+                    {{-- Thumbnails will be injected here by JS --}}
                 </div>
             </div>
         </div>
@@ -150,40 +154,90 @@
     </form>
 </div>
 
-{{-- JAVASCRIPT FOR IMAGE PREVIEW --}}
+{{-- JAVASCRIPT FOR HANDLING MULTIPLE IMAGES --}}
 <script>
-    function previewImage(event) {
-        const input = event.target;
-        const reader = new FileReader();
-        
-        reader.onload = function(){
-            const dataURL = reader.result;
-            const preview = document.getElementById('image-preview');
-            const placeholder = document.getElementById('upload-placeholder');
-            const removeBtn = document.getElementById('remove-btn-container');
+    // Store files in a DataTransfer object to manipulate them (add/remove)
+    const dt = new DataTransfer();
+    const maxImages = 8;
 
-            preview.src = dataURL;
-            preview.classList.remove('hidden');
-            placeholder.classList.add('hidden');
-            removeBtn.classList.remove('hidden');
-        };
+    function handleFiles(files) {
+        const input = document.getElementById('image_upload');
+        const container = document.getElementById('preview-container');
+        const countLabel = document.getElementById('image-count');
         
-        if (input.files && input.files[0]) {
-            reader.readAsDataURL(input.files[0]);
+        // 1. Add new files to our DataTransfer object
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            
+            // Check limit
+            if (dt.items.length >= maxImages) {
+                alert("Maksimum 8 gambar sahaja dibenarkan.");
+                break;
+            }
+
+            // Check if file is image
+            if (file.type.match('image.*')) {
+                dt.items.add(file);
+            }
+        }
+
+        // 2. Update the actual input file list so it submits correctly to backend
+        input.files = dt.files;
+
+        // 3. Update UI
+        updateImagePreviews();
+    }
+
+    function updateImagePreviews() {
+        const container = document.getElementById('preview-container');
+        const countLabel = document.getElementById('image-count');
+        const dropzone = document.getElementById('dropzone');
+
+        // Clear current previews
+        container.innerHTML = '';
+
+        // Update count text
+        countLabel.innerText = `${dt.items.length}/${maxImages} Gambar`;
+
+        // Loop through files and create thumbnails
+        for (let i = 0; i < dt.files.length; i++) {
+            const file = dt.files[i];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const div = document.createElement('div');
+                div.className = 'relative w-full h-20 rounded-lg overflow-hidden group border border-gray-200 shadow-sm';
+                
+                div.innerHTML = `
+                    <img src="${e.target.result}" class="w-full h-full object-cover">
+                    <button type="button" onclick="removeImage(${i})" class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-0.5 shadow-md hover:bg-red-600 transition">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                `;
+                container.appendChild(div);
+            }
+            reader.readAsDataURL(file);
+        }
+
+        // Optional: Hide dropzone if max reached
+        if (dt.items.length >= maxImages) {
+            dropzone.classList.add('opacity-50', 'pointer-events-none');
+        } else {
+            dropzone.classList.remove('opacity-50', 'pointer-events-none');
         }
     }
 
-    function removeImage() {
+    function removeImage(index) {
         const input = document.getElementById('image_upload');
-        const preview = document.getElementById('image-preview');
-        const placeholder = document.getElementById('upload-placeholder');
-        const removeBtn = document.getElementById('remove-btn-container');
-
-        input.value = ""; 
-        preview.src = "";
-        preview.classList.add('hidden');
-        placeholder.classList.remove('hidden');
-        removeBtn.classList.add('hidden');
+        
+        // Remove file at index
+        dt.items.remove(index);
+        
+        // Update input files
+        input.files = dt.files;
+        
+        // Refresh UI
+        updateImagePreviews();
     }
 </script>
 @endsection

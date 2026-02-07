@@ -49,6 +49,15 @@ class ContactsController extends Controller
                     'department' => 'Pentadbiran'
                 ]
             ]);
+
+            $departments = [
+            (object)['name' => 'IPD Pekan (Pertanyaan)', 'category' => 'PDRM', 'phone' => '094221222'],
+            (object)['name' => 'Bomba & Penyelamat Pekan', 'category' => 'Kecemasan', 'phone' => '094224444'],
+            (object)['name' => 'Hospital Pekan', 'category' => 'Kesihatan', 'phone' => '094244333'],
+            (object)['name' => 'Angkatan Pertahanan Awam', 'category' => 'Kecemasan', 'phone' => '069512345'],
+            (object)['name' => 'Majlis Perbandaran Pekan', 'category' => 'MPP', 'phone' => '094211077'],
+        ];
+
         } else {
             // REAL DATABASE QUERY
             // Fetch users who are officers/supervisors, excluding the current user
@@ -56,8 +65,11 @@ class ContactsController extends Controller
                 ->where('id', '!=', Auth::id())
                 ->orderBy('name')
                 ->get();
+
+        
+            $departments = [];
         }
 
-        return view('Users.Contacts', compact('contacts'));
+        return view('Users.Contacts', compact('contacts', 'departments'));
     }
 }
