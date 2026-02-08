@@ -15,20 +15,20 @@
         <div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-[#00205B] to-blue-900"></div>
         
         <div class="relative z-10 mt-8">
+            {{-- ADDED: 'group' class here to handle hover effects --}}
             <div class="w-24 h-24 bg-white p-1 rounded-full mx-auto shadow-lg relative group">
                 
                 {{-- Avatar Container --}}
                 <div class="w-full h-full bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold text-2xl overflow-hidden relative">
-                    {{-- Check for 'gambar_profile' in your DB --}}
-                    @if($user->gambar_profile)
-                        <img id="profileImagePreview" src="{{ asset('storage/' . $user->gambar_profile) }}" class="w-full h-full object-cover">
+                    {{-- LOGIC UPDATE: Use 'gambar_profile' from DB and asset() helper --}}
+                    @if(Auth::user() && Auth::user()->gambar_profile)
+                        <img id="profileImagePreview" src="{{ asset('storage/' . Auth::user()->gambar_profile) }}" class="w-full h-full object-cover">
                     @else
-                        {{-- Generate Initials if no image --}}
-                        <span id="profileInitials">{{ substr($user->name, 0, 2) }}</span>
+                        <span id="profileInitials">{{ substr(Auth::user()->name ?? 'Razak', 0, 2) }}</span>
                     @endif
                 </div>
 
-                {{-- CHANGE PHOTO BUTTON --}}
+                {{-- === [START] CHANGE PHOTO BUTTON === --}}
                 <label for="photoInput" class="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition cursor-pointer z-20">
                     <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
@@ -36,11 +36,19 @@
                     </svg>
                 </label>
 
-                {{-- Hidden Form for File Input --}}
-                <form id="photoForm" action="#" method="POST" enctype="multipart/form-data">
+                {{-- Hidden Input Field --}}
+                {{-- CRITICAL UPDATE: Added route() to action attribute --}}
+                <form id="photoForm" action="{{ route('Penyelia.update_photo', Auth::id()) }}" method="POST" enctype="multipart/form-data">
                     @csrf
+                    {{-- Name is 'photo' to match Controller validation --}}
                     <input type="file" id="photoInput" name="photo" class="hidden" accept="image/*" onchange="previewImage(this)">
                 </form>
+                {{-- === [END] CHANGE PHOTO BUTTON === --}}
+                
+                {{-- Supervisor Badge --}}
+                <div class="absolute bottom-0 right-0 bg-yellow-400 border-4 border-white rounded-full p-1.5 text-white shadow-sm pointer-events-none z-10" title="Akaun Penyelia">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
+                </div>
             </div>
             
             {{-- DISPLAY NAME & RANK --}}
@@ -115,36 +123,24 @@
 <script>
     function previewImage(input) {
         if (input.files && input.files[0]) {
-            var reader = new FileReader();
             
-            reader.onload = function(e) {
-                // Check if img exists, if not create it
-                let img = document.getElementById('profileImagePreview');
-                if (!img) {
-                    const container = document.getElementById('profileInitials').parentNode;
-                    container.innerHTML = `<img id="profileImagePreview" src="${e.target.result}" class="w-full h-full object-cover">`;
-                } else {
-                    img.src = e.target.result;
-                }
+            // 1. Optional: Visual Feedback (Loading)
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+            
+            Toast.fire({
+                icon: 'info',
+                title: 'Sedang memuat naik gambar...'
+            });
 
-                // Show success alert
-                const Toast = Swal.mixin({
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true
-                });
-                Toast.fire({
-                    icon: 'success',
-                    title: 'Gambar dipilih. Sila tekan Simpan.' // Note: Changed text because AJAX upload isn't connected yet
-                });
-                
-                // For real backend, you would uncomment this:
-                // document.getElementById('photoForm').submit();
-            }
-            
-            reader.readAsDataURL(input.files[0]);
+            // 2. CRITICAL STEP: Submit the form to the server
+            // This sends the file to your 'update_photo' controller
+            document.getElementById('photoForm').submit();
         }
     }
 </script>

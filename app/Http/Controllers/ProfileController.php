@@ -76,5 +76,34 @@ class ProfileController extends Controller
 
         return redirect()->route('Users.Profile')->with('success', 'Profil berjaya dikemaskini.');
     }
+
+    public function update_photo(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        // 1. Validation
+        $request->validate([
+            // Ensure input name matches the form input name="photo"
+            'photo' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        if ($request->hasFile('photo')) {
+            
+            // 2. Delete Old Photo (Fix: Check the actual column name)
+            if ($user->gambar_profile && \Storage::disk('public')->exists($user->gambar_profile)) {
+                \Storage::disk('public')->delete($user->gambar_profile);
+            }
+
+            // 3. Store New Photo
+            // This stores in storage/app/public/profile_photos
+            $path = $request->file('photo')->store('profile_photos', 'public');
+
+            // 4. Update Database
+            $user->gambar_profile = $path;
+            $user->save(); // <--- YOU MISSED THIS CRITICAL LINE
+        }
+
+        return redirect()->back()->with('success', 'Gambar profil berjaya dikemaskini!');
+    }
     
 }

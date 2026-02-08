@@ -22,15 +22,17 @@
                     'type' => 'Rondaan MPV',
                     'location' => 'Sektor A',
                     'desc' => 'Membuat rondaan di kawasan perumahan Taman Bahagia. Keadaan terkawal.',
-                    'status' => 'pending'
+                    'status' => 'pending',
+                    'image' => 'https://images.unsplash.com/photo-1595150266023-4475476a6665?q=80&w=600&auto=format&fit=crop'
                 ],
                 [
-                    'id' => 3, // Random ID
+                    'id' => 3, 
                     'time' => '11:45 AM',
                     'type' => 'Pemeriksaan Kenderaan',
                     'location' => 'Jalan Besar',
                     'desc' => 'Menahan dan memeriksa sebuah van putih dalam keadaan mencurigakan.',
-                    'status' => 'pending'
+                    'status' => 'pending',
+                    'image' => null
                 ]
             ]
         ],
@@ -46,7 +48,8 @@
                     'type' => 'Kaunter Aduan',
                     'location' => 'Balai Polis',
                     'desc' => 'Menerima laporan kehilangan kad pengenalan. No Repot: MR/123/2026.',
-                    'status' => 'pending'
+                    'status' => 'pending',
+                    'image' => null
                 ]
             ]
         ]
@@ -182,16 +185,19 @@
                 </button>
             </div>
             <div class="p-5 space-y-4">
+                {{-- Anggota Name --}}
                 <div class="bg-blue-50 p-3 rounded-lg border border-blue-100">
                     <p class="text-xs text-blue-600 mb-1">Anggota:</p>
                     <p class="text-sm font-bold text-blue-900" id="verify-anggota-name">Nama Anggota</p>
                 </div>
                 
+                {{-- Comment --}}
                 <div>
                     <label class="block text-xs font-bold text-gray-700 mb-1">Ulasan Penyelia (Optional)</label>
                     <textarea id="modal-comment" rows="3" class="w-full text-sm border-gray-200 rounded-lg focus:border-blue-900 focus:ring-blue-900 placeholder-gray-400 border-2" placeholder="Masukkan ulasan atau teguran..."></textarea>
                 </div>
 
+                {{-- Signature Pad --}}
                 <div>
                     <label class="block text-xs font-bold text-gray-700 mb-2">Tandatangan Digital</label>
                     <div class="border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 overflow-hidden">
@@ -206,13 +212,24 @@
                     </div>
                 </div>
 
+                {{-- SIGNATURE INFO (Restored) --}}
+                <div class="flex items-center gap-2 p-2 border border-dashed border-gray-300 rounded bg-gray-50">
+                    <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-600">SM</div>
+                    <div class="text-[10px] text-gray-500">
+                        <p>Ditandatangani secara digital oleh:</p>
+                        <p class="font-bold text-gray-700">Sjn. Mejar Halim (ID: 8888)</p>
+                        <p class="text-xs text-gray-400">{{ now()->format('d M Y, H:i') }}</p>
+                    </div>
+                </div>
+
+                {{-- Buttons --}}
                 <div class="flex gap-2 pt-2">
                     <button onclick="closeVerificationModal()" class="flex-1 px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-bold rounded-lg hover:bg-gray-50">Batal</button>
                     <button onclick="saveVerification()" class="flex-1 px-4 py-2 bg-green-600 text-white text-sm font-bold rounded-lg hover:bg-green-700 shadow-lg shadow-green-600/20">Sahkan & Simpan</button>
                 </div>
             </div>
             <input type="hidden" id="verify-task-id">
-            <input type="hidden" id="verify-user-id"> {{-- New Hidden Field --}}
+            <input type="hidden" id="verify-user-id">
         </div>
     </div>
 </div>
@@ -222,8 +239,13 @@
      ============================== --}}
 <div id="detailModal" class="hidden fixed inset-0 z-[100] w-screen h-screen overflow-hidden" role="dialog" aria-modal="true">
     <div class="absolute inset-0 flex items-center justify-center p-4">
+        {{-- Backdrop --}}
         <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" onclick="closeDetailModal()"></div>
+
+        {{-- Panel --}}
         <div class="relative z-10 w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            
+            {{-- Header --}}
             <div class="bg-white px-5 py-4 border-b border-gray-100 flex items-center justify-between sticky top-0 z-20">
                 <div>
                     <h3 class="text-lg font-bold text-gray-900">Butiran Tugasan</h3>
@@ -233,22 +255,59 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
+
+            {{-- Scrollable Content --}}
             <div class="p-5 overflow-y-auto">
+                
+                {{-- User Info --}}
                 <div class="flex items-center gap-3 mb-6">
                     <div class="w-12 h-12 rounded-full bg-[#00205B] flex items-center justify-center text-white text-sm font-bold shadow-md">
                         <span id="detail-initials">AB</span>
                     </div>
                     <div>
                         <h4 class="text-base font-bold text-gray-900" id="detail-name">Nama...</h4>
-                        <p class="text-xs text-gray-500">Anggota PDRM</p>
+                        <p class="text-xs text-gray-500" id="detail-id">ID...</p>
                     </div>
                 </div>
-                
-                {{-- Dynamic content injected by JS --}}
-                <div id="detail-content-placeholder">
-                    <p class="text-sm text-gray-500">Memuatkan data...</p>
+
+                {{-- Task Info Grid --}}
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                        <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Jenis Tugas</p>
+                        <p class="text-sm font-bold text-gray-800 mt-0.5" id="detail-type">Rondaan</p>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                        <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Masa</p>
+                        <p class="text-sm font-bold text-gray-800 mt-0.5" id="detail-time">10:00 AM</p>
+                    </div>
+                    <div class="col-span-2 bg-gray-50 p-3 rounded-lg border border-gray-100">
+                        <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Lokasi</p>
+                        <p class="text-sm font-bold text-gray-800 mt-0.5" id="detail-location">Lokasi...</p>
+                    </div>
                 </div>
+
+                {{-- Description --}}
+                <div class="mb-6">
+                    <h5 class="text-sm font-bold text-gray-900 mb-2">Laporan Aktiviti</h5>
+                    <p class="text-sm text-gray-600 leading-relaxed bg-white border border-gray-100 p-3 rounded-lg shadow-sm" id="detail-description">
+                        Keterangan tugasan...
+                    </p>
+                </div>
+
+                {{-- Supporting Image --}}
+                <div id="detail-image-container" class="mb-2 hidden">
+                    <h5 class="text-sm font-bold text-gray-900 mb-2">Lampiran Gambar</h5>
+                    <div class="rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+                        <img id="detail-image" src="" alt="Bukti Tugasan" class="w-full h-auto object-cover max-h-60">
+                    </div>
+                </div>
+                <div id="no-image-placeholder" class="hidden mb-2 p-4 text-center border-2 border-dashed border-gray-200 rounded-lg">
+                    <p class="text-xs text-gray-400 italic">Tiada lampiran gambar disertakan.</p>
+                </div>
+
             </div>
+
+            {{-- Footer --}}
             <div class="bg-gray-50 px-5 py-3 border-t border-gray-100 text-center">
                 <button onclick="closeDetailModal()" class="w-full bg-white border border-gray-300 text-gray-700 text-sm font-bold py-2.5 rounded-lg hover:bg-gray-100 transition shadow-sm">
                     Tutup
@@ -295,44 +354,44 @@
         }
     }
 
-    // --- MOCK DATA FOR DETAILS (Usually fetched via AJAX) ---
-    // In real app, you might pass full object or fetch via API
+    // --- MOCK DATA FOR DETAILS ---
+    // Make sure 'image' property is handled if you use it in the JS below
     const mockTaskData = {
-        1: { type: "Rondaan MPV", location: "Sektor A", desc: "Membuat rondaan...", time: "10:30 AM" },
-        2: { type: "Kaunter Aduan", location: "Balai Polis", desc: "Menerima laporan...", time: "09:15 AM" },
-        3: { type: "Pemeriksaan", location: "Jalan Besar", desc: "Menahan van putih...", time: "11:45 AM" }
+        1: { type: "Rondaan MPV", location: "Sektor A", desc: "Membuat rondaan...", time: "10:30 AM", image: "https://images.unsplash.com/photo-1595150266023-4475476a6665?q=80&w=600" },
+        2: { type: "Kaunter Aduan", location: "Balai Polis", desc: "Menerima laporan...", time: "09:15 AM", image: null },
+        3: { type: "Pemeriksaan", location: "Jalan Besar", desc: "Menahan van putih...", time: "11:45 AM", image: null }
     };
 
+    // --- FIXED VIEW DETAILS FUNCTION ---
+    // This now populates the specific IDs in the HTML instead of replacing innerHTML
     function viewTaskDetails(taskId, name, initials) {
         const data = mockTaskData[taskId];
         
+        // 1. Set Header Info
         document.getElementById('detail-name').innerText = name;
         document.getElementById('detail-initials').innerText = initials;
         
-        // Populate content dynamically
-        const htmlContent = `
-            <div class="grid grid-cols-2 gap-4 mb-6">
-                <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
-                    <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Jenis Tugas</p>
-                    <p class="text-sm font-bold text-gray-800 mt-0.5">${data.type}</p>
-                </div>
-                <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
-                    <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Masa</p>
-                    <p class="text-sm font-bold text-gray-800 mt-0.5">${data.time}</p>
-                </div>
-                <div class="col-span-2 bg-gray-50 p-3 rounded-lg border border-gray-100">
-                    <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Lokasi</p>
-                    <p class="text-sm font-bold text-gray-800 mt-0.5">${data.location}</p>
-                </div>
-            </div>
-            <div class="mb-6">
-                <h5 class="text-sm font-bold text-gray-900 mb-2">Laporan Aktiviti</h5>
-                <p class="text-sm text-gray-600 leading-relaxed bg-white border border-gray-100 p-3 rounded-lg shadow-sm">
-                    ${data.desc}
-                </p>
-            </div>
-        `;
-        document.getElementById('detail-content-placeholder').innerHTML = htmlContent;
+        // 2. Set Text Fields
+        document.getElementById('detail-type').innerText = data.type;
+        document.getElementById('detail-time').innerText = data.time;
+        document.getElementById('detail-location').innerText = data.location;
+        document.getElementById('detail-description').innerText = data.desc;
+
+        // 3. Handle Image Logic
+        const imgContainer = document.getElementById('detail-image-container');
+        const noImage = document.getElementById('no-image-placeholder');
+        const imgElement = document.getElementById('detail-image');
+
+        if (data.image) {
+            imgElement.src = data.image;
+            imgContainer.classList.remove('hidden');
+            noImage.classList.add('hidden');
+        } else {
+            imgContainer.classList.add('hidden');
+            noImage.classList.remove('hidden');
+        }
+
+        // 4. Show Modal
         document.getElementById('detailModal').classList.remove('hidden');
     }
 
@@ -356,7 +415,7 @@
 
     function openVerificationModal(taskId, name, userId) {
         document.getElementById('verify-task-id').value = taskId;
-        document.getElementById('verify-user-id').value = userId; // Store User ID
+        document.getElementById('verify-user-id').value = userId; 
         document.getElementById('verify-anggota-name').innerText = name;
         document.getElementById('modal-comment').value = ''; 
         document.getElementById('verifyModal').classList.remove('hidden');
@@ -397,7 +456,7 @@
         badge.classList.replace('bg-yellow-100', 'bg-green-100');
         badge.classList.replace('text-yellow-800', 'text-green-800');
         badge.innerText = 'Disahkan';
-        document.getElementById(`actions-${taskId}`).remove(); // Remove buttons
+        document.getElementById(`actions-${taskId}`).remove(); 
 
         // Add Signature Display
         const signatureDiv = document.getElementById(`signature-${taskId}`);
@@ -420,7 +479,6 @@
         if (currentCount > 1) {
             countSpan.innerText = currentCount - 1;
         } else {
-            // If count reaches 0, change text to "Semua Selesai" and green
             countSpan.innerText = 0;
             statusText.innerHTML = `<span class="text-green-600 font-bold flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Semua Disahkan</span>`;
         }

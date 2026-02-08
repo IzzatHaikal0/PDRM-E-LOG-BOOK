@@ -94,6 +94,9 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         Route::get('/profile/ubah/{id}', [ProfileController::class, 'view_edit_form'])->name('Users.EditProfile');
 
         Route::put('/profile/ubah/{id}/simpan', [ProfileController::class, 'update_profile'])->name('Users.UpdateProfile');
+
+        Route::post('/profile/update-photo/{id}', [ProfileController::class, 'update_photo'])->name('Users.update_photo');
+
     });
 
     /*
@@ -132,6 +135,8 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         Route::get('/profile/ubah', function() {
             return view('Penyelia.EditProfile');
         })->name('Penyelia.EditProfile');
+
+        Route::post('/profile/update-photo/{id}', [ProfileController::class, 'update_photo'])->name('Penyelia.update_photo');
     });
 
 }); // End of Middleware Group

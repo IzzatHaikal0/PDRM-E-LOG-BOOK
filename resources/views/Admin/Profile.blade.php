@@ -35,7 +35,7 @@
 
         {{-- Logout Button --}}
 
-        <form method="POST" action="#" class="w-full">
+        <form method="POST" action="{{ route('logout') }}" class="w-full">
             @csrf
             <button type="submit" class="w-full flex items-center justify-between p-4 hover:bg-red-50 transition group">
                 <div class="flex items-center gap-3">

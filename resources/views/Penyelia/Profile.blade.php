@@ -20,16 +20,15 @@
                 
                 {{-- Avatar Container --}}
                 <div class="w-full h-full bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold text-2xl overflow-hidden relative">
-                    @if(Auth::user() && Auth::user()->profile_photo_url)
-                        {{-- Added ID for preview update --}}
-                        <img id="profileImagePreview" src="{{ Auth::user()->profile_photo_url }}" class="w-full h-full object-cover">
+                    {{-- LOGIC UPDATE: Use 'gambar_profile' from DB and asset() helper --}}
+                    @if(Auth::user() && Auth::user()->gambar_profile)
+                        <img id="profileImagePreview" src="{{ asset('storage/' . Auth::user()->gambar_profile) }}" class="w-full h-full object-cover">
                     @else
                         <span id="profileInitials">{{ substr(Auth::user()->name ?? 'Razak', 0, 2) }}</span>
                     @endif
                 </div>
 
                 {{-- === [START] CHANGE PHOTO BUTTON === --}}
-                {{-- This label acts as the button. It appears on hover. --}}
                 <label for="photoInput" class="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition cursor-pointer z-20">
                     <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
@@ -38,8 +37,10 @@
                 </label>
 
                 {{-- Hidden Input Field --}}
-                <form id="photoForm" action="#" method="POST" enctype="multipart/form-data">
+                {{-- CRITICAL UPDATE: Added route() to action attribute --}}
+                <form id="photoForm" action="{{ route('Penyelia.update_photo', Auth::id()) }}" method="POST" enctype="multipart/form-data">
                     @csrf
+                    {{-- Name is 'photo' to match Controller validation --}}
                     <input type="file" id="photoInput" name="photo" class="hidden" accept="image/*" onchange="previewImage(this)">
                 </form>
                 {{-- === [END] CHANGE PHOTO BUTTON === --}}
@@ -119,33 +120,24 @@
 <script>
     function previewImage(input) {
         if (input.files && input.files[0]) {
-            var reader = new FileReader();
             
-            reader.onload = function(e) {
-                // Check if img exists, if not create it
-                let img = document.getElementById('profileImagePreview');
-                if (!img) {
-                    const container = document.getElementById('profileInitials').parentNode;
-                    container.innerHTML = `<img id="profileImagePreview" src="${e.target.result}" class="w-full h-full object-cover">`;
-                } else {
-                    img.src = e.target.result;
-                }
+            // 1. Optional: Visual Feedback (Loading)
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+            
+            Toast.fire({
+                icon: 'info',
+                title: 'Sedang memuat naik gambar...'
+            });
 
-                // Show success alert (Mock)
-                const Toast = Swal.mixin({
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true
-                });
-                Toast.fire({
-                    icon: 'success',
-                    title: 'Gambar profil dikemaskini'
-                });
-            }
-            
-            reader.readAsDataURL(input.files[0]);
+            // 2. CRITICAL STEP: Submit the form to the server
+            // This sends the file to your 'update_photo' controller
+            document.getElementById('photoForm').submit();
         }
     }
 </script>
