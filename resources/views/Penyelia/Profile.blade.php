@@ -52,11 +52,11 @@
             </div>
             
             <h3 class="mt-3 text-xl font-bold text-gray-900 flex items-center justify-center gap-2">
-                {{ Auth::user()->name ?? 'Insp. Razak Bin Karim' }}
+                {{ Auth::user()->name ?? 'N/A' }}
             </h3>
             
             <p class="text-sm text-gray-500 font-medium mb-2">
-                {{ Auth::user()->rank ?? 'Inspektor' }} • {{ Auth::user()->badge_number ?? 'G/12999' }}
+                {{ Auth::user()->pangkat->pangkat_name ?? 'N/A' }} • {{ Auth::user()->no_badan ?? 'N/A' }}
             </p>
 
             <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 tracking-wide">
@@ -72,7 +72,7 @@
                 <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                 <h4 class="font-bold text-gray-800 text-sm uppercase tracking-wide">Maklumat Peribadi</h4>
             </div>
-            <a href="{{ route('Penyelia.EditProfile') }}" class="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-1.5 rounded-lg transition flex items-center gap-1 text-xs font-bold">
+            <a href="{{ route('Penyelia.EditProfile', $user->id) }}" class="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-1.5 rounded-lg transition flex items-center gap-1 text-xs font-bold">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                 Ubah
             </a>
@@ -82,20 +82,20 @@
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">No. Kad Pengenalan</label>
-                    <p class="text-sm font-semibold text-gray-800">820505-01-9999</p>
+                    <p class="text-sm font-semibold text-gray-800">{{ $user->no_ic }}</p>
                 </div>
                 <div>
                     <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">No. Telefon</label>
-                    <p class="text-sm font-semibold text-gray-800">019-9988776</p>
+                    <p class="text-sm font-semibold text-gray-800">{{ $user->no_telefon }}</p>
                 </div>
             </div>
             <div>
                 <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Jawatan Rasmi</label>
-                <p class="text-sm font-semibold text-gray-800">Ketua Polis Balai (KPB) - IPD Muar</p>
+                <p class="text-sm font-semibold text-gray-800">{{ $user->pangkat->pangkat_name }}</p>
             </div>
             <div>
                 <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Emel Rasmi</label>
-                <p class="text-sm font-semibold text-gray-800">razak.karim@pdrm.gov.my</p>
+                <p class="text-sm font-semibold text-gray-800">{{ $user->email }}</p>
             </div>
         </div>
     </div>

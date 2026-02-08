@@ -65,6 +65,7 @@ class LoginController extends Controller
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
+            'role' => ['required'],
         ]);
 
         // 2. Attempt to log the user in using Database Credentials

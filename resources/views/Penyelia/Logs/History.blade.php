@@ -205,26 +205,36 @@
                                     
                                     {{-- DRAFT ACTION AREA --}}
                                     <div class="mt-4 pt-3 border-t border-gray-200/60">
-                                        {{-- 1. End Time Form (Only available here) --}}
                                         <form action="#" method="POST" class="flex flex-col gap-3">
                                             @csrf
                                             @method('PATCH')
                                             
-                                            {{-- Time Input --}}
-                                            <div class="flex flex-col gap-1">
-                                                <label class="text-[10px] font-bold text-gray-500 uppercase">Tetapkan Masa Tamat:</label>
-                                                <input type="time" name="end_time" value="{{ now()->format('H:i') }}" 
-                                                       class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:ring-[#00205B] focus:border-[#00205B] shadow-sm">
+                                            {{-- [NEW] Grid for Date & Time --}}
+                                            <div class="grid grid-cols-2 gap-2">
+                                                
+                                                {{-- 1. Date Input (Added Before Time) --}}
+                                                <div class="flex flex-col gap-1">
+                                                    <label class="text-[10px] font-bold text-gray-500 uppercase">Tarikh Tamat</label>
+                                                    <input type="date" name="end_date" 
+                                                        value="{{ $log->end_date ?? now()->format('Y-m-d') }}" 
+                                                        class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:ring-[#00205B] focus:border-[#00205B] shadow-sm">
+                                                </div>
+
+                                                {{-- 2. Time Input --}}
+                                                <div class="flex flex-col gap-1">
+                                                    <label class="text-[10px] font-bold text-gray-500 uppercase">Masa Tamat</label>
+                                                    <input type="time" name="end_time" 
+                                                        value="{{ $log->end_time ?? now()->format('H:i') }}" 
+                                                        class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:ring-[#00205B] focus:border-[#00205B] shadow-sm">
+                                                </div>
                                             </div>
 
                                             {{-- Buttons Row --}}
                                             <div class="flex gap-2">
-                                                {{-- UBAH Button --}}
                                                 <a href="#" class="flex-1 px-3 py-2 bg-white border border-gray-300 text-gray-700 text-xs font-bold rounded-lg hover:bg-gray-50 text-center">
                                                     Ubah
                                                 </a>
                                                 
-                                                {{-- HANTAR Button --}}
                                                 <button type="submit" class="flex-[2] px-3 py-2 bg-[#00205B] text-white text-xs font-bold rounded-lg hover:bg-blue-900 shadow-sm flex justify-center items-center gap-2">
                                                     <span>Hantar ke Penyelia</span>
                                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>

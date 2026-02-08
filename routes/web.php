@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PangkatController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\LogsController;
@@ -56,6 +57,8 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         Route::get('/tetapan-sistem', function() {
             return view('Admin.Settings');
         })->name('Admin.Settings');
+
+        Route::get('/tetapan-sistem', [PangkatController::class, 'index'])->name('Admin.Settings');
     });
 
     /*
