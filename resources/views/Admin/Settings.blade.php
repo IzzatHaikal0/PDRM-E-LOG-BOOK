@@ -18,8 +18,8 @@
     ];
 
     $contacts = [
-        ['id' => 1, 'name' => 'IPD Muar', 'phone' => '06-952 6001'],
-        ['id' => 2, 'name' => 'Bomba Muar', 'phone' => '06-951 4444'],
+        ['id' => 1, 'name' => 'IPD Pekan', 'phone' => '06-952 6001'],
+        ['id' => 2, 'name' => 'Bomba Pekan', 'phone' => '06-951 4444'],
         ['id' => 3, 'name' => 'Hospital Sultanah Fatimah', 'phone' => '06-952 1999'],
         ['id' => 4, 'name' => 'APM (Pertahanan Awam)', 'phone' => '06-951 3999'],
     ];
@@ -181,6 +181,11 @@
                         <input type="text" id="itemName" name="name" class="block w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 text-sm transition-all" placeholder="Masukkan nama..." required>
                     </div>
 
+                    <div id="itemField" class="hidden">
+                        <label for="inputLabel" class="block text-sm font-medium text-gray-700 mb-1">No.Telefon</label>
+                        <input type="text" id="itemName" name="name" class="block w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 text-sm transition-all" placeholder="Masukkan nama..." required>
+                    </div>
+
                     {{-- [NEW] Dropdown for Category (Hidden by default) --}}
                     <div id="categoryField" class="hidden">
                         <label for="itemCategory" class="block text-sm font-medium text-gray-700 mb-1">Kategori Tugas</label>
@@ -238,6 +243,7 @@
         
         // Reset Fields
         categoryField.classList.add('hidden');
+        itemField.classList.add('hidden');
         
         // Determine Label & Show Category for 'types'
         let typeName = '';
@@ -251,7 +257,8 @@
             label.innerText = 'Nama Pangkat';
         } else if (type === 'contacts') {
             typeName = 'Nombor Kecemasan';
-            label.innerText = 'Nama & No. Telefon';
+            label.innerText = 'Nama';
+            itemField.classList.remove('hidden');
         }
 
         // Set Title & Value

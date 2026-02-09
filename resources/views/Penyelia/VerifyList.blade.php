@@ -91,16 +91,31 @@
         <div class="user-group-card bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden" data-name="{{ strtolower($user['name']) }}">
             
             {{-- HEADER: CLICK TO EXPAND --}}
-            <div onclick="toggleGroup({{ $user['id'] }})" class="p-4 flex items-center justify-between cursor-pointer bg-white hover:bg-gray-50 transition select-none">
+            <div onclick="toggleGroup({{ $user['id'] }})" class="p-4 flex items-center justify-between cursor-pointer bg-white hover:bg-gray-50 transition select-none group">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-[#00205B] flex items-center justify-center text-white text-xs font-bold shadow-sm">
+                    {{-- Avatar --}}
+                    <div class="w-10 h-10 rounded-full bg-[#00205B] flex items-center justify-center text-white text-xs font-bold shadow-sm shrink-0">
                         {{ $user['initials'] }}
                     </div>
-                    <div>
-                        <h4 class="text-sm font-bold text-gray-900">{{ $user['name'] }}</h4>
-                        <p class="text-[10px] text-gray-500" id="status-text-{{ $user['id'] }}">
-                            <span class="text-orange-600 font-bold" id="count-{{ $user['id'] }}">{{ $user['pending_count'] }}</span> tugasan baru
-                        </p>
+                    
+                    {{-- User Info & Bulk Action --}}
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:gap-3">
+                        <div>
+                            <h4 class="text-sm font-bold text-gray-900">{{ $user['name'] }}</h4>
+                            <p class="text-[10px] text-gray-500" id="status-text-{{ $user['id'] }}">
+                                <span class="text-orange-600 font-bold" id="count-{{ $user['id'] }}">{{ $user['pending_count'] }}</span> tugasan baru
+                            </p>
+                        </div>
+
+                        {{-- [NEW] BULK VERIFY BUTTON (Only show if count > 1) --}}
+                        @if($user['pending_count'] > 1)
+                        <button onclick="event.stopPropagation(); verifyAllUserTasks({{ $user['id'] }}, '{{ $user['name'] }}')" 
+                                id="btn-verify-all-{{ $user['id'] }}"
+                                class="mt-1 sm:mt-0 px-3 py-1 bg-blue-50 text-blue-700 text-[10px] font-bold rounded-full border border-blue-100 hover:bg-blue-100 transition flex items-center gap-1 w-fit">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Sahkan Semua
+                        </button>
+                        @endif
                     </div>
                 </div>
                 
@@ -110,13 +125,14 @@
                 </div>
             </div>
 
-            {{-- BODY: LIST OF TASKS (HIDDEN BY DEFAULT) --}}
+            {{-- BODY: LIST OF TASKS --}}
             <div id="group-body-{{ $user['id'] }}" class="hidden border-t border-gray-100 bg-gray-50/50">
-                <div class="p-3 space-y-3">
+                {{-- Added ID here to find tasks easier --}}
+                <div class="p-3 space-y-3" id="task-list-{{ $user['id'] }}">
                     
                     @foreach($user['tasks'] as $task)
-                    {{-- INDIVIDUAL TASK CARD --}}
-                    <div id="task-{{ $task['id'] }}" class="bg-white border border-gray-200 rounded-xl p-3 shadow-sm relative">
+                    {{-- Added 'user-task-item' class and 'data-task-id' --}}
+                    <div id="task-{{ $task['id'] }}" data-task-id="{{ $task['id'] }}" class="user-task-item bg-white border border-gray-200 rounded-xl p-3 shadow-sm relative">
                         {{-- Status Stripe --}}
                         <div id="stripe-{{ $task['id'] }}" class="absolute left-0 top-0 bottom-0 w-1 bg-yellow-400 rounded-l-xl transition-colors duration-500"></div>
                         
@@ -146,7 +162,7 @@
                                 </button>
                             </div>
 
-                             {{-- Signature Container (Initially Hidden) --}}
+                             {{-- Signature Container --}}
                              <div id="signature-{{ $task['id'] }}" class="hidden mt-2 pt-2 border-t border-gray-50 animate-fade-in"></div>
                         </div>
                     </div>
@@ -172,6 +188,12 @@
      MODAL 1: PENGESAHAN (SIGN)
      ============================== --}}
 <div id="verifyModal" class="hidden fixed inset-0 z-[100] w-screen h-screen overflow-hidden" role="dialog" aria-modal="true">
+    <input type="hidden" id="verify-task-id">
+    <input type="hidden" id="verify-user-id">
+    
+    {{-- [NEW] This input tracks if we are doing Single or Batch --}}
+    <input type="hidden" id="verify-mode" value="single">
+    
     <div class="absolute inset-0 flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity" onclick="closeVerificationModal()"></div>
         <div class="relative z-10 w-full max-w-sm bg-white rounded-xl shadow-2xl overflow-hidden transform transition-all">
@@ -328,17 +350,15 @@
         const chevron = document.getElementById(`chevron-${userId}`);
         
         if (body.classList.contains('hidden')) {
-            // Open
             body.classList.remove('hidden');
             chevron.classList.add('rotate-180');
         } else {
-            // Close
             body.classList.add('hidden');
             chevron.classList.remove('rotate-180');
         }
     }
 
-    // --- FILTER USERS (PARENT CARDS) ---
+    // --- SEARCH FILTER ---
     function filterUserGroups() {
         const input = document.getElementById('searchInput');
         const filter = input.value.toLowerCase();
@@ -354,8 +374,152 @@
         }
     }
 
-    // --- MOCK DATA FOR DETAILS ---
-    // Make sure 'image' property is handled if you use it in the JS below
+    // --- SIGNATURE PAD SETUP ---
+    function initializeSignaturePad() {
+        const canvas = document.getElementById('signaturePad');
+        if (!canvas) return;
+        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        canvas.width = canvas.offsetWidth * ratio;
+        canvas.height = canvas.offsetHeight * ratio;
+        canvas.getContext("2d").scale(ratio, ratio);
+        signaturePad = new SignaturePad(canvas, { backgroundColor: 'rgb(255, 255, 255)', penColor: 'rgb(0, 32, 91)' });
+    }
+
+    function clearSignature() { if (signaturePad) signaturePad.clear(); }
+    function getSignatureData() { return (signaturePad && !signaturePad.isEmpty()) ? signaturePad.toDataURL('image/png') : null; }
+
+    // --- [1] OPEN MODAL: SINGLE TASK ---
+    function openVerificationModal(taskId, name, userId) {
+        document.getElementById('verify-mode').value = 'single'; // Set Single Mode
+        document.getElementById('verify-task-id').value = taskId;
+        document.getElementById('verify-user-id').value = userId;
+        document.getElementById('verify-anggota-name').innerText = name;
+        document.getElementById('modal-comment').value = ''; 
+        
+        document.getElementById('verifyModal').classList.remove('hidden');
+        setTimeout(() => initializeSignaturePad(), 100);
+    }
+
+    // --- [2] OPEN MODAL: BATCH (ALL TASKS) ---
+    function verifyAllUserTasks(userId, name) {
+        document.getElementById('verify-mode').value = 'batch'; // Set Batch Mode
+        document.getElementById('verify-user-id').value = userId;
+        document.getElementById('verify-anggota-name').innerText = name + " (Semua Tugasan)";
+        document.getElementById('modal-comment').value = ''; 
+        
+        document.getElementById('verifyModal').classList.remove('hidden');
+        setTimeout(() => initializeSignaturePad(), 100);
+    }
+
+    function closeVerificationModal() {
+        document.getElementById('verifyModal').classList.add('hidden');
+        if (signaturePad) signaturePad.clear();
+    }
+
+    // --- [3] SAVE LOGIC (HANDLES BOTH) ---
+    function saveVerification() {
+        const mode = document.getElementById('verify-mode').value;
+        const signatureData = getSignatureData();
+        const userId = document.getElementById('verify-user-id').value;
+
+        if (!signatureData) {
+            Swal.fire({ icon: 'warning', title: 'Tandatangan Diperlukan', text: 'Sila tandatangan sebelum mengesahkan.', confirmButtonColor: '#00205B' });
+            return;
+        }
+
+        closeVerificationModal();
+
+        Swal.fire({
+            icon: 'success',
+            title: mode === 'batch' ? 'Semua Tugasan Disahkan' : 'Tugasan Disahkan',
+            timer: 1500,
+            showConfirmButton: false
+        }).then(() => {
+            if (mode === 'batch') {
+                // Find all tasks for this user and verify them loop
+                const container = document.getElementById(`task-list-${userId}`);
+                const tasks = container.querySelectorAll('.user-task-item');
+                
+                tasks.forEach(task => {
+                    const taskId = task.getAttribute('data-task-id');
+                    // Check if task still needs verification (buttons exist)
+                    if(document.getElementById(`actions-${taskId}`)) {
+                        updateCardUI(taskId, userId, signatureData, false); // false = don't update count yet
+                    }
+                });
+                
+                // Finally set count to 0 and hide "Verify All" button
+                updateUserCountUI(userId, 0);
+
+            } else {
+                // Single Update
+                const taskId = document.getElementById('verify-task-id').value;
+                updateCardUI(taskId, userId, signatureData, true); // true = decrease count by 1
+            }
+        });
+    }
+
+    // Helper: Updates visual state of ONE card
+    function updateCardUI(taskId, userId, signatureImage, updateCount) {
+        // Change colors
+        document.getElementById(`stripe-${taskId}`).classList.replace('bg-yellow-400', 'bg-green-500');
+        const badge = document.getElementById(`badge-${taskId}`);
+        badge.classList.replace('bg-yellow-100', 'bg-green-100');
+        badge.classList.replace('text-yellow-800', 'text-green-800');
+        badge.innerText = 'Disahkan';
+        
+        // Remove buttons
+        const actionDiv = document.getElementById(`actions-${taskId}`);
+        if(actionDiv) actionDiv.remove();
+
+        // Show Signature
+        const signatureDiv = document.getElementById(`signature-${taskId}`);
+        signatureDiv.classList.remove('hidden');
+        signatureDiv.innerHTML = `
+            <div class="flex flex-col gap-2">
+                <div class="flex items-center text-[10px] text-gray-500 bg-gray-50 px-2 py-1 rounded border border-gray-100">
+                    <svg class="w-3 h-3 mr-1 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    <span>Disahkan oleh <strong>Sjn. Mejar Halim</strong></span>
+                </div>
+                <img src="${signatureImage}" alt="Tandatangan" class="h-12 w-auto self-start border border-gray-100 rounded p-1 bg-white">
+            </div>
+        `;
+
+        // If single mode, decrement count
+        if(updateCount) {
+            decrementUserCount(userId);
+        }
+    }
+
+    // Helper: Decrease count by 1
+    function decrementUserCount(userId) {
+        const countSpan = document.getElementById(`count-${userId}`);
+        let currentCount = parseInt(countSpan.innerText);
+        if (currentCount > 1) {
+            updateUserCountUI(userId, currentCount - 1);
+        } else {
+            updateUserCountUI(userId, 0);
+        }
+    }
+
+    // Helper: Update Header Count/Status
+    function updateUserCountUI(userId, count) {
+        const countSpan = document.getElementById(`count-${userId}`);
+        const statusText = document.getElementById(`status-text-${userId}`);
+        const verifyAllBtn = document.getElementById(`btn-verify-all-${userId}`);
+
+        countSpan.innerText = count;
+
+        if (count === 0) {
+            // Show "Semua Disahkan" green text
+            statusText.innerHTML = `<span class="text-green-600 font-bold flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Semua Disahkan</span>`;
+            // Remove the bulk button if it exists
+            if(verifyAllBtn) verifyAllBtn.remove();
+        }
+    }
+
+    // --- MOCK DATA FOR BUTIRAN ---
+    // (Keep your existing mockTaskData and viewTaskDetails function here)
     const mockTaskData = {
         1: { type: "Rondaan MPV", location: "Sektor A", desc: "Membuat rondaan...", time: "10:30 AM", image: "https://images.unsplash.com/photo-1595150266023-4475476a6665?q=80&w=600" },
         2: { type: "Kaunter Aduan", location: "Balai Polis", desc: "Menerima laporan...", time: "09:15 AM", image: null },

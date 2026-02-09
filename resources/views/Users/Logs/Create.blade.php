@@ -76,7 +76,7 @@
         {{-- 4. TARIKH & MASA --}}
         <div class="grid grid-cols-2 gap-4">
             <div>
-                <label for="date" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Tarikh</label>
+                <label for="date" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Tarikh Mula</label>
                 <input type="date" id="date" name="date" value="{{ date('Y-m-d') }}"
                        class="block w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-blue-900 focus:border-blue-900 text-sm">
             </div>
