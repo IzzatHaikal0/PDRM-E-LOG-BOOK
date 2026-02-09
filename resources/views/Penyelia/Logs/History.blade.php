@@ -104,12 +104,25 @@
 
     {{-- 1. HEADER & ACTIONS --}}
     <div class="mb-6">
-        <div class="flex items-center justify-between mb-4">
+        <div class="flex items-end justify-between mb-4">
             <div>
                 <h2 class="font-bold text-xl text-[#00205B]">Sejarah Aktiviti</h2>
-                <div class="text-xs text-gray-400">
-                    {{ now()->translatedFormat('F Y') }}
-                </div>
+                
+                {{-- [UPDATED] MONTH PICKER --}}
+                <form action="#" method="GET" class="mt-1">
+                    <div class="relative max-w-[150px]">
+                        <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+                            {{-- Calendar Icon --}}
+                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </div>
+                        
+                        {{-- Changed type="date" to type="month" --}}
+                        <input type="month" name="month" 
+                               value="{{ request('month', now()->format('Y-m')) }}" 
+                               onchange="this.form.submit()" 
+                               class="block w-full pl-8 pr-2 py-1 text-xs font-bold text-gray-600 bg-gray-100 border-none rounded-lg focus:ring-0 cursor-pointer hover:bg-gray-200 transition">
+                    </div>
+                </form>
             </div>
 
             <a href="{{ route('Users.Logs.Report') }}" class="flex items-center gap-2 px-4 py-2 bg-white border border-blue-200 text-blue-700 text-xs font-bold rounded-xl hover:bg-blue-50 transition shadow-sm active:scale-95">
@@ -118,6 +131,7 @@
             </a>
         </div>
 
+        {{-- Search Bar (Unchanged) --}}
         <div class="relative">
             <input type="text" id="searchInput" onkeyup="filterLogs()" placeholder="Cari aktiviti..." 
                    class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-white text-sm focus:ring-2 focus:ring-[#00205B] focus:border-[#00205B] placeholder-gray-400 shadow-sm transition">
@@ -145,48 +159,65 @@
 
     {{-- 3. CONTENT AREAS --}}
     
-    {{-- === VIEW A: DRAFTS (Disimpan) === --}}
+   {{-- === VIEW A: DRAFTS (Disimpan) === --}}
     <div id="view-draft" class="space-y-6 animate-fade-in">
-        @php $hasDrafts = false; @endphp
+        
+        {{-- 1. CALCULATE TOTAL DRAFTS --}}
+        @php
+            // FIX: Wrap $logs in collect() before flattening
+            $allDrafts = collect($logs)->flatten()->filter(fn($log) => $log->status === 'draft');
+        @endphp
 
+        {{-- 2. GLOBAL ACTION BAR (Only shows if there are drafts) --}}
+        @if($allDrafts->isNotEmpty())
+            <div class="bg-blue-50 border border-blue-100 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+                <div>
+                    <h3 class="text-sm font-bold text-blue-900">Tugasan Belum Dihantar</h3>
+                    <p class="text-xs text-blue-600 mt-0.5">
+                        Terdapat <span class="font-bold">{{ $allDrafts->count() }}</span> tugasan draf untuk bulan ini.
+                    </p>
+                </div>
+
+                {{-- MASTER SUBMIT FORM --}}
+                <form action="{{ route('logs.batch_submit') }}" method="POST" class="w-full sm:w-auto">
+                    @csrf
+                    @method('PATCH')
+                    
+                    {{-- Loop through ALL drafts to create hidden inputs --}}
+                    @foreach($allDrafts as $draft)
+                        <input type="hidden" name="log_ids[]" value="{{ $draft->id }}">
+                    @endforeach
+
+                    <button type="submit" class="w-full sm:w-auto flex justify-center items-center gap-2 px-5 py-2.5 bg-[#00205B] text-white text-xs font-bold rounded-xl hover:bg-blue-900 shadow-md transition transform active:scale-95">
+                        <span>Hantar Semua ({{ $allDrafts->count() }})</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                    </button>
+                </form>
+            </div>
+        @endif
+
+        {{-- 3. DAILY LISTING --}}
         @foreach($logs as $date => $dailyLogs)
             @php $draftItems = $dailyLogs->filter(fn($log) => $log->status === 'draft'); @endphp
 
             @if($draftItems->isNotEmpty())
-                @php $hasDrafts = true; @endphp
                 <div class="log-group">
-                    {{-- [UPDATED] Date Header with Bulk Action --}}
-                <div class="flex items-center justify-between mb-3 px-1">
-                    {{-- Left: Date Label --}}
-                    <div class="flex items-center gap-2">
+                    {{-- Date Header --}}
+                    <div class="flex items-center gap-2 mb-3 px-1">
                         <span class="w-2 h-2 rounded-full bg-gray-400"></span>
                         <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider">
                             {{ \Carbon\Carbon::parse($date)->translatedFormat('d M Y, l') }}
                         </h3>
                     </div>
 
-                    {{-- Right: Bulk Send Button --}}
-                    <form action="{{ route('logs.batch_submit') }}" method="POST">
-                        @csrf
-                        @method('PATCH')
-                        
-                        {{-- Hidden Inputs: Collect all IDs in this group --}}
-                        @foreach($draftItems as $draft)
-                            <input type="hidden" name="log_ids[]" value="{{ $draft->id }}">
-                        @endforeach
-
-                        <button type="submit" class="flex items-center gap-1.5 px-3 py-1.5 bg-[#00205B] text-white rounded-lg shadow-sm hover:bg-blue-900 transition active:scale-95">
-                            <span class="text-[10px] font-bold uppercase tracking-wide">Hantar Semua ({{ $draftItems->count() }})</span>
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                        </button>
-                    </form>
-                </div>
-
+                    {{-- Cards List --}}
                     <div class="bg-white border border-gray-200 border-dashed rounded-2xl shadow-sm overflow-hidden divide-y divide-gray-100">
                         @foreach($draftItems as $log)
                             <div class="log-card-item p-4 flex gap-4 hover:bg-gray-50 transition relative overflow-hidden bg-gray-50/50">
+                                {{-- Visual Indicator --}}
                                 <div class="absolute left-0 top-0 bottom-0 w-1 bg-gray-300"></div>
 
+                                {{-- Time --}}
                                 <div class="flex flex-col items-center gap-1 shrink-0 w-12 pt-1">
                                     <span class="text-sm font-bold text-gray-600">
                                         {{ \Carbon\Carbon::parse($log->time)->format('H:i') }}
@@ -194,49 +225,35 @@
                                     <span class="text-[10px] text-gray-400">MULA</span>
                                 </div>
 
+                                {{-- Content --}}
                                 <div class="flex-1 min-w-0">
                                     <div class="flex justify-between items-start mb-1">
                                         <h4 class="text-sm font-bold text-gray-800 truncate">{{ $log->type }}</h4>
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-gray-200 text-gray-600">
-                                            Draf
-                                        </span>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-gray-200 text-gray-600">Draf</span>
                                     </div>
                                     <p class="text-xs text-gray-500 line-clamp-2 mt-1">{{ $log->remarks }}</p>
                                     
-                                    {{-- DRAFT ACTION AREA --}}
+                                    {{-- Individual Edit Form --}}
                                     <div class="mt-4 pt-3 border-t border-gray-200/60">
                                         <form action="#" method="POST" class="flex flex-col gap-3">
                                             @csrf
                                             @method('PATCH')
                                             
-                                            {{-- [NEW] Grid for Date & Time --}}
                                             <div class="grid grid-cols-2 gap-2">
-                                                
-                                                {{-- 1. Date Input (Added Before Time) --}}
                                                 <div class="flex flex-col gap-1">
                                                     <label class="text-[10px] font-bold text-gray-500 uppercase">Tarikh Tamat</label>
-                                                    <input type="date" name="end_date" 
-                                                        value="{{ $log->end_date ?? now()->format('Y-m-d') }}" 
-                                                        class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:ring-[#00205B] focus:border-[#00205B] shadow-sm">
+                                                    <input type="date" name="end_date" value="{{ $log->end_date ?? now()->format('Y-m-d') }}" class="block w-full px-2 py-2 bg-white border border-gray-300 rounded-lg text-xs shadow-sm">
                                                 </div>
-
-                                                {{-- 2. Time Input --}}
                                                 <div class="flex flex-col gap-1">
                                                     <label class="text-[10px] font-bold text-gray-500 uppercase">Masa Tamat</label>
-                                                    <input type="time" name="end_time" 
-                                                        value="{{ $log->end_time ?? now()->format('H:i') }}" 
-                                                        class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:ring-[#00205B] focus:border-[#00205B] shadow-sm">
+                                                    <input type="time" name="end_time" value="{{ $log->end_time ?? now()->format('H:i') }}" class="block w-full px-2 py-2 bg-white border border-gray-300 rounded-lg text-xs shadow-sm">
                                                 </div>
                                             </div>
 
-                                            {{-- Buttons Row --}}
                                             <div class="flex gap-2">
-                                                <a href="#" class="flex-1 px-3 py-2 bg-white border border-gray-300 text-gray-700 text-xs font-bold rounded-lg hover:bg-gray-50 text-center">
-                                                    Ubah
-                                                </a>
-                                                
+                                                <a href="#" class="flex-1 px-3 py-2 bg-white border border-gray-300 text-gray-700 text-xs font-bold rounded-lg hover:bg-gray-50 text-center">Ubah</a>
                                                 <button type="submit" class="flex-[2] px-3 py-2 bg-[#00205B] text-white text-xs font-bold rounded-lg hover:bg-blue-900 shadow-sm flex justify-center items-center gap-2">
-                                                    <span>Hantar ke Penyelia</span>
+                                                    <span>Hantar</span>
                                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                                                 </button>
                                             </div>
@@ -250,9 +267,12 @@
             @endif
         @endforeach
 
-        @if(!$hasDrafts)
+        @if($allDrafts->isEmpty())
             <div class="flex flex-col items-center justify-center py-12 text-center">
-                <p class="text-gray-500 text-xs">Tiada draf disimpan.</p>
+                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-3">
+                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <p class="text-gray-500 text-xs">Tiada draf untuk bulan ini.</p>
                 <a href="{{ route('logs.create') }}" class="mt-4 text-xs font-bold text-blue-600 hover:underline">+ Cipta Tugasan Baru</a>
             </div>
         @endif
