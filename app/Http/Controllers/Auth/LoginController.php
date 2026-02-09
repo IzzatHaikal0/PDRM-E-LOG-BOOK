@@ -61,19 +61,15 @@ class LoginController extends Controller
 
     public function authenticate(Request $request)
     {
-        // 1. Validate the input
         $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-            'role' => ['required'],
+            'no_badan' => ['required', 'string'],
+            'password' => ['required', 'string'],
         ]);
 
-        // 2. Attempt to log the user in using Database Credentials
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
             // 3. REDIRECTION LOGIC BASED ON DB ROLE
-            // We access the 'role' column from the authenticated user
             $role = Auth::user()->role; 
 
             switch ($role) {
@@ -87,15 +83,18 @@ class LoginController extends Controller
                     return redirect()->route('Users.Dashboard');
                 
                 default:
-                    // Fallback if role is undefined
-                    return redirect()->route('Users.Dashboard');
+                    // Fallback for users without a valid role
+                    Auth::logout();
+                    return back()->withErrors([
+                        'no_badan' => 'Peranan pengguna tidak sah.',
+                    ]);
             }
         }
 
         // 4. If login fails
         return back()->withErrors([
-            'email' => 'Maklumat log masuk tidak sah.',
-        ])->onlyInput('email');
+            'no_badan' => 'Maklumat log masuk tidak sah.',
+        ])->onlyInput('no_badan');
     }
    
 

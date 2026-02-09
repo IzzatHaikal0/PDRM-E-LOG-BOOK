@@ -30,13 +30,13 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
             </div>
-            <input id="email" 
+            <input id="no_badan" 
                    type="text" 
-                   name="email" 
-                   value="{{ old('email') }}" 
+                   name="no_badan" 
+                   value="{{ old('no_badan') }}" 
                    required 
                    autofocus 
-                   placeholder="Emel"
+                   placeholder="ID (Nombor Badan)"
                    class="block w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-pdrm-blue/20 focus:border-pdrm-blue transition-all duration-200 sm:text-sm shadow-sm" />
         </div>
 

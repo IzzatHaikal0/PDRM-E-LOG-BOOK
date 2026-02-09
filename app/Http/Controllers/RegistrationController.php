@@ -9,8 +9,8 @@ use App\Models\Pangkat;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Mail; 
-use App\Mail\UserWelcomeMail;        
+//use Illuminate\Support\Facades\Mail; 
+//use App\Mail\UserWelcomeMail;        
 
 class RegistrationController extends Controller
 {
@@ -35,12 +35,10 @@ class RegistrationController extends Controller
             'no_badan'      => 'required|string|unique:users,no_badan',
             'no_ic'         => 'required|string|unique:users,no_ic',
             'no_telefon'    => 'required|string',
-            'email'         => 'required|email|unique:users,email',
-            'alamat'        => 'nullable|string',
+            'email'         => 'required|email',
         ], [
             'no_badan.unique' => 'Nombor badan ini telah didaftarkan.',
             'no_ic.unique'    => 'No. Kad Pengenalan ini telah wujud.',
-            'email.unique'    => 'Alamat emel ini telah digunakan.',
         ]);
 
         if ($validator->fails()) {
@@ -50,10 +48,8 @@ class RegistrationController extends Controller
                 ->with('tab', 'manual');
         }
 
-        // B. Generate Random Password
-        $randomPassword = Str::random(12); 
-
-        // C. Create User
+        // B. Create User
+        // Note: No random password generation needed anymore.
         $user = User::create([
             'name'           => $request->name,
             'email'          => $request->email,
@@ -61,22 +57,15 @@ class RegistrationController extends Controller
             'no_badan'       => $request->no_badan,
             'no_ic'          => $request->no_ic,
             'no_telefon'     => $request->no_telefon,
-            'alamat'         => $request->address, 
             'pangkat_id'     => $request->pangkat_id,
-            'password'       => Hash::make($randomPassword),
+            // UPDATE: Use 'no_ic' as the default password
+            'password'       => Hash::make($request->no_ic),
         ]);
 
-        // D. Send Email
-        try {
-            Mail::to($user->email)->send(new UserWelcomeMail($user, $randomPassword));
-        } catch (\Exception $e) {
-            // Optional: Log error if email fails, but don't stop the registration process
-            // \Log::error('Email failed: ' . $e->getMessage());
-        }
-
-        // E. Redirect
+        // C. Redirect
+        // Removed email logic block. Updated success message to inform admin about the default password.
         return redirect()->route('Admin.Registration')
-            ->with('success', 'Anggota berjaya didaftarkan dan emel telah dihantar! Kata laluan sementara: ' . $randomPassword);
+            ->with('success', 'Anggota berjaya didaftarkan. Kata laluan adalah No. Kad Pengenalan pengguna.');
     }
 
     // Add this function inside your RegistrationController class

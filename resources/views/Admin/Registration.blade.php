@@ -117,10 +117,6 @@
                                 <input type="email" name="email" id="email" value="{{ old('email') }}" placeholder="nama@pdrm.gov.my" class="block w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 sm:text-sm">
                                 @error('email') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                             </div>
-                            <div class="md:col-span-2">
-                                <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Alamat Tetap</label>
-                                <textarea id="address" name="address" rows="3" placeholder="Alamat kediaman semasa..." class="block w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 sm:text-sm">{{ old('address') }}</textarea>
-                            </div>
                         </div>
                     </div>
 
