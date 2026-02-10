@@ -1,5 +1,16 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
+//use Illuminate\Support\Facades\Route;
+
+Route::get('/db-test', function () {
+    return [
+        'host' => config('database.connections.mysql.host'),
+        'username' => config('database.connections.mysql.username'),
+        'database' => config('database.connections.mysql.database'),
+    ];
+});
+
 use App\Http\Controllers\PangkatController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
@@ -7,6 +18,7 @@ use App\Http\Controllers\LogsController;
 use App\Http\Controllers\ContactsController;
 use App\Http\Controllers\RegistrationController; 
 use App\Http\Controllers\ProfileController;
+
 /*
 |--------------------------------------------------------------------------
 | 1. Public Routes (Login & Logout)
@@ -77,9 +89,8 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         Route::get('/hubungi', [ContactsController::class, 'index'])->name('contacts');
 
         // 3. Rekod (Create Log)
-        Route::get('/rekod/baru', function() {
-            return view('Users.Logs.Create');
-        })->name('logs.create');
+        Route::post('/rekod/simpan', [LogsController::class, 'store'])->name('logs.store');
+        Route::get('/rekod/baru', [LogsController::class, 'create'])->name('logs.create');// Handle form submission
 
         // 4. Sejarah (History)
         Route::get('/rekod/sejarah', [LogsController::class, 'index'])->name('logs.history');

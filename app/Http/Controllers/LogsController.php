@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\ActivityLog;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
 use Carbon\Carbon;
 
 class LogsController extends Controller
@@ -12,7 +14,9 @@ class LogsController extends Controller
     public function index()
     {
         // --- TOGGLE THIS TO FALSE LATER TO USE REAL DATABASE ---
-        $testMode = true; 
+        $testMode = true;
+
+        
 
         if ($testMode) {
             // ==========================================
@@ -123,7 +127,9 @@ class LogsController extends Controller
 
     public function create()
     {
-        return view('Users.Logs.Create');
+        //return view('Users.Logs.Create');
+        $penugasans = \Illuminate\Support\Facades\DB::table('penugasan')->get();
+        return view('Users.Logs.Create', compact('penugasans'));
     }
 
     // 2. HANDLE THE FORM SUBMISSION (WITH IMAGES)
@@ -135,7 +141,8 @@ class LogsController extends Controller
             'type' => 'required',
             'date' => 'required|date',
             'time' => 'required',
-            'officer_id' => 'required',
+            //'officer_id' => 'required',
+            'is_off_duty' => 'nullable|boolean',
             'remarks' => 'required',
             'images.*' => 'image|mimes:jpeg,png,jpg|max:5120', // Max 5MB per image
             'images' => 'max:8', // Max 8 files total
@@ -156,15 +163,16 @@ class LogsController extends Controller
         // C. Save to Database
         ActivityLog::create([
             'user_id' => Auth::id() ?? 1, // Fallback for test mode
-            'balai' => Auth::check() ? Auth::user()->balai : 'Balai Muar', // Fallback
+            'balai' => Auth::user()->balai ??  'Balai Pekan', // Fallback
             'area' => $request->area,
             'type' => $request->type,
             'date' => $request->date,
             'time' => $request->time,
             'end_time' => null, // Empty initially
-            'officer_id' => $request->officer_id,
+            'officer_id' => null,
+            'is_off_duty' => $request->has('is_off_duty') ? 1:0,
             'remarks' => $request->remarks,
-            'status' => 'ongoing', // Default status
+            'status' => 'draft', // Default status
             'images' => $imagePaths, // Laravel casts this array to JSON automatically
         ]);
 

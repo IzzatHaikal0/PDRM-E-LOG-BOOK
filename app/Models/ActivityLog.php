@@ -16,6 +16,7 @@ class ActivityLog extends Model
         'type',
         'date',
         'time',
+        'is_off_duty',
         'remarks',
         'officer_id',
         'end_time',
@@ -26,6 +27,7 @@ class ActivityLog extends Model
 
     protected $casts = [
     'images' => 'array',
+    'is_off_duty' => 'boolean',
     ];
 
     // Relationship: Who submitted this log?

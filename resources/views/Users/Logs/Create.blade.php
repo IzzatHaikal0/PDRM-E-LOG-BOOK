@@ -9,6 +9,17 @@
 @section('content')
 <div class="py-6 px-4 max-w-lg mx-auto pb-24">
 
+{{-- ERROR ALERT BLOCK --}}
+    @if ($errors->any())
+        <div class="bg-red-50 border border-red-200 text-red-600 rounded-xl p-4 mb-6 text-sm">
+            <ul class="list-disc list-inside">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     {{-- Info Card --}}
     <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6 flex gap-3 items-start">
         <svg class="w-5 h-5 text-blue-800 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -18,7 +29,7 @@
         </div>
     </div>
 
-    <form action="#" method="POST" enctype="multipart/form-data" class="space-y-5">
+    <form action="{{ route('logs.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
         @csrf
 
         {{-- 2. KAWASAN BERTUGAS --}}
@@ -27,11 +38,10 @@
                 Kawasan Penugasan
             </label>
             <div class="relative">
-                <select id="area" name="area" class="block w-full pl-4 pr-10 py-3 bg-white border border-gray-200 rounded-xl focus:ring-blue-900 focus:border-blue-900 text-sm appearance-none">
+                <select id="area" name="area" onchange="filterTasks()" class="block w-full pl-4 pr-10 py-3 bg-white border border-gray-200 rounded-xl focus:ring-blue-900 focus:border-blue-900 text-sm appearance-none">
                     <option value="" disabled selected>Sila Pilih Kawasan</option>
                     <option value="Kawasan Luar">Kawasan Luar</option>
                     <option value="Kawasan Dalam">Kawasan Dalam</option>
-                    
                     
                 </select>
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
@@ -48,24 +58,10 @@
             <div class="relative">
                 <select id="type" name="type" class="block w-full pl-4 pr-10 py-3 bg-white border border-gray-200 rounded-xl focus:ring-blue-900 focus:border-blue-900 text-sm appearance-none">
                     <option value="" disabled selected>Pilih Jenis Tugas</option>
-                    <option value="Pos Pengawal">Pos Pengawal</option>
-                    <option value="Rondaan MPV">Rondaan MPV</option>
-                    <option value="Rondaan URB">Rondaan URB</option>
-                    <option value="Bit/Pondok">Bit / Pondok Polis</option>
-                    <option value="Tugas Pejabat">Tugas Pejabat</option>
-                    <option value="Operasi Khas">Operasi Khas</option>
-                    <option value="Latihan">Latihan / Kursus</option>
-                    <option value="Kaunter Pertanyaan">Kaunter Pertanyaan / Kaunter Aduan</option>
-                    <option value="Bilik penjara">Bilik penjara</option>
-                    <option value="Bilik senjata">Bilik senjata</option>
-                    <option value="Bilik siasatan">Bilik siasatan</option>
-                    <option value="Bilik Operasi">Bilik kawalan / bilik operasi</option>
-                    <option value="Pejabat">Pejabat pentadbiran</option>
-                    <option value="Bit/Pondok">Bit / Pondok Polis</option>
-                    <option value="Tugas Pejabat">Tugas Pejabat</option>
-                    <option value="Operasi Khas">Operasi Khas</option>
-                    <option value="Latihan">Latihan / Kursus</option>
-                    <option value="Lain-lain">Lain-lain</option>
+                    @foreach($penugasans as $tugas)
+                        <option value="{{ $tugas->name }}" data-category="{{ $tugas->category }}">
+                            {{ $tugas->name }}</option>
+                    @endforeach
                 </select>
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -239,5 +235,41 @@
         // Refresh UI
         updateImagePreviews();
     }
+
+    function filterTasks() {
+        const areaSelect = document.getElementById('area');
+        const typeSelect = document.getElementById('type');
+        const selectedArea = areaSelect.value;
+        const options = typeSelect.querySelectorAll('option');
+
+        // Reset the Type selection
+        typeSelect.value = "";
+        
+        // Loop through all options in the Type dropdown
+        options.forEach(option => {
+            // Skip the "Sila Pilih" placeholder
+            if (option.disabled) {
+                option.text = "Sila Pilih Tugas"; // Update placeholder text
+                return;
+            }
+
+            // Get category from database data attribute
+            const category = option.getAttribute('data-category');
+
+            // Logic: Show if categories match, Hide if they don't
+            if (category === selectedArea) {
+                option.style.display = "block"; // Show
+            } else {
+                option.style.display = "none";  // Hide
+            }
+        });
+    }
+
+    // Run once on load just in case (e.g. if validation fails and page reloads)
+    document.addEventListener("DOMContentLoaded", function() {
+        if(document.getElementById('area').value !== "") {
+            filterTasks();
+        }
+    });
 </script>
 @endsection
