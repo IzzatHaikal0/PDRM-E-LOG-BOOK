@@ -129,6 +129,7 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
             return view('Penyelia.VerifyList'); 
         })->name('Penyelia.VerifyList');
 
+
         // 1. Show Verification List
     Route::get('/sahkan-tugasan', [LogsController::class, 'verifyList'])->name('Penyelia.VerifyList');
 

@@ -214,29 +214,64 @@ class LogsController extends Controller
 
 // 1. SHOW THE LIST (Grouped by User)
 public function verifyList()
-{
-    // Fetch all logs where status is 'pending'
-    $pendingLogs = \App\Models\ActivityLog::where('status', 'pending')
-        ->with('user') // Load user details
-        ->orderBy('date', 'desc')
-        ->orderBy('time', 'desc')
-        ->get();
+    {
+        // --- PART A: PENDING LOGS (Existing Logic) ---
+        $pendingLogs = \App\Models\ActivityLog::where('status', 'pending')
+            ->with('user')
+            ->orderBy('date', 'desc')
+            ->orderBy('time', 'desc')
+            ->get();
 
-    // Group them by User ID
-    $groupedTasks = $pendingLogs->groupBy('user_id')->map(function ($tasks, $userId) {
-        $user = $tasks->first()->user;
-        
-        return [
-            'id' => $userId,
-            'name' => $user->name,
-            'initials' => strtoupper(substr($user->name, 0, 2)), // Get initials (e.g. Ali Abu -> AA)
-            'pending_count' => $tasks->count(),
-            'tasks' => $tasks
-        ];
-    });
+        $groupedTasks = $this->groupLogsByUser($pendingLogs);
 
-    return view('Penyelia.VerifyList', compact('groupedTasks'));
-}
+        // --- PART B: VERIFIED LOGS (New Logic) ---
+        // Fetch logs approved or rejected (Limit to 50 recent to avoid clutter)
+        $verifiedLogs = \App\Models\ActivityLog::whereIn('status', ['approved', 'rejected'])
+            ->with(['user', 'officer']) // Load officer for signature info
+            ->orderBy('updated_at', 'desc')
+            ->take(50)
+            ->get();
+
+        $verifiedGroups = $this->groupLogsByUser($verifiedLogs);
+
+        return view('Penyelia.VerifyList', compact('groupedTasks', 'verifiedGroups'));
+    }
+
+// Helper function to keep code clean (Put this at bottom of Controller)
+private function groupLogsByUser($logs)
+    {
+        return $logs->groupBy('user_id')->map(function ($userLogs) {
+            $user = $userLogs->first()->user;
+            
+            return [
+                'id' => $user->id,
+                'name' => $user->name,
+                'initials' => collect(explode(' ', $user->name))->map(fn($w) => $w[0])->take(2)->join(''),
+                'count' => $userLogs->count(),
+                'pending_count' => $userLogs->count(),
+                
+                'tasks' => $userLogs->map(function ($log) {
+                    $imgs = $log->images; 
+                    return [
+                        'id' => $log->id,
+                        'date' => \Carbon\Carbon::parse($log->date)->format('d M Y'),
+                        'time' => \Carbon\Carbon::parse($log->time)->format('h:i A'),
+                        'type' => $log->type,
+                        'location' => $log->area ?? $log->balai,
+                        'desc' => $log->remarks,
+                        'status' => $log->status,
+                        'rejection_reason' => $log->rejection_reason,
+                        // Get Officer Name (who verified it)
+                        'officer_name' => $log->officer ? $log->officer->name : 'Penyelia',
+                        'verified_at' => $log->updated_at->format('d M, h:i A'),
+                        // Images
+                        'image' => ($imgs && count($imgs) > 0) ? asset('storage/'.$imgs[0]) : null,
+                        'all_images' => $imgs
+                    ];
+                })
+            ];
+        });
+    }
 
 // 2. HANDLE VERIFICATION (Save Signature & Update Status)
 public function verifyStore(Request $request)
