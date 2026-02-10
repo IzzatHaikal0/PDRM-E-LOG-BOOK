@@ -249,7 +249,7 @@ private function groupLogsByUser($logs)
                 'initials' => collect(explode(' ', $user->name))->map(fn($w) => $w[0])->take(2)->join(''),
                 'count' => $userLogs->count(),
                 'pending_count' => $userLogs->count(),
-                
+
                 'tasks' => $userLogs->map(function ($log) {
                     $imgs = $log->images; 
                     return [
@@ -266,6 +266,7 @@ private function groupLogsByUser($logs)
                         'verified_at' => $log->updated_at->format('d M, h:i A'),
                         // Images
                         'image' => ($imgs && count($imgs) > 0) ? asset('storage/'.$imgs[0]) : null,
+                        'signature_url' => $log->signature_path ? asset('storage/'.$log->signature_path) : null,
                         'all_images' => $imgs
                     ];
                 })
@@ -282,11 +283,25 @@ public function verifyStore(Request $request)
         'comment' => 'nullable|string'
     ]);
 
+    $signaturePath = null;
+    if ($request->signature) {
+        // Convert Base64 to Image File
+        $image = $request->signature;  // your base64 encoded
+        $image = str_replace('data:image/png;base64,', '', $image);
+        $image = str_replace(' ', '+', $image);
+        $imageName = 'signatures/sig_' . time() . '_' . uniqid() . '.png';
+        
+        // Save to Storage (public/signatures folder)
+        \Illuminate\Support\Facades\Storage::disk('public')->put($imageName, base64_decode($image));
+        $signaturePath = $imageName;
+    }
+
     // Update the logs
     \App\Models\ActivityLog::whereIn('id', $request->task_ids)->update([
         'status' => 'approved',
         'officer_id' => Auth::id(), // The currently logged-in supervisor
         'rejection_reason' => $request->comment, // Using this field for general comments/remarks
+        'signature_path' => $signaturePath, // Signature path
         'updated_at' => now()
     ]);
     

@@ -382,6 +382,21 @@
                     </p>
                 </div>
 
+                {{-- SIGNATURE SECTION --}}
+                <div id="detail-signature-section" class="mb-6 hidden">
+                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-100 flex justify-between items-center">
+                        <div>
+                            <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Disahkan Oleh</p>
+                            <p class="text-sm font-bold text-gray-800 mt-0.5" id="detail-officer-name">
+                                {{-- Officer Name goes here --}}
+                            </p>
+                        </div>
+                        <div class="bg-white border border-gray-200 rounded p-1">
+                            <img id="detail-signature-img" src="" alt="Tandatangan" class="h-10 w-auto object-contain">
+                        </div>
+                    </div>
+                </div>
+
                 {{-- Supporting Image --}}
                 <div id="detail-image-container" class="mb-2 hidden">
                     <h5 class="text-sm font-bold text-gray-900 mb-2">Lampiran Gambar</h5>
@@ -394,6 +409,27 @@
                 </div>
 
             </div>
+
+            {{-- NEW: SIGNATURE SECTION --}}
+                <div id="detail-signature-section" class="mb-6 hidden">
+                    <h5 class="text-sm font-bold text-gray-900 mb-2">Pengesahan Penyelia</h5>
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500">Disahkan oleh:</p>
+                                <p class="text-xs font-bold text-gray-900" id="detail-officer-name">Nama Penyelia</p>
+                            </div>
+                        </div>
+                        {{-- The Signature Image --}}
+                        <div class="bg-white border border-gray-200 rounded p-2 inline-block">
+                            <img id="detail-signature-img" src="" alt="Tandatangan" class="h-12 w-auto">
+                        </div>
+                    </div>
+                </div>
+
 
             {{-- Footer --}}
             <div class="bg-gray-50 px-5 py-3 border-t border-gray-100 text-center">
@@ -625,7 +661,20 @@
         document.getElementById('detail-type').innerText = task.type;
         document.getElementById('detail-time').innerText = task.time;
         document.getElementById('detail-location').innerText = task.location;
-        document.getElementById('detail-description').innerText = task.desc; // Note: In controller we mapped 'desc' => $log->remarks
+        document.getElementById('detail-description').innerText = task.desc;
+
+        // --- NEW: HANDLE SIGNATURE ---
+        const sigSection = document.getElementById('detail-signature-section');
+        const sigImg = document.getElementById('detail-signature-img');
+        const officerName = document.getElementById('detail-officer-name');
+
+        if (task.signature_url) {
+            sigImg.src = task.signature_url;
+            officerName.innerText = task.officer_name;
+            sigSection.classList.remove('hidden');
+        } else {
+            sigSection.classList.add('hidden');
+        }
 
         // 4. Handle Images
         const imgContainer = document.getElementById('detail-image-container');
