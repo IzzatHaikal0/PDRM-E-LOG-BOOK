@@ -14,7 +14,7 @@ class LogsController extends Controller
     public function index()
     {
         // --- TOGGLE THIS TO FALSE LATER TO USE REAL DATABASE ---
-        $testMode = true;
+        $testMode = false;
 
         
 

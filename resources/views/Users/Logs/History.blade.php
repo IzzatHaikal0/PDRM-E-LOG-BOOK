@@ -1,103 +1,5 @@
 @extends('layouts.app')
 
-@php
-    // Example Data for 'logs'
-    $logs = [
-        '2026-01-31' => collect([
-            // EXAMPLE 1: A patrol task started but not submitted
-            (object) [
-                'id' => 101,
-                'time' => '08:00:00',
-                'type' => 'Rondaan Cegah Jenayah',
-                'remarks' => 'Melakukan rondaan berkala di kawasan perumahan Taman Utama dan sekitar lot kedai. Keadaan terkawal.',
-                'status' => 'draft', // <--- This triggers the Draft UI
-                'end_time' => null,
-                'officer' => null,
-                'rejection_reason' => null
-            ],
-
-            (object) [
-                'id' => 107,
-                'time' => '10:45:00',
-                'type' => 'Kawalan Trafik',
-                'remarks' => 'Melakukan kawalan lalu lintas di persimpangan lampu isyarat utama berikutan kerosakan teknikal.',
-                'status' => 'draft',
-                'end_time' => null,
-                'officer' => null,
-                'rejection_reason' => null
-            ],
-            (object) [
-                'id' => 108,
-                'time' => '14:20:00',
-                'type' => 'Siasatan Kes',
-                'remarks' => 'Menemubual saksi kejadian kes kecurian di Blok C. Saksi memberikan keterangan mengenai suspek.',
-                'status' => 'draft',
-                'end_time' => null,
-                'officer' => null,
-                'rejection_reason' => null
-            ],
-            (object) [
-                'id' => 109,
-                'time' => '16:30:00',
-                'type' => 'Tugas Khas',
-                'remarks' => 'Mengiringi penghantaran dokumen penting ke Pejabat Daerah. Cuaca hujan lebat.',
-                'status' => 'draft',
-                'end_time' => null,
-                'officer' => null,
-                'rejection_reason' => null
-            ],
-            (object) [
-                'id' => 110,
-                'time' => '20:00:00',
-                'type' => 'Rondaan Berkenderaan',
-                'remarks' => 'Rondaan menggunakan MPV di sekitar kawasan industri. Tiada aktiviti mencurigakan dikesan setakat ini.',
-                'status' => 'draft',
-                'end_time' => null,
-                'officer' => null,
-                'rejection_reason' => null
-            ],
-
-
-            
-            
-            // EXAMPLE 2: Desk duty that is still ongoing/drafted
-            (object) [
-                'id' => 102,
-                'time' => '14:30:00',
-                'type' => 'Tugas Pejabat (Pertanyaan)',
-                'remarks' => 'Mengemaskini buku log keluar masuk pelawat dan memantau CCTV di pondok pengawal.',
-                'status' => 'pending', // <--- This triggers the Draft UI
-                'end_time' => null,
-                'officer' => null,
-                'rejection_reason' => null
-            ],
-        ]),
-        
-        // Other dates/statuses for context...
-        '2026-01-30' => collect([
-            (object) [
-                'id' => 99, 
-                'time' => '09:00:00', 
-                'type' => 'Latihan Jasmani', 
-                'remarks' => 'Latihan kecergasan mingguan.', 
-                'status' => 'approved',
-                'end_time' => '10:00:00',
-                'officer' => (object)['name' => 'Sjn. Mejar Halim']
-            ],
-
-            (object) [
-                'id' => 110,
-                'time' => '20:00:00',
-                'type' => 'Rondaan Berkenderaan',
-                'remarks' => 'Rondaan menggunakan MPV di sekitar kawasan industri. Tiada aktiviti mencurigakan dikesan setakat ini.',
-                'status' => 'draft',
-                'end_time' => null,
-                'officer' => null,
-                'rejection_reason' => null
-            ],
-        ])
-    ];
-@endphp
 
 @section('content')
 <div class="py-6 px-4 max-w-lg mx-auto pb-24">
@@ -206,7 +108,7 @@
                                     {{-- DRAFT ACTION AREA --}}
                                     <div class="mt-4 pt-3 border-t border-gray-200/60">
                                         {{-- 1. End Time Form (Only available here) --}}
-                                        <form action="#" method="POST" class="flex flex-col gap-3">
+                                        <form action="{{ route('logs.end_task', $log->id) }}" method="POST" class="flex flex-col gap-3">
                                             @csrf
                                             @method('PATCH')
                                             
