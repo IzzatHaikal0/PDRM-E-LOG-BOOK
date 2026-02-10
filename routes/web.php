@@ -130,6 +130,12 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
             return view('Penyelia.VerifyList'); 
         })->name('Penyelia.VerifyList');
 
+        // 1. Show Verification List
+    Route::get('/sahkan-tugasan', [LogsController::class, 'verifyList'])->name('Penyelia.VerifyList');
+
+    // 2. Process Verification (Single or Batch)
+    Route::post('/sahkan-tugasan/simpan', [LogsController::class, 'verifyStore'])->name('Penyelia.VerifyStore');
+
         // 3. Rekod (Create Log)
         Route::get('/rekod/baru', function() {
             return view('Penyelia.Logs.Create');

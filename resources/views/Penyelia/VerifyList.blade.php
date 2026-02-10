@@ -7,54 +7,7 @@
 @endsection
 
 @section('content')
-{{-- MOCK DATA: GROUPED BY USER --}}
-@php
-    $groupedTasks = [
-        [
-            'id' => 101, // User ID
-            'name' => 'Kpl. Abu Bakar',
-            'initials' => 'AB',
-            'pending_count' => 2,
-            'tasks' => [
-                [
-                    'id' => 1,
-                    'time' => '10:30 AM',
-                    'type' => 'Rondaan MPV',
-                    'location' => 'Sektor A',
-                    'desc' => 'Membuat rondaan di kawasan perumahan Taman Bahagia. Keadaan terkawal.',
-                    'status' => 'pending',
-                    'image' => 'https://images.unsplash.com/photo-1595150266023-4475476a6665?q=80&w=600&auto=format&fit=crop'
-                ],
-                [
-                    'id' => 3, 
-                    'time' => '11:45 AM',
-                    'type' => 'Pemeriksaan Kenderaan',
-                    'location' => 'Jalan Besar',
-                    'desc' => 'Menahan dan memeriksa sebuah van putih dalam keadaan mencurigakan.',
-                    'status' => 'pending',
-                    'image' => null
-                ]
-            ]
-        ],
-        [
-            'id' => 102,
-            'name' => 'L/Kpl Siti Aminah',
-            'initials' => 'SA',
-            'pending_count' => 1,
-            'tasks' => [
-                [
-                    'id' => 2,
-                    'time' => '09:15 AM',
-                    'type' => 'Kaunter Aduan',
-                    'location' => 'Balai Polis',
-                    'desc' => 'Menerima laporan kehilangan kad pengenalan. No Repot: MR/123/2026.',
-                    'status' => 'pending',
-                    'image' => null
-                ]
-            ]
-        ]
-    ];
-@endphp
+
 
 <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto pb-24">
     
@@ -132,9 +85,9 @@
                     
                     @foreach($user['tasks'] as $task)
                     {{-- Added 'user-task-item' class and 'data-task-id' --}}
-                    <div id="task-{{ $task['id'] }}" data-task-id="{{ $task['id'] }}" class="user-task-item bg-white border border-gray-200 rounded-xl p-3 shadow-sm relative">
+                    <div id="task-{{ $task->id }}" data-task-id="{{ $task->id }}" class="user-task-item bg-white border border-gray-200 rounded-xl p-3 shadow-sm relative">
                         {{-- Status Stripe --}}
-                        <div id="stripe-{{ $task['id'] }}" class="absolute left-0 top-0 bottom-0 w-1 bg-yellow-400 rounded-l-xl transition-colors duration-500"></div>
+                        <div id="stripe-{{ $task->id }}" class="absolute left-0 top-0 bottom-0 w-1 bg-yellow-400 rounded-l-xl transition-colors duration-500"></div>
                         
                         <div class="pl-3">
                             <div class="flex justify-between items-start mb-1">
@@ -143,7 +96,7 @@
                                     <span class="text-[10px] text-gray-400">&bull;</span>
                                     <span class="text-xs font-semibold text-gray-700">{{ $task['type'] }}</span>
                                 </div>
-                                <span id="badge-{{ $task['id'] }}" class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-yellow-100 text-yellow-800">
+                                <span id="badge-{{ $task->id }}" class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-yellow-100 text-yellow-800">
                                     Menunggu
                                 </span>
                             </div>
@@ -153,17 +106,17 @@
                             </p>
 
                             {{-- Actions --}}
-                            <div id="actions-{{ $task['id'] }}" class="flex gap-2 mt-2">
-                                <button onclick="openVerificationModal({{ $task['id'] }}, '{{ $user['name'] }}', {{ $user['id'] }})" class="flex-1 bg-[#00205B] text-white text-[10px] font-bold py-1.5 rounded hover:bg-blue-900 transition">
+                            <div id="actions-{{ $task->id }}" class="flex gap-2 mt-2">
+                                <button onclick="openVerificationModal({{ $task->id }}, '{{ $user['name'] }}', {{ $user['id'] }})" class="flex-1 bg-[#00205B] text-white text-[10px] font-bold py-1.5 rounded hover:bg-blue-900 transition">
                                     Sahkan
                                 </button>
-                                <button onclick="viewTaskDetails({{ $task['id'] }}, '{{ $user['name'] }}', '{{ $user['initials'] }}')" class="px-4 bg-white border border-gray-300 text-gray-600 text-[10px] font-bold py-1.5 rounded hover:bg-gray-50 transition">
+                                <button onclick="viewTaskDetails({{ $task->id }}, '{{ $user['name'] }}', '{{ $user['initials'] }}')" class="px-4 bg-white border border-gray-300 text-gray-600 text-[10px] font-bold py-1.5 rounded hover:bg-gray-50 transition">
                                     Butiran
                                 </button>
                             </div>
 
                              {{-- Signature Container --}}
-                             <div id="signature-{{ $task['id'] }}" class="hidden mt-2 pt-2 border-t border-gray-50 animate-fade-in"></div>
+                             <div id="signature-{{ $task->id }}" class="hidden mt-2 pt-2 border-t border-gray-50 animate-fade-in"></div>
                         </div>
                     </div>
                     @endforeach

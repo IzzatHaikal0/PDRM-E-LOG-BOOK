@@ -11,6 +11,8 @@ return new class extends Migration
         Schema::create('penugasan', function (Blueprint $table) {
             $table->id();
             $table->string('name'); // The task name (e.g., Rondaan MPV)
+            $table->enum('category', ['Kawasan Luar', 'Kawasan Dalam'])
+                  ->default('Kawasan Dalam');
             $table->string('description')->nullable(); // Optional description
             $table->timestamps();
         });

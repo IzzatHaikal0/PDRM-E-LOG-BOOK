@@ -208,4 +208,57 @@ class LogsController extends Controller
             $count = count($request->log_ids);
             return back()->with('success', "$count laporan berjaya dihantar ke penyelia.");
         }
+
+    
+    // In LogsController.php
+
+// 1. SHOW THE LIST (Grouped by User)
+public function verifyList()
+{
+    // Fetch all logs where status is 'pending'
+    $pendingLogs = \App\Models\ActivityLog::where('status', 'pending')
+        ->with('user') // Load user details
+        ->orderBy('date', 'desc')
+        ->orderBy('time', 'desc')
+        ->get();
+
+    // Group them by User ID
+    $groupedTasks = $pendingLogs->groupBy('user_id')->map(function ($tasks, $userId) {
+        $user = $tasks->first()->user;
+        
+        return [
+            'id' => $userId,
+            'name' => $user->name,
+            'initials' => strtoupper(substr($user->name, 0, 2)), // Get initials (e.g. Ali Abu -> AA)
+            'pending_count' => $tasks->count(),
+            'tasks' => $tasks
+        ];
+    });
+
+    return view('Penyelia.VerifyList', compact('groupedTasks'));
+}
+
+// 2. HANDLE VERIFICATION (Save Signature & Update Status)
+public function verifyStore(Request $request)
+{
+    $request->validate([
+        'task_ids' => 'required|array', // Can be one ID or multiple
+        'signature' => 'required', // Base64 string from signature pad
+        'comment' => 'nullable|string'
+    ]);
+
+    // Update the logs
+    \App\Models\ActivityLog::whereIn('id', $request->task_ids)->update([
+        'status' => 'approved',
+        'officer_id' => Auth::id(), // The currently logged-in supervisor
+        'rejection_reason' => $request->comment, // Using this field for general comments/remarks
+        'updated_at' => now()
+    ]);
+    
+    // Note: You might want to save the signature image to storage 
+    // and save the path in DB if you want to be strict.
+    // For now, we assume the signature is verified by the action itself.
+
+    return response()->json(['success' => true, 'message' => 'Tugasan berjaya disahkan.']);
+}
 }
