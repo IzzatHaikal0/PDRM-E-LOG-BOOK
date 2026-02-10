@@ -64,6 +64,7 @@ class LoginController extends Controller
         $credentials = $request->validate([
             'no_badan' => ['required', 'string'],
             'password' => ['required', 'string'],
+            'role' => ['required', 'string'],
         ]);
 
         if (Auth::attempt($credentials)) {

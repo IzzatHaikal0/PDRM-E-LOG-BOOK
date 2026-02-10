@@ -1,5 +1,6 @@
 <?php
 
+
 use Illuminate\Support\Facades\DB;
 //use Illuminate\Support\Facades\Route;
 
@@ -18,7 +19,7 @@ use App\Http\Controllers\LogsController;
 use App\Http\Controllers\ContactsController;
 use App\Http\Controllers\RegistrationController; 
 use App\Http\Controllers\ProfileController;
-
+use App\Http\Controllers\AdminSettingController;
 /*
 |--------------------------------------------------------------------------
 | 1. Public Routes (Login & Logout)
@@ -66,11 +67,9 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         Route::get('/kemaskini-anggota/{id}', [RegistrationController::class, 'edit'])->name('Admin.EditUser');
         Route::post('/kemaskini-anggota/{id}/simpan', [RegistrationController::class, 'update'])->name('Admin.UpdateUser');
 
-        Route::get('/tetapan-sistem', function() {
-            return view('Admin.Settings');
-        })->name('Admin.Settings');
 
-        Route::get('/tetapan-sistem', [PangkatController::class, 'index'])->name('Admin.Settings');
+        Route::get('/tetapan-sistem', [AdminSettingController::class, 'getAllSettings'])->name('Admin.Settings');
+        Route::post('/admin/settings/penugasan', [AdminSettingController::class, 'storePenugasan'])->name('Admin.Settings.StorePenugasan');
     });
 
     /*

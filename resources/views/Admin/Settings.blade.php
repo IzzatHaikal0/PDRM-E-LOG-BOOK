@@ -8,14 +8,6 @@
 
 @section('content')
 @php
-    // Mock Data
-    $types = [
-        ['id' => 1, 'name' => 'Rondaan MPV', 'category' => 'luar'],
-        ['id' => 2, 'name' => 'Rondaan URB', 'category' => 'luar'],
-        ['id' => 3, 'name' => 'Bit / Pondok Polis', 'category' => 'luar'],
-        ['id' => 4, 'name' => 'Tugas Pejabat', 'category' => 'dalam'],
-        ['id' => 5, 'name' => 'Operasi Khas', 'category' => 'luar'],
-    ];
 
     $contacts = [
         ['id' => 1, 'name' => 'IPD Pekan', 'phone' => '06-952 6001'],
@@ -26,7 +18,25 @@
 @endphp
 
 <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto pb-24">
+    {{-- Success Alert --}}
+    @if(session('success'))
+        <div class="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-sm text-sm font-bold flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            {{ session('success') }}
+        </div>
+    @endif
 
+    {{-- Validation Errors --}}
+    @if ($errors->any())
+        <div class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg shadow-sm text-sm">
+            <ul class="list-disc list-inside">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+    
     <div class="mb-6">
         <h1 class="text-2xl font-bold text-[#00205B]">Konfigurasi Data</h1>
         <p class="text-sm text-gray-500">Uruskan senarai pilihan dan maklumat rujukan sistem.</p>
@@ -52,26 +62,33 @@
             <div id="section-types" class="hidden border-t border-gray-100 bg-gray-50/50">
                 <div class="p-4">
                     <div class="flex justify-end mb-4">
-                        <button onclick="openModal('add', 'types')" class="px-3 py-1.5 bg-[#00205B] text-white text-xs font-bold rounded-lg hover:bg-blue-900 transition flex items-center gap-1 shadow-sm">
+                        {{-- Pass Route URL to Modal --}}
+                        <button onclick="openModal('add', 'types', '', '', '', '{{ route('Admin.Settings.StorePenugasan') }}')" class="px-3 py-1.5 bg-[#00205B] text-white text-xs font-bold rounded-lg hover:bg-blue-900 transition flex items-center gap-1 shadow-sm">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                             Tambah Tugasan
                         </button>
                     </div>
                     <ul class="space-y-2">
-                        @foreach($types as $type)
+                        @forelse($all_penugasan as $item)
                         <li class="bg-white p-3 rounded-lg border border-gray-200 flex items-center justify-between shadow-sm">
                             <div class="flex items-center gap-3">
-                                <span class="px-2 py-1 text-[10px] font-bold uppercase rounded {{ $type['category'] == 'luar' ? 'bg-orange-100 text-orange-700' : 'bg-purple-100 text-purple-700' }}">
-                                    {{ $type['category'] }}
+                                <span class="px-2 py-1 text-[10px] font-bold uppercase rounded {{ $item->category == 'Kawasan Luar' ? 'bg-purple-100 text-purple-700 border border-purple-200' : 'bg-orange-100 text-orange-700 border border-orange-200' }}">
+                                    {{ $item->category }}
                                 </span>
-                                <span class="text-sm font-medium text-gray-700">{{ $type['name'] }}</span>
+                                <div>
+                                    <span class="text-sm font-medium text-gray-700">{{ $item->name }}</span>
+                                    @if($item->description)
+                                    <p class="text-[10px] text-gray-400">{{ $item->description }}</p>
+                                    @endif
+                                </div>
                             </div>
                             <div class="flex items-center gap-2">
-                                <button onclick="openModal('edit', 'types', '{{ $type['name'] }}', '{{ $type['category'] }}')" class="text-gray-400 hover:text-blue-600"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
-                                <button onclick="deleteItem('{{ $type['name'] }}')" class="text-gray-400 hover:text-red-600"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                                <button class="text-gray-400 hover:text-red-600"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
                             </div>
                         </li>
-                        @endforeach
+                        @empty
+                        <li class="text-center text-sm text-gray-400 py-4 italic">Tiada data penugasan.</li>
+                        @endforelse
                     </ul>
                 </div>
             </div>
@@ -157,7 +174,7 @@
     </div>
 </div>
 
-{{-- MODAL (Reusable) --}}
+{{-- DYNAMIC MODAL --}}
 <div id="dataModal" style="display: none;" class="fixed inset-0 z-[100] w-screen h-screen overflow-hidden" role="dialog" aria-modal="true">
     <div class="absolute inset-0 flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
@@ -171,35 +188,43 @@
             </div>
 
             <div class="p-6">
-                <form id="modalForm" action="#" method="POST" class="space-y-4">
+                {{-- Form Action is dynamic via JS --}}
+                <form id="modalForm" action="" method="POST" class="space-y-4">
                     @csrf
-                    <div id="methodField"></div>
                     
-                    {{-- Standard Name Input --}}
+                    {{-- 1. Name Input --}}
                     <div>
                         <label id="inputLabel" for="itemName" class="block text-sm font-medium text-gray-700 mb-1">Nama Item</label>
                         <input type="text" id="itemName" name="name" class="block w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 text-sm transition-all" placeholder="Masukkan nama..." required>
                     </div>
 
-                    <div id="itemField" class="hidden">
-                        <label for="inputLabel" class="block text-sm font-medium text-gray-700 mb-1">No.Telefon</label>
-                        <input type="text" id="itemName" name="name" class="block w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 text-sm transition-all" placeholder="Masukkan nama..." required>
-                    </div>
-
-                    {{-- [NEW] Dropdown for Category (Hidden by default) --}}
+                    {{-- 2. Category Dropdown (Only for Penugasan) --}}
                     <div id="categoryField" class="hidden">
                         <label for="itemCategory" class="block text-sm font-medium text-gray-700 mb-1">Kategori Tugas</label>
                         <select id="itemCategory" name="category" class="block w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 text-sm transition-all">
-                            <option value="luar">Tugasan Luar</option>
-                            <option value="dalam">Tugasan Dalam (Pejabat)</option>
+                            {{-- VALUES MUST MATCH CONTROLLER VALIDATION --}}
+                            <option value="Kawasan Luar">Kawasan Luar</option>
+                            <option value="Kawasan Dalam">Kawasan Dalam</option>
                         </select>
+                    </div>
+
+                    {{-- 3. Description (Only for Penugasan) --}}
+                    <div id="descriptionField" class="hidden">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi (Optional)</label>
+                        <input type="text" name="description" class="block w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 text-sm transition-all" placeholder="Keterangan ringkas...">
+                    </div>
+
+                    {{-- 4. Phone (Only for Contacts) --}}
+                    <div id="phoneField" class="hidden">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">No. Telefon</label>
+                        <input type="text" id="itemPhone" name="phone" class="block w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 text-sm transition-all" placeholder="012-3456789">
                     </div>
                     
                     <div class="flex justify-end gap-3 pt-4">
                         <button type="button" onclick="closeModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none transition-colors">
                             Batal
                         </button>
-                        <button type="button" onclick="submitMock()" class="px-4 py-2 text-sm font-bold text-white bg-[#00205B] rounded-lg hover:bg-blue-900 focus:outline-none shadow-lg shadow-blue-900/20 transition-all transform hover:scale-105">
+                        <button type="submit" class="px-4 py-2 text-sm font-bold text-white bg-[#00205B] rounded-lg hover:bg-blue-900 focus:outline-none shadow-lg shadow-blue-900/20 transition-all transform hover:scale-105">
                             Simpan
                         </button>
                     </div>
@@ -216,11 +241,6 @@
         const content = document.getElementById(id);
         const icon = document.getElementById('icon-' + id);
         
-        // Close others (optional - remove if you want multiple open)
-        // document.querySelectorAll('[id^="section-"]').forEach(el => {
-        //     if(el.id !== id) el.classList.add('hidden');
-        // });
-
         if (content.classList.contains('hidden')) {
             content.classList.remove('hidden');
             icon.classList.add('rotate-180');
@@ -230,41 +250,55 @@
         }
     }
 
-    // 2. OPEN MODAL
-    function openModal(action, type, currentName = '', category = '') {
+    // 2. OPEN MODAL (Handles Dynamic Fields & Routing)
+    function openModal(action, type, currentName = '', category = '', phone = '', routeUrl = '#') {
         const modal = document.getElementById('dataModal');
+        const form = document.getElementById('modalForm');
         const title = document.getElementById('modalTitle');
+        
         const input = document.getElementById('itemName');
         const label = document.getElementById('inputLabel');
         const categoryField = document.getElementById('categoryField');
+        const descriptionField = document.getElementById('descriptionField');
         const categoryInput = document.getElementById('itemCategory');
+        const phoneField = document.getElementById('phoneField');
+        const phoneInput = document.getElementById('itemPhone');
 
         modal.style.display = 'block'; 
         
-        // Reset Fields
+        // Update Form Action (The URL to post to)
+        form.action = routeUrl;
+
+        // Reset Fields Visibility
         categoryField.classList.add('hidden');
-        itemField.classList.add('hidden');
+        descriptionField.classList.add('hidden');
+        phoneField.classList.add('hidden');
         
-        // Determine Label & Show Category for 'types'
+        // Logic Based on Type
         let typeName = '';
         if(type === 'types') {
             typeName = 'Jenis Tugas';
             label.innerText = 'Nama Tugasan';
-            categoryField.classList.remove('hidden'); // Show Dropdown
+            
+            categoryField.classList.remove('hidden'); 
+            descriptionField.classList.remove('hidden');
+            
             if(category) categoryInput.value = category;
-        }else if (type === 'ranks') {
+        } else if (type === 'ranks') {
             typeName = 'Pangkat';
             label.innerText = 'Nama Pangkat';
         } else if (type === 'contacts') {
             typeName = 'Nombor Kecemasan';
-            label.innerText = 'Nama';
-            itemField.classList.remove('hidden');
+            label.innerText = 'Nama Agensi/Individu';
+            phoneField.classList.remove('hidden'); 
+            if(phone) phoneInput.value = phone;
         }
 
         // Set Title & Value
         if (action === 'add') {
             title.innerText = 'Tambah ' + typeName;
             input.value = '';
+            phoneInput.value = '';
         } else {
             title.innerText = 'Kemaskini ' + typeName;
             input.value = currentName;
@@ -277,17 +311,7 @@
         document.getElementById('dataModal').style.display = 'none';
     }
 
-    function submitMock() {
-        closeModal();
-        Swal.fire({
-            icon: 'success',
-            title: 'Berjaya!',
-            text: 'Data telah disimpan.',
-            timer: 1500,
-            showConfirmButton: false
-        });
-    }
-
+    // Optional: DELETE Function
     function deleteItem(name) {
         Swal.fire({
             title: 'Padam Data?',
@@ -300,6 +324,7 @@
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
+                // Here you would normally submit a DELETE form or Ajax call
                 Swal.fire('Berjaya!', 'Data telah dipadam.', 'success');
             }
         })
