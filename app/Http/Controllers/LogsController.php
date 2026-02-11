@@ -311,4 +311,87 @@ public function verifyStore(Request $request)
 
     return response()->json(['success' => true, 'message' => 'Tugasan berjaya disahkan.']);
 }
+
+
+// In app/Http/Controllers/LogsController.php
+
+public function edit($id)
+    {
+        $log = \App\Models\ActivityLog::findOrFail($id);
+
+        // Security Check: Ensure user owns this log
+        if ($log->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Fetch penugasan list for the dropdown
+        $penugasans = \Illuminate\Support\Facades\DB::table('penugasan')->get();
+
+        return view('Users.Logs.Edit', compact('log', 'penugasans'));
+    }
+
+public function update(Request $request, $id)
+    {
+        $log = \App\Models\ActivityLog::findOrFail($id);
+
+        // 1. Validation
+        $request->validate([
+            'area' => 'required',
+            'type' => 'required',
+            'date' => 'required|date',
+            'time' => 'required',
+            'remarks' => 'required',
+            'images.*' => 'image|mimes:jpeg,png,jpg|max:5120', // Max 5MB
+        ]);
+
+        // 2. Handle New Image Uploads
+        $currentImages = $log->images ?? []; // Get existing images array
+        
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('log_evidence', 'public');
+                $currentImages[] = $path; // Append new image to list
+            }
+        }
+
+        // 3. Update Database
+        $log->update([
+            'area' => $request->area,
+            'type' => $request->type,
+            'date' => $request->date,
+            'time' => $request->time,
+            // If checkbox is checked send 1, else 0
+            'is_off_duty' => $request->has('is_off_duty') ? 1 : 0, 
+            'remarks' => $request->remarks,
+            'images' => $currentImages, // Save merged array
+            // Optionally reset status to draft/pending if it was rejected
+            'status' => 'pending', 
+        ]);
+
+        return redirect()->route('logs.history')->with('success', 'Laporan berjaya dikemaskini!');
+    }
+
+// Optional: Helper to delete a single image via AJAX or Link
+public function deleteImage(Request $request, $id)
+    {
+        $log = \App\Models\ActivityLog::findOrFail($id);
+        $images = $log->images;
+        $imageToDelete = $request->image_path;
+
+        // Filter out the image to delete
+        $updatedImages = array_filter($images, fn($img) => $img !== $imageToDelete);
+
+        // Update DB
+        $log->update(['images' => array_values($updatedImages)]);
+
+        // Delete file from storage (optional, to save space)
+        if(\Illuminate\Support\Facades\Storage::disk('public')->exists($imageToDelete)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($imageToDelete);
+        }
+
+        return back()->with('success', 'Gambar dipadam.');
+    }
+
+
+
 }

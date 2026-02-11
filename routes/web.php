@@ -79,19 +79,19 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     */
     Route::prefix('anggota')->group(function () {
 
-        // 1. Utama
+        // Utama
         Route::get('/dashboard', function() {
             return view('Users.Dashboard');
         })->name('Users.Dashboard');
 
-        // 2. Hubungi (Contacts)
+        // Hubungi (Contacts)
         Route::get('/hubungi', [ContactsController::class, 'index'])->name('contacts');
 
-        // 3. Rekod (Create Log)
+        // Rekod (Create Log)
         Route::post('/rekod/simpan', [LogsController::class, 'store'])->name('logs.store');
         Route::get('/rekod/baru', [LogsController::class, 'create'])->name('logs.create');// Handle form submission
 
-        // 4. Sejarah (History)
+        // Sejarah (History)
         Route::get('/rekod/sejarah', [LogsController::class, 'index'])->name('logs.history');
         Route::get('/rekod/sejarah/report', function() {
             return view ('Users.Logs.Report');
@@ -100,15 +100,22 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         // Logic to update end time
         Route::patch('/rekod/tamat/{id}', [LogsController::class, 'updateEndTime'])->name('logs.end_task');
 
-        // 5. Profil
+        // Profil
         Route::get('/profil', [ProfileController::class, 'index'])->name('Users.Profile');
 
-        // 6. Edit Profile
+        // Edit Profile
         Route::get('/profile/ubah/{id}', [ProfileController::class, 'view_edit_form'])->name('Users.EditProfile');
 
         Route::put('/profile/ubah/{id}/simpan', [ProfileController::class, 'update_profile'])->name('Users.UpdateProfile');
 
         Route::post('/profile/update-photo/{id}', [ProfileController::class, 'update_photo'])->name('Users.update_photo');
+
+        // EDIT ROUTES
+        Route::get('/rekod/ubah/{id}', [LogsController::class, 'edit'])->name('logs.edit');
+        Route::put('/rekod/ubah/{id}', [LogsController::class, 'update'])->name('logs.update');
+        
+        // Route to delete a specific image from an existing log
+        Route::delete('/rekod/gambar/{id}', [LogsController::class, 'deleteImage'])->name('logs.delete_image');
 
     });
 

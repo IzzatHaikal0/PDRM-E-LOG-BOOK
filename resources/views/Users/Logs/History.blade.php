@@ -122,7 +122,7 @@
                                             {{-- Buttons Row --}}
                                             <div class="flex gap-2">
                                                 {{-- UBAH Button --}}
-                                                <a href="#" class="flex-1 px-3 py-2 bg-white border border-gray-300 text-gray-700 text-xs font-bold rounded-lg hover:bg-gray-50 text-center">
+                                                <a href="{{ route('logs.edit', $log->id) }}" class="flex-1 px-3 py-2 bg-white border border-gray-300 text-gray-700 text-xs font-bold rounded-lg hover:bg-gray-50 text-center">
                                                     Ubah
                                                 </a>
                                                 
@@ -199,7 +199,7 @@
                                     {{-- SENT ACTION AREA --}}
                                     <div class="mt-3 flex justify-end">
                                         {{-- Only UBAH button allowed here. No End Time setting. --}}
-                                        <a href="#" class="flex items-center gap-1 px-3 py-1.5 bg-white hover:bg-gray-50 text-gray-700 rounded-lg border border-gray-200 text-xs font-bold transition shadow-sm">
+                                        <a href="{{ route('logs.edit', $log->id) }}" class="flex items-center gap-1 px-3 py-1.5 bg-white hover:bg-gray-50 text-gray-700 rounded-lg border border-gray-200 text-xs font-bold transition shadow-sm">
                                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                                             Ubah
                                         </a>
