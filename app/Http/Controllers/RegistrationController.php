@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers; // <--- FIXED TYPO (Added 's')
+namespace App\Http\Controllers; 
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use App\Imports\UsersImport; 
 use Maatwebsite\Excel\Facades\Excel;     
 use Illuminate\Support\Facades\Response; 
+use App\Exports\TemplateExport;
 
 class RegistrationController extends Controller
 {
@@ -163,7 +164,7 @@ class RegistrationController extends Controller
     {
         // Validate file type
         $request->validate([
-            'bulk_file' => 'required|mimes:xlsx,csv,xls|max:5120', // Max 5MB
+            'bulk_file' => 'required|mimes:xlsx,csv,xls|max:5120', 
         ]);
 
         try {
@@ -189,26 +190,7 @@ class RegistrationController extends Controller
     // 2. DOWNLOAD TEMPLATE
     public function downloadTemplate()
     {
-        // Define headers for the CSV
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="template_pendaftaran_anggota.csv"',
-        ];
-
-        // Define columns
-        $columns = ['nama_penuh', 'no_kad_pengenalan', 'no_badan', 'no_telefon', 'pangkat', 'peranan'];
-
-        // Create a callback to write the columns
-        $callback = function() use ($columns) {
-            $file = fopen('php://output', 'w');
-            fputcsv($file, $columns);
-            
-            // Add a sample row (Example)
-            fputcsv($file, ['Ali Bin Abu', '880101015555', 'RF12345', '0123456789', 'Sarjan', 'anggota']);
-            
-            fclose($file);
-        };
-
-        return Response::stream($callback, 200, $headers);
+        // It MUST be .xlsx to support Dropdowns (CSV does not support this)
+        return Excel::download(new TemplateExport, 'template_pendaftaran_anggota.xlsx');
     }
 }
