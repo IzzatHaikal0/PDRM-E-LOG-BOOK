@@ -8,7 +8,7 @@
 
 @section('content')
 
-{{-- 1. STATISTICS SECTION --}}
+{{-- 1. STATISTICS SECTION (Unchanged) --}}
 @php
     $stats = [
         ['label' => 'Inspektor & Keatas', 'count' => $statsData['inspektor'], 'color' => 'bg-red-50 text-red-700', 'icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'],
@@ -20,7 +20,7 @@
 
 <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
 
-    {{-- NOTE: HTML Success Message Removed. Replaced by SweetAlert script at the bottom. --}}
+    {{-- Success/Error Messages handled by JS below --}}
 
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
         <div>
@@ -87,7 +87,6 @@
                 <tr class="hover:bg-blue-50/50 transition">
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center">
-                            {{-- Generate initials from Name --}}
                             <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-800 font-bold text-sm">
                                 {{ substr($user->name, 0, 2) }}
                             </div>
@@ -98,7 +97,6 @@
                         </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700">
-                         {{-- Capitalize First Letter --}}
                         <span class="capitalize">{{ $user->role }}</span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
@@ -118,7 +116,10 @@
                             <a href="{{ route('Admin.EditUser', ['id' => $user->id]) }}" class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 p-2 rounded-lg transition" title="Kemaskini">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                             </a>
-                            <button onclick="confirmDelete('{{ $user->name }}', '{{ $user->id }}')" class="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition" title="Padam">
+                            {{-- BUTTON PADAM (DESKTOP) --}}
+                            <button onclick="confirmDelete('{{ $user->name }}', '{{ route('Admin.DeleteUser', $user->id) }}')" 
+                                    class="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition" 
+                                    title="Padam">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                             </button>
                         </div>
@@ -128,7 +129,6 @@
             </tbody>
         </table>
         
-        {{-- Pagination Links --}}
         <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
             {{ $users->links() }}
         </div>
@@ -153,7 +153,9 @@
                 <a href="{{ route('Admin.EditUser', ['id' => $user->id]) }}" class="flex-1 flex items-center justify-center px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 rounded-lg">
                     Edit
                 </a>
-                <button onclick="confirmDelete('{{ $user->name }}', '{{ $user->id }}')" class="flex-1 flex items-center justify-center px-3 py-1.5 text-xs font-medium text-red-700 bg-red-50 rounded-lg">
+                {{-- BUTTON PADAM (MOBILE) - UPDATED TO PASS ROUTE URL --}}
+                <button onclick="confirmDelete('{{ $user->name }}', '{{ route('Admin.DeleteUser', $user->id) }}')" 
+                        class="flex-1 flex items-center justify-center px-3 py-1.5 text-xs font-medium text-red-700 bg-red-50 rounded-lg">
                     Padam
                 </button>
             </div>
@@ -167,23 +169,26 @@
 
 </div>
 
+{{-- [IMPORTANT] HIDDEN FORM FOR DELETION --}}
+<form id="deleteForm" action="" method="POST" style="display: none;">
+    @csrf
+    @method('DELETE')
+</form>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    // 1. Session Flash Messages (Success & Error)
+    // 1. Session Flash Messages
     document.addEventListener('DOMContentLoaded', function() {
-        
-        // Success Message
         @if(session('success'))
             Swal.fire({
                 icon: 'success',
                 title: 'Berjaya!',
                 text: "{{ session('success') }}",
                 confirmButtonColor: '#00205B',
-                timer: 5000 // Auto close after 5 seconds
+                timer: 3000
             });
         @endif
 
-        // Error Message
         @if(session('error'))
             Swal.fire({
                 icon: 'error',
@@ -194,11 +199,11 @@
         @endif
     });
 
-    // 2. Delete Confirmation
-    function confirmDelete(name, id) {
+    // 2. Updated Delete Function (Accepts URL)
+    function confirmDelete(name, url) {
         Swal.fire({
             title: 'Anda pasti?',
-            text: "Adakah anda ingin memadam anggota: " + name + "?",
+            text: "Adakah anda ingin memadam anggota: " + name + "? Data ini akan dipindahkan ke arkib (Soft Delete).",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
@@ -207,13 +212,11 @@
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
-                // If you have a delete route, you would submit a form here.
-                // For now, it just shows a success message mock.
-                Swal.fire(
-                    'Berjaya!',
-                    'Fungsi padam belum disambungkan ke pangkalan data.',
-                    'success'
-                )
+                // Set the form action to the specific delete URL
+                const form = document.getElementById('deleteForm');
+                form.action = url;
+                // Submit the form
+                form.submit();
             }
         })
     }

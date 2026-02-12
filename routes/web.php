@@ -66,10 +66,14 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 
         Route::get('/kemaskini-anggota/{id}', [RegistrationController::class, 'edit'])->name('Admin.EditUser');
         Route::post('/kemaskini-anggota/{id}/simpan', [RegistrationController::class, 'update'])->name('Admin.UpdateUser');
-
+        Route::delete('/padam/{id}', [RegistrationController::class, 'softdelete'])->name('Admin.DeleteUser');
 
         Route::get('/tetapan-sistem', [AdminSettingController::class, 'getAllSettings'])->name('Admin.Settings');
         Route::post('/admin/settings/penugasan', [AdminSettingController::class, 'storePenugasan'])->name('Admin.Settings.StorePenugasan');
+        // Update (New)
+        Route::put('/admin/settings/penugasan/{id}', [AdminSettingController::class, 'updatePenugasan'])->name('Admin.Settings.UpdatePenugasan');
+        // Delete (New)
+        Route::delete('/admin/settings/penugasan/{id}', [AdminSettingController::class, 'deletePenugasan'])->name('Admin.Settings.DeletePenugasan');
     });
 
     /*

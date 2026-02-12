@@ -40,4 +40,32 @@
             // 3. Redirect
             return redirect()->back()->with('success', 'Jenis penugasan berjaya ditambah!');
         }
+
+        // 1. UPDATE Function
+        public function updatePenugasan(Request $request, $id)
+        {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'category' => 'required|in:Kawasan Luar,Kawasan Dalam',
+                'description' => 'nullable|string|max:255',
+            ]);
+
+            $task = Penugasan::findOrFail($id);
+            $task->update([
+                'name' => $request->name,
+                'category' => $request->category,
+                'description' => $request->description,
+            ]);
+
+            return redirect()->back()->with('success', 'Jenis penugasan berjaya dikemaskini!');
+        }
+
+        // 2. DELETE Function (Soft Delete)
+        public function deletePenugasan($id)
+        {
+            $task = Penugasan::findOrFail($id);
+            $task->delete();
+
+            return redirect()->back()->with('success', 'Jenis penugasan berjaya dipadam.');
+        }
     }

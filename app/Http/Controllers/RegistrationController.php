@@ -25,7 +25,7 @@ class RegistrationController extends Controller
     }
 
     // 2. Handle Manual Registration Submission
-   public function storeManual(Request $request)
+    public function storeManual(Request $request)
     {
         // A. Validation
         $validator = Validator::make($request->all(), [
@@ -147,5 +147,15 @@ class RegistrationController extends Controller
 
         return redirect()->route('Admin.ListAnggota')
             ->with('success', 'Maklumat anggota berjaya dikemaskini!');
+    }
+
+    //soft delete users
+    public function softdelete(Request $request, $id)
+    {
+        // 1. Find the user
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        return redirect()->back()->with('success', 'Pengguna berjaya dipadam. Data masih ada dalam pangkalan data.');
     }
 }
