@@ -321,7 +321,7 @@
                     </div>
                 </div>
 
-                {{-- SIGNATURE INFO (Restored) --}}
+                {{-- SIGNATURE INFO --}}
                 <div class="flex items-center gap-2 p-2 border border-dashed border-gray-300 rounded bg-gray-50">
                     <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-600">
                         {{ collect(explode(' ', Auth::user()->name))->map(fn($w) => $w[0])->take(2)->join('') }}
@@ -329,7 +329,7 @@
                     
                     <div class="text-[10px] text-gray-500">
                         <p>Ditandatangani secara digital oleh:</p>
-                        <p class="font-bold text-gray-700">{{ Auth::user()->name }} (ID: {{ Auth::user()->id }})</p>
+                        <p class="font-bold text-gray-700">{{ Auth::user()->name }} (ID: {{ Auth::user()->no_badan }})</p>
                         <p class="text-xs text-gray-400">{{ now()->format('d M Y, H:i') }}</p>
                     </div>
                 </div>
