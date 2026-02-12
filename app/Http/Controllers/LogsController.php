@@ -257,6 +257,9 @@ private function groupLogsByUser($logs)
                 'tasks' => $userLogs->groupBy('date')->map(function ($dailyLogs) {
                     return $dailyLogs->map(function ($log) {
 
+                    $officerName = $log->officer ? $log->officer->name : 'Penyelia';
+                    $officerId = $log->officer ? $log->officer->id : '-';
+
                     $imgs = $log->images; 
                     return [
                         'id' => $log->id,
@@ -268,7 +271,9 @@ private function groupLogsByUser($logs)
                         'status' => $log->status,
                         'rejection_reason' => $log->rejection_reason,
                         // Get Officer Name (who verified it)
-                        'officer_name' => $log->officer ? $log->officer->name : 'Penyelia',
+                        'officer_name' => $officerName,
+                        'officer_badge' => $officerId,
+                        //'officer_name' => $log->officer ? $log->officer->name : 'Penyelia',
                         'verified_at' => $log->updated_at->format('d M, h:i A'),
                         // Images
                         'images' => ($imgs && count($imgs) > 0) 
