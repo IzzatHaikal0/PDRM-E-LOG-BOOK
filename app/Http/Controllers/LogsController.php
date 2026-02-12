@@ -127,10 +127,13 @@ class LogsController extends Controller
 
     public function create()
     {
-        //return view('Users.Logs.Create');
-        $penugasans = \Illuminate\Support\Facades\DB::table('penugasan')->get();
+        $penugasans = \Illuminate\Support\Facades\DB::table('penugasan')
+            ->whereNull('deleted_at')
+            ->get();
+
         return view('Users.Logs.Create', compact('penugasans'));
     }
+
 
     // 2. HANDLE THE FORM SUBMISSION (WITH IMAGES)
     public function store(Request $request)

@@ -87,14 +87,26 @@
                 <tr class="hover:bg-blue-50/50 transition">
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center">
-                            <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-800 font-bold text-sm">
-                                {{ substr($user->name, 0, 2) }}
-                            </div>
-                            <div class="ml-4">
-                                <div class="text-sm font-bold text-gray-900">{{ $user->name }}</div>
-                                <div class="text-xs text-gray-500">{{ $user->email }}</div>
+                        <div class="h-10 w-10 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
+                            @if($user->gambar_profile)
+                                <img src="{{ asset('storage/' . $user->gambar_profile) }}"
+                                    alt="{{ $user->name }}"
+                                    class="h-full w-full object-cover">
+                            @else
+                                <span class="text-sm font-bold text-gray-600">
+                                    {{ strtoupper(substr($user->name, 0, 2)) }}
+                                </span>
+                            @endif
+                        </div>
+
+                        <div class="ml-4">
+                            <div class="text-sm font-bold text-gray-900">{{ $user->name }}</div>
+                            <div class="text-xs text-gray-500">
+                                {{ $user->email ?: 'Email belum disediakan' }}
                             </div>
                         </div>
+
+
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700">
                         <span class="capitalize">{{ $user->role }}</span>

@@ -56,7 +56,9 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         Route::get('/daftar-pengguna', [RegistrationController::class, 'showForm'])->name('Admin.Registration');
         // 2. Save Data (This was missing)
         Route::post('/daftar-pengguna/simpan', [RegistrationController::class, 'storeManual'])->name('Admin.Registration.Store');
-
+        // NEW BULK ROUTES
+        Route::post('/admin/register/bulk', [RegistrationController::class, 'storeBulk'])->name('Admin.Registration.StoreBulk');
+        Route::get('/admin/register/template', [RegistrationController::class, 'downloadTemplate'])->name('Admin.Registration.Template');
 
         Route::get('/senarai-anggota', [RegistrationController::class, 'listUsers'])->name('Admin.ListAnggota');
 
@@ -69,11 +71,34 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         Route::delete('/padam/{id}', [RegistrationController::class, 'softdelete'])->name('Admin.DeleteUser');
 
         Route::get('/tetapan-sistem', [AdminSettingController::class, 'getAllSettings'])->name('Admin.Settings');
-        Route::post('/admin/settings/penugasan', [AdminSettingController::class, 'storePenugasan'])->name('Admin.Settings.StorePenugasan');
+        
+        Route::post('/settings/penugasan', [AdminSettingController::class, 'storePenugasan'])->name('Admin.Settings.StorePenugasan');
+        Route::put('/settings/penugasan/{id}', [AdminSettingController::class, 'updatePenugasan'])->name('Admin.Settings.UpdatePenugasan');
+        Route::delete('/settings/penugasan/{id}', [AdminSettingController::class, 'deletePenugasan'])->name('Admin.Settings.DeletePenugasan');
+
+        // pangkat
+        // Store (Existing)
+        Route::post('/settings/pangkat', [AdminSettingController::class, 'addNewPangkat'])->name('Admin.Settings.StorePangkat');
         // Update (New)
-        Route::put('/admin/settings/penugasan/{id}', [AdminSettingController::class, 'updatePenugasan'])->name('Admin.Settings.UpdatePenugasan');
+        Route::put('/settings/pangkat/{id}', [AdminSettingController::class, 'updatePangkat'])->name('Admin.Settings.UpdatePangkat');
         // Delete (New)
-        Route::delete('/admin/settings/penugasan/{id}', [AdminSettingController::class, 'deletePenugasan'])->name('Admin.Settings.DeletePenugasan');
+        Route::delete('/settings/pangkat/{id}', [AdminSettingController::class, 'deletePangkat'])->name('Admin.Settings.DeletePangkat');
+        // Reorder Pangkat (New)
+        Route::post('/admin/settings/pangkat/reorder', [AdminSettingController::class, 'reorderPangkat'])->name('Admin.Settings.ReorderPangkat');
+
+        //kecemasan
+        Route::post('/settings/kecemasan',
+            [AdminSettingController::class, 'storeKecemasan']
+        )->name('Admin.Settings.StoreKecemasan');
+
+        Route::put('/settings/kecemasan/{id}',
+            [AdminSettingController::class, 'updateKecemasan']
+        )->name('Admin.Settings.UpdateKecemasan');
+
+        Route::delete('/settings/kecemasan/{id}',
+            [AdminSettingController::class, 'deleteKecemasan']
+        )->name('Admin.Settings.DeleteKecemasan');
+
     });
 
     /*

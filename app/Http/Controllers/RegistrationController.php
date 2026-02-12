@@ -9,8 +9,9 @@ use App\Models\Pangkat;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-//use Illuminate\Support\Facades\Mail; 
-//use App\Mail\UserWelcomeMail;        
+use App\Imports\UsersImport; 
+use Maatwebsite\Excel\Facades\Excel;     
+use Illuminate\Support\Facades\Response; 
 
 class RegistrationController extends Controller
 {
@@ -18,7 +19,7 @@ class RegistrationController extends Controller
     public function showForm()
     {
         // 1. Get all ranks from the 'pangkats' table
-        $pangkats = Pangkat::all(); 
+        $pangkats = Pangkat::orderBy('level', 'asc')->get();
         
         // 2. Return the view and pass the data using 'compact'
         return view('Admin.Registration', compact('pangkats'));
@@ -35,7 +36,6 @@ class RegistrationController extends Controller
             'no_badan'      => 'required|string|unique:users,no_badan',
             'no_ic'         => 'required|string|unique:users,no_ic',
             'no_telefon'    => 'required|string',
-            'email'         => 'required|email',
         ], [
             'no_badan.unique' => 'Nombor badan ini telah didaftarkan.',
             'no_ic.unique'    => 'No. Kad Pengenalan ini telah wujud.',
@@ -52,7 +52,6 @@ class RegistrationController extends Controller
         // Note: No random password generation needed anymore.
         $user = User::create([
             'name'           => $request->name,
-            'email'          => $request->email,
             'role'           => $request->role, 
             'no_badan'       => $request->no_badan,
             'no_ic'          => $request->no_ic,
@@ -125,7 +124,7 @@ class RegistrationController extends Controller
             'no_badan'      => 'required|string|unique:users,no_badan,' . $user->id,
             'no_ic'         => 'required|string|unique:users,no_ic,' . $user->id,
             'no_telefon'    => 'required|string',
-            'email'         => 'required|email|unique:users,email,' . $user->id,
+            'email'         => 'nullable|email|unique:users,email,' . $user->id,
             'alamat'        => 'nullable|string',
         ]);
 
@@ -157,5 +156,59 @@ class RegistrationController extends Controller
         $user->delete();
 
         return redirect()->back()->with('success', 'Pengguna berjaya dipadam. Data masih ada dalam pangkalan data.');
+    }
+
+    // 1. PROCESS THE FILE UPLOAD
+    public function storeBulk(Request $request) 
+    {
+        // Validate file type
+        $request->validate([
+            'bulk_file' => 'required|mimes:xlsx,csv,xls|max:5120', // Max 5MB
+        ]);
+
+        try {
+            // Run the Import
+            Excel::import(new UsersImport, $request->file('bulk_file'));
+            
+            return redirect()->back()->with('success', 'Pendaftaran serentak berjaya diproses!');
+
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+             // Handle Excel Data Validation Errors
+             $failures = $e->failures();
+             $messages = [];
+             foreach ($failures as $failure) {
+                 $messages[] = 'Baris ' . $failure->row() . ': ' . implode(', ', $failure->errors());
+             }
+             return redirect()->back()->withErrors($messages);
+        } catch (\Exception $e) {
+            // General Error
+            return redirect()->back()->withErrors(['Ralat fail: ' . $e->getMessage()]);
+        }
+    }
+
+    // 2. DOWNLOAD TEMPLATE
+    public function downloadTemplate()
+    {
+        // Define headers for the CSV
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="template_pendaftaran_anggota.csv"',
+        ];
+
+        // Define columns
+        $columns = ['nama_penuh', 'no_kad_pengenalan', 'no_badan', 'no_telefon', 'pangkat', 'peranan'];
+
+        // Create a callback to write the columns
+        $callback = function() use ($columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+            
+            // Add a sample row (Example)
+            fputcsv($file, ['Ali Bin Abu', '880101015555', 'RF12345', '0123456789', 'Sarjan', 'anggota']);
+            
+            fclose($file);
+        };
+
+        return Response::stream($callback, 200, $headers);
     }
 }
