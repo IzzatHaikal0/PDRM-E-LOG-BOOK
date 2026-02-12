@@ -56,7 +56,9 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         Route::get('/daftar-pengguna', [RegistrationController::class, 'showForm'])->name('Admin.Registration');
         // 2. Save Data (This was missing)
         Route::post('/daftar-pengguna/simpan', [RegistrationController::class, 'storeManual'])->name('Admin.Registration.Store');
-
+        // NEW BULK ROUTES
+        Route::post('/admin/register/bulk', [RegistrationController::class, 'storeBulk'])->name('Admin.Registration.StoreBulk');
+        Route::get('/admin/register/template', [RegistrationController::class, 'downloadTemplate'])->name('Admin.Registration.Template');
 
         Route::get('/senarai-anggota', [RegistrationController::class, 'listUsers'])->name('Admin.ListAnggota');
 
@@ -75,16 +77,14 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         Route::delete('/settings/penugasan/{id}', [AdminSettingController::class, 'deletePenugasan'])->name('Admin.Settings.DeletePenugasan');
 
         // pangkat
-        Route::post('/settings/pangkat', 
-            [AdminSettingController::class, 'storePangkat']
-        )->name('Admin.Settings.StorePangkat');
-        Route::post('/settings/pangkat/{id}', 
-            [AdminSettingController::class, 'updatePangkat']
-        )->name('Admin.Settings.UpdatePangkat');
-        Route::delete('/settings/pangkat/{id}', 
-            [AdminSettingController::class, 'deletePangkat']
-        )->name('Admin.Settings.DeletePangkat');
-
+        // Store (Existing)
+        Route::post('/settings/pangkat', [AdminSettingController::class, 'addNewPangkat'])->name('Admin.Settings.StorePangkat');
+        // Update (New)
+        Route::put('/settings/pangkat/{id}', [AdminSettingController::class, 'updatePangkat'])->name('Admin.Settings.UpdatePangkat');
+        // Delete (New)
+        Route::delete('/settings/pangkat/{id}', [AdminSettingController::class, 'deletePangkat'])->name('Admin.Settings.DeletePangkat');
+        // Reorder Pangkat (New)
+        Route::post('/admin/settings/pangkat/reorder', [AdminSettingController::class, 'reorderPangkat'])->name('Admin.Settings.ReorderPangkat');
 
         //kecemasan
         Route::post('/settings/kecemasan',

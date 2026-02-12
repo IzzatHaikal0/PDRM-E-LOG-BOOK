@@ -73,7 +73,7 @@
                                     <option value="" disabled selected>Pilih Pangkat</option>
                                     @foreach($pangkats as $pangkat)
                                         <option value="{{ $pangkat->id }}" {{ old('pangkat_id') == $pangkat->id ? 'selected' : '' }}>
-                                            {{ $pangkat->pangkat_name }}
+                                            {{ $pangkat->level }}: {{ $pangkat->pangkat_name }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -124,7 +124,7 @@
         </div>
     </div>
 
-    {{-- BULK UPLOAD SECTION (Kept as is) --}}
+    {{-- BULK UPLOAD SECTION --}}
     <div id="content-bulk" class="hidden">
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="bg-indigo-900 px-6 py-4">
@@ -145,13 +145,15 @@
                         <h4 class="text-sm font-bold text-blue-900 mb-1">Langkah 1: Muat Turun Template</h4>
                         <p class="text-xs text-blue-700">Sila gunakan template rasmi untuk mengelakkan ralat data.</p>
                     </div>
-                    <a href="#" class="px-4 py-2 bg-white border border-blue-200 text-blue-700 text-xs font-bold rounded-lg hover:bg-blue-50 shadow-sm flex items-center gap-2">
+                    {{-- UPDATED ROUTE HERE --}}
+                    <a href="{{ route('Admin.Registration.Template') }}" class="px-4 py-2 bg-white border border-blue-200 text-blue-700 text-xs font-bold rounded-lg hover:bg-blue-50 shadow-sm flex items-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                        Muat Turun .XLSX
+                        Muat Turun .CSV
                     </a>
                 </div>
 
-                <form action="#" method="POST" enctype="multipart/form-data">
+                {{-- UPDATED FORM ACTION HERE --}}
+                <form action="{{ route('Admin.Registration.StoreBulk') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="mb-6">
                         <h4 class="text-sm font-bold text-gray-900 mb-2">Langkah 2: Muat Naik Fail</h4>
@@ -162,9 +164,12 @@
                                     <p class="mb-2 text-sm text-gray-500"><span class="font-semibold text-[#00205B]">Klik untuk muat naik</span> atau seret fail ke sini</p>
                                     <p class="text-xs text-gray-500">XLSX atau CSV (MAX. 5MB)</p>
                                 </div>
-                                <input id="dropzone-file" type="file" class="hidden" name="bulk_file" />
+                                {{-- INPUT FILE --}}
+                                <input id="dropzone-file" type="file" class="hidden" name="bulk_file" onchange="showFileName(this)" />
                             </label>
                         </div>
+                        {{-- File Name Display (Optional JS helper below) --}}
+                        <p id="file-name-display" class="mt-2 text-sm text-green-600 font-bold text-center"></p>
                     </div>
 
                     <div class="flex justify-end">

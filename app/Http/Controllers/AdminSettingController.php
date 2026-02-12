@@ -15,10 +15,70 @@
     {
         public function getAllSettings()
         {
-            $all_pangkat = Pangkat::all();
+            $all_pangkat = Pangkat::orderBy('level', 'asc')->get();
             $all_penugasan = Penugasan::all();
 
             return view('Admin.Settings', compact('all_pangkat', 'all_penugasan'));
+        }
+
+        //add a new pangkat
+        public function addNewPangkat(Request $request)
+        {
+            $request->validate([
+                'name' => 'required|string|max:255',
+            ]);
+
+            // Auto-calculate level: Put it at the bottom (Max Level + 1)
+            $nextLevel = Pangkat::max('level') + 1;
+
+            Pangkat::create([
+                'pangkat_name' => $request->name,
+                'level' => $nextLevel // Use the calculated value
+            ]);
+
+            return redirect()->back()->with('success', 'Pangkat berjaya ditambah!');
+}
+
+        // 2. UPDATE
+        public function updatePangkat(Request $request, $id)
+        {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'level' => 'required|integer'
+            ]);
+
+            $pangkat = Pangkat::findOrFail($id);
+            $pangkat->update([
+                'pangkat_name' => $request->name,
+                'level' => $request->level
+            ]);
+
+            return redirect()->back()->with('success', 'Pangkat berjaya dikemaskini!');
+        }
+
+        // 3. DELETE (Soft Delete)
+        public function deletePangkat($id)
+        {
+            $pangkat = Pangkat::findOrFail($id);
+            $pangkat->delete();
+
+            return redirect()->back()->with('success', 'Pangkat berjaya dipadam.');
+        }
+
+        public function reorderPangkat(Request $request)
+        {
+            $request->validate([
+                'order' => 'required|array',
+            ]);
+
+            $order = $request->input('order'); // Array of IDs in new order: [5, 2, 8, 1...]
+
+            foreach ($order as $index => $id) {
+                // Update level based on the array index (starting from 1)
+                Pangkat::where('id', $id)->update(['level' => $index + 1]);
+            }
+
+            return response()->json(['status' => 'success', 'message' => 'Susunan pangkat berjaya dikemaskini.']);
         }
 
        public function storePenugasan(Request $request)
@@ -67,15 +127,5 @@
             $task->delete();
 
             return redirect()->back()->with('success', 'Jenis penugasan berjaya dipadam.');
-        }
-
-        public function storePangkat()
-        {
-
-        }
-
-        public function updatePangkat()
-        {
-            
         }
     }
