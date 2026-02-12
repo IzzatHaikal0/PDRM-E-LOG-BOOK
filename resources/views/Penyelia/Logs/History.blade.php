@@ -107,14 +107,19 @@
                     <div class="bg-white border border-gray-200 border-dashed rounded-2xl shadow-sm overflow-hidden divide-y divide-gray-100">
                         @foreach($draftItems as $log)
                             <div class="log-card-item p-4 flex gap-4 hover:bg-gray-50 transition relative overflow-hidden bg-gray-50/50">
+                                
+                                {{-- Visual Indicator --}}
                                 <div class="absolute left-0 top-0 bottom-0 w-1 bg-gray-300"></div>
 
+                                {{-- Time Display --}}
                                 <div class="flex flex-col items-center gap-1 shrink-0 w-12 pt-1">
                                     <span class="text-sm font-bold text-gray-600">
                                         {{ \Carbon\Carbon::parse($log->time)->format('H:i') }}
                                     </span>
+                                    <span class="text-[10px] text-gray-400">MULA</span>
                                 </div>
 
+                                {{-- Content Area --}}
                                 <div class="flex-1 min-w-0">
                                     <div class="flex justify-between items-start mb-1">
                                         <h4 class="text-sm font-bold text-gray-800 truncate">{{ $log->type }}</h4>
@@ -122,21 +127,37 @@
                                     </div>
                                     <p class="text-xs text-gray-500 line-clamp-2 mt-1">{{ $log->remarks }}</p>
                                     
-                                    {{-- Actions --}}
-                                    <div class="mt-4 pt-3 border-t border-gray-200/60 flex gap-2">
-                                        <a href="{{ route('logs.edit', $log->id) }}" class="flex-1 px-3 py-2 bg-white border border-gray-300 text-gray-700 text-xs font-bold rounded-lg hover:bg-gray-50 text-center">Ubah</a>
-                                        
-                                        {{-- Single Submit --}}
-                                        <form action="{{ route('logs.batch_submit') }}" method="POST" class="flex-[2]">
+                                    {{-- [RESTORED] END TIME INPUTS --}}
+                                    <div class="mt-4 pt-3 border-t border-gray-200/60">
+                                        {{-- Form to Update End Time & Send --}}
+                                        <form action="{{ route('logs.end_task', $log->id) }}" method="POST" class="flex flex-col gap-3">
                                             @csrf
                                             @method('PATCH')
-                                            <input type="hidden" name="log_ids[]" value="{{ $log->id }}">
-                                            <button type="submit" class="w-full px-3 py-2 bg-[#00205B] text-white text-xs font-bold rounded-lg hover:bg-blue-900 shadow-sm flex justify-center items-center gap-2">
-                                                <span>Hantar</span>
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                                            </button>
+                                            
+                                            <div class="grid grid-cols-2 gap-2">
+                                                <div class="flex flex-col gap-1">
+                                                    <label class="text-[10px] font-bold text-gray-500 uppercase">Tarikh Tamat</label>
+                                                    <input type="date" name="end_date" value="{{ $log->date }}" class="block w-full px-2 py-2 bg-white border border-gray-300 rounded-lg text-xs shadow-sm focus:ring-[#00205B] focus:border-[#00205B]">
+                                                </div>
+                                                <div class="flex flex-col gap-1">
+                                                    <label class="text-[10px] font-bold text-gray-500 uppercase">Masa Tamat</label>
+                                                    <input type="time" name="end_time" value="{{ now()->format('H:i') }}" class="block w-full px-2 py-2 bg-white border border-gray-300 rounded-lg text-xs shadow-sm focus:ring-[#00205B] focus:border-[#00205B]">
+                                                </div>
+                                            </div>
+
+                                            <div class="flex gap-2">
+                                                <a href="{{ route('logs.edit', $log->id) }}" class="flex-1 px-3 py-2 bg-white border border-gray-300 text-gray-700 text-xs font-bold rounded-lg hover:bg-gray-50 text-center">
+                                                    Ubah
+                                                </a>
+                                                <button type="submit" class="flex-[2] px-3 py-2 bg-[#00205B] text-white text-xs font-bold rounded-lg hover:bg-blue-900 shadow-sm flex justify-center items-center gap-2">
+                                                    <span>Hantar</span>
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                                </button>
+                                            </div>
                                         </form>
                                     </div>
+                                    {{-- END RESTORED SECTION --}}
+
                                 </div>
                             </div>
                         @endforeach
