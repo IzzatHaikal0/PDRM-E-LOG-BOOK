@@ -80,52 +80,60 @@
 
             {{-- BODY: LIST OF TASKS --}}
             <div id="group-body-{{ $user['id'] }}" class="hidden border-t border-gray-100 bg-gray-50/50">
-                {{-- Added ID here to find tasks easier --}}
                 <div class="p-3 space-y-3" id="task-list-{{ $user['id'] }}">
                     
-                    @foreach($user['tasks'] as $task)
-                    {{-- Added 'user-task-item' class and 'data-task-id' --}}
-                    <div id="task-{{ $task['id'] }}" data-task-id="{{ $task['id'] }}" class="user-task-item bg-white border border-gray-200 rounded-xl p-3 shadow-sm relative">
-                        {{-- Status Stripe --}}
-                        <div id="stripe-{{ $task['id'] }}" class="absolute left-0 top-0 bottom-0 w-1 bg-yellow-400 rounded-l-xl transition-colors duration-500"></div>
+                    {{-- Loop through Dates first --}}
+                    @foreach($user['tasks'] as $date => $dailyTasks)
                         
-                        <div class="pl-3">
-                            <div class="flex justify-between items-start mb-1">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-xs font-bold text-gray-900">{{ \Carbon\Carbon::parse($task['time'])->format('h:i A') }}</span>
-                                    <span class="text-[10px] text-gray-400">&bull;</span>
-                                    <span class="text-xs font-semibold text-gray-700">{{ $task['type'] }}</span>
-                                </div>
-                                <span id="badge-{{ $task['id'] }}" class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-yellow-100 text-yellow-800">
-                                    Menunggu
-                                </span>
-                            </div>
-                            
-                            <p class="text-xs text-gray-600 line-clamp-2 mb-2">
-                                {{ $task['desc'] }}
-                            </p>
-
-                            {{-- Actions --}}
-                            <div id="actions-{{ $task['id'] }}" class="flex gap-2 mt-2">
-                                <button onclick="openVerificationModal({{ $task['id'] }}, '{{ $user['name'] }}', {{ $user['id'] }})" class="flex-1 bg-[#00205B] text-white text-[10px] font-bold py-1.5 rounded hover:bg-blue-900 transition">
-                                    Sahkan
-                                </button>
-                                <button 
-                                    type="button"
-                                    onclick="openDetailModal(this)"
-                                    data-task='{{ json_encode($task) }}'
-                                    data-user-name="{{ $user['name'] }}"
-                                    data-user-initials="{{ $user['initials'] }}"
-                                    data-user-id="{{ $user['id'] }}"
-                                    class="px-3 py-1 bg-white border border-gray-300 text-gray-600 text-[10px] font-bold rounded hover:bg-gray-50 transition">
-                                    Butiran
-                                </button>
-                            </div>
-
-                             {{-- Signature Container --}}
-                             <div id="signature-{{ $task['id'] }}" class="hidden mt-2 pt-2 border-t border-gray-50 animate-fade-in"></div>
+                        {{-- Date Header --}}
+                        <div class="px-4 pt-4 pb-2">
+                            <h5 class="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+                                {{ \Carbon\Carbon::parse($date)->translatedFormat('d F Y, l') }}
+                            </h5>
                         </div>
-                    </div>
+
+                        {{-- Task List for this Date --}}
+                        <div class="px-3 pb-2 space-y-3">
+                            @foreach($dailyTasks as $task)
+                                {{-- Task Card (Same as before) --}}
+                                <div id="task-{{ $task['id'] }}" data-task-id="{{ $task['id'] }}" class="user-task-item bg-white border border-gray-200 rounded-xl p-3 shadow-sm relative">
+                                    {{-- Status Stripe --}}
+                                    <div id="stripe-{{ $task['id'] }}" class="absolute left-0 top-0 bottom-0 w-1 bg-yellow-400 rounded-l-xl transition-colors duration-500"></div>
+                                    
+                                    <div class="pl-3">
+                                        <div class="flex justify-between items-start mb-1">
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-xs font-bold text-gray-900">{{ $task['time'] }}</span>
+                                                <span class="text-[10px] text-gray-400">&bull;</span>
+                                                <span class="text-xs font-semibold text-gray-700">{{ $task['type'] }}</span>
+                                            </div>
+                                            <span id="badge-{{ $task['id'] }}" class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-yellow-100 text-yellow-800">
+                                                Menunggu
+                                            </span>
+                                        </div>
+                                        
+                                        <p class="text-xs text-gray-600 line-clamp-2 mb-2">{{ $task['desc'] }}</p>
+
+                                        <div id="actions-{{ $task['id'] }}" class="flex gap-2 mt-2">
+                                            <button onclick="openVerificationModal({{ $task['id'] }}, '{{ $user['name'] }}', {{ $user['id'] }})" class="flex-1 bg-[#00205B] text-white text-[10px] font-bold py-1.5 rounded hover:bg-blue-900 transition">
+                                                Sahkan
+                                            </button>
+                                            <button type="button" onclick="openDetailModal(this)"
+                                                data-task='{{ json_encode($task) }}'
+                                                data-user-name="{{ $user['name'] }}"
+                                                data-user-initials="{{ $user['initials'] }}"
+                                                data-user-id="{{ $user['id'] }}"
+                                                class="px-4 bg-white border border-gray-300 text-gray-600 text-[10px] font-bold py-1.5 rounded hover:bg-gray-50 transition">
+                                                Butiran
+                                            </button>
+                                        </div>
+
+                                        <div id="signature-{{ $task['id'] }}" class="hidden mt-2 pt-2 border-t border-gray-50 animate-fade-in"></div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
                     @endforeach
 
                 </div>
@@ -166,71 +174,84 @@
                 {{-- BODY --}}
                 <div id="group-body-v-{{ $user['id'] }}" class="hidden border-t border-gray-100 bg-gray-50/50">
                     <div class="p-3 space-y-3">
-                        @foreach($user['tasks'] as $task)
-                            @php
-                                $isApproved = $task['status'] === 'approved';
-                                $statusColor = $isApproved ? 'bg-green-500' : 'bg-red-500';
-                                $badgeClass = $isApproved ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
-                                $statusText = $isApproved ? 'Disahkan' : 'Ditolak';
-                            @endphp
+                        {{-- [NEW] Loop through Dates first --}}
+                        @foreach($user['tasks'] as $date => $dailyTasks)
+                            
+                            {{-- Date Header --}}
+                            <div class="px-4 pt-4 pb-2">
+                                <h5 class="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-[#00205B]"></span>
+                                    {{ \Carbon\Carbon::parse($date)->translatedFormat('d F Y, l') }}
+                                </h5>
+                            </div>
 
-                            <div class="bg-white border border-gray-200 rounded-xl p-3 shadow-sm relative overflow-hidden">
-                                {{-- Status Stripe --}}
-                                <div class="absolute left-0 top-0 bottom-0 w-1 {{ $statusColor }}"></div>
+                            {{-- Task List for this Date --}}
+                            <div class="px-3 pb-2 space-y-3">
+                                @foreach($dailyTasks as $task)
+                                    @php
+                                        $isApproved = $task['status'] === 'approved';
+                                        $statusColor = $isApproved ? 'bg-green-500' : 'bg-red-500';
+                                        $badgeClass = $isApproved ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+                                        $statusText = $isApproved ? 'Disahkan' : 'Ditolak';
+                                    @endphp
 
-                                <div class="pl-3">
-                                    {{-- Header Row --}}
-                                    <div class="flex justify-between items-start mb-1">
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-xs font-bold text-gray-900">{{ $task['time'] }}</span>
-                                            <span class="text-[10px] text-gray-400">&bull;</span>
-                                            <span class="text-xs font-semibold text-gray-700">{{ $task['type'] }}</span>
-                                        </div>
-                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium {{ $badgeClass }}">
-                                            {{ $statusText }}
-                                        </span>
-                                    </div>
-
-                                    {{-- Description --}}
-                                    <p class="text-xs text-gray-600 line-clamp-2 mb-2">{{ $task['desc'] }}</p>
-
-                                    {{-- Rejection Reason (If Rejected) --}}
-                                    @if(!$isApproved && $task['rejection_reason'])
-                                        <div class="mb-2 p-2 bg-red-50 border border-red-100 rounded-lg text-[10px] text-red-700">
-                                            <strong>Sebab:</strong> {{ $task['rejection_reason'] }}
-                                        </div>
-                                    @endif
-
-                                    {{-- Footer: Signature & Details Button --}}
-                                    <div class="flex items-end justify-between mt-2 pt-2 border-t border-gray-50">
-                                        {{-- Static Signature Display --}}
-                                        <div class="flex flex-col gap-1">
-                                            <div class="flex items-center text-[10px] text-gray-500">
-                                                @if($isApproved)
-                                                    <svg class="w-3 h-3 mr-1 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                                    <span>Disahkan oleh <strong>{{ $task['officer_name'] }}</strong></span>
-                                                @else
-                                                    <svg class="w-3 h-3 mr-1 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                                    <span>Ditolak oleh <strong>{{ $task['officer_name'] }}</strong></span>
-                                                @endif
+                                    <div class="bg-white border border-gray-200 rounded-xl p-3 shadow-sm relative overflow-hidden">
+                                        <div class="absolute left-0 top-0 bottom-0 w-1 {{ $statusColor }}"></div>
+                                        <div class="pl-3">
+                                            <div class="flex justify-between items-start mb-1">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-xs font-bold text-gray-900">{{ $task['time'] }}</span>
+                                                    <span class="text-[10px] text-gray-400">&bull;</span>
+                                                    <span class="text-xs font-semibold text-gray-700">{{ $task['type'] }}</span>
+                                                </div>
+                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium {{ $badgeClass }}">
+                                                    {{ $statusText }}
+                                                </span>
                                             </div>
-                                            <span class="text-[9px] text-gray-400 pl-4">{{ $task['verified_at'] }}</span>
-                                        </div>
 
-                                        {{-- Details Button --}}
-                                        <button 
-                                            type="button"
-                                            onclick="openDetailModal(this)"
-                                            {{-- [FIX] Use Single Quotes here too --}}
-                                            data-task='{{ json_encode($task) }}'
-                                            data-user-name="{{ $user['name'] }}"
-                                            data-user-initials="{{ $user['initials'] }}"
-                                            data-user-id="{{ $user['id'] }}"
-                                            class="px-4 bg-white border border-gray-300 text-gray-600 text-[10px] font-bold py-1.5 rounded hover:bg-gray-50 transition">
-                                            Butiran
-                                        </button>
+                                            <p class="text-xs text-gray-600 line-clamp-2 mb-2">{{ $task['desc'] }}</p>
+
+                                            @if(!$isApproved && $task['rejection_reason'])
+                                                <div class="mb-2 p-2 bg-red-50 border border-red-100 rounded-lg text-[10px] text-red-700">
+                                                    <strong>Sebab:</strong> {{ $task['rejection_reason'] }}
+                                                </div>
+                                            @endif
+
+                                            <div class="flex items-end justify-between mt-2 pt-2 border-t border-gray-50">
+                                                <div class="flex flex-col gap-1">
+                                                    <div class="flex items-center text-[10px] text-gray-500">
+                                                        @if($isApproved)
+                                                            <svg class="w-3 h-3 mr-1 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                            <span>Disahkan oleh <strong>{{ $task['officer_name'] }}</strong></span>
+                                                        @else
+                                                            <svg class="w-3 h-3 mr-1 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                                            <span>Ditolak oleh <strong>{{ $task['officer_name'] }}</strong></span>
+                                                        @endif
+                                                    </div>
+                                                    
+                                                    {{-- Show Signature on Card --}}
+                                                    @if($isApproved && isset($task['signature_url']) && $task['signature_url'])
+                                                        <div class="pl-4 mt-1">
+                                                            <img src="{{ $task['signature_url'] }}" alt="Signature" class="h-6 w-auto border border-gray-100 rounded bg-white p-0.5">
+                                                        </div>
+                                                    @endif
+
+                                                    <span class="text-[9px] text-gray-400 pl-4">{{ $task['verified_at'] }}</span>
+                                                </div>
+
+                                                <button 
+                                                    onclick="openDetailModal(this)" 
+                                                    data-task='{{ json_encode($task) }}'
+                                                    data-user-name="{{ $user['name'] }}"
+                                                    data-user-initials="{{ $user['initials'] }}"
+                                                    data-user-id="{{ $user['id'] }}"
+                                                    class="px-3 py-1 bg-white border border-gray-300 text-gray-600 text-[10px] font-bold rounded hover:bg-gray-50 transition">
+                                                    Butiran
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
+                                @endforeach
                             </div>
                         @endforeach
                     </div>
@@ -398,12 +419,15 @@
                 </div>
 
                 {{-- Supporting Image --}}
-                <div id="detail-image-container" class="mb-2 hidden">
+                <div id="detail-image-container" class="mb-4 hidden">
                     <h5 class="text-sm font-bold text-gray-900 mb-2">Lampiran Gambar</h5>
-                    <div class="rounded-lg overflow-hidden border border-gray-200 shadow-sm">
-                        <img id="detail-image" src="" alt="Bukti Tugasan" class="w-full h-auto object-cover max-h-60">
+                    
+                    {{-- Grid for multiple images --}}
+                    <div id="detail-image-grid" class="grid grid-cols-2 gap-2">
+                        {{-- Javascript will inject <img> tags here --}}
                     </div>
                 </div>
+
                 <div id="no-image-placeholder" class="hidden mb-2 p-4 text-center border-2 border-dashed border-gray-200 rounded-lg">
                     <p class="text-xs text-gray-400 italic">Tiada lampiran gambar disertakan.</p>
                 </div>
@@ -678,12 +702,28 @@
 
         // 4. Handle Images
         const imgContainer = document.getElementById('detail-image-container');
+        const imgGrid = document.getElementById('detail-image-grid');
         const noImage = document.getElementById('no-image-placeholder');
-        const imgElement = document.getElementById('detail-image');
+        
+        imgGrid.innerHTML = '';
 
-        // Check if image exists (Controller sends 'image' as the URL of the first image)
-        if (task.image) {
-            imgElement.src = task.image;
+        if (task.images && task.images.length > 0) {
+            // Loop through all images and create elements
+            task.images.forEach(url => {
+                const imgWrapper = document.createElement('div');
+                imgWrapper.className = "relative rounded-lg overflow-hidden border border-gray-200 shadow-sm group h-32";
+                
+                const img = document.createElement('img');
+                img.src = url;
+                img.className = "w-full h-full object-cover cursor-pointer hover:scale-105 transition duration-300";
+                
+                // Optional: Add simple click to view in new tab
+                img.onclick = () => window.open(url, '_blank');
+                
+                imgWrapper.appendChild(img);
+                imgGrid.appendChild(imgWrapper);
+            });
+
             imgContainer.classList.remove('hidden');
             noImage.classList.add('hidden');
         } else {

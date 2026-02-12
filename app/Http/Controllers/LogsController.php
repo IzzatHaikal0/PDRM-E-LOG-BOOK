@@ -250,7 +250,10 @@ private function groupLogsByUser($logs)
                 'count' => $userLogs->count(),
                 'pending_count' => $userLogs->count(),
 
-                'tasks' => $userLogs->map(function ($log) {
+                //Group tasks by Date
+                'tasks' => $userLogs->groupBy('date')->map(function ($dailyLogs) {
+                    return $dailyLogs->map(function ($log) {
+
                     $imgs = $log->images; 
                     return [
                         'id' => $log->id,
@@ -265,11 +268,15 @@ private function groupLogsByUser($logs)
                         'officer_name' => $log->officer ? $log->officer->name : 'Penyelia',
                         'verified_at' => $log->updated_at->format('d M, h:i A'),
                         // Images
-                        'image' => ($imgs && count($imgs) > 0) ? asset('storage/'.$imgs[0]) : null,
+                        'images' => ($imgs && count($imgs) > 0) 
+                        ? array_map(fn($path) => asset('storage/'.$path), $imgs) 
+                        : [],
+                        // Signature
                         'signature_url' => $log->signature_path ? asset('storage/'.$log->signature_path) : null,
                         'all_images' => $imgs
                     ];
-                })
+                });
+                })->sortKeysDesc() // Sort so newest dates are at the top
             ];
         });
     }
