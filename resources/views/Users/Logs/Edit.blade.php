@@ -195,7 +195,6 @@
         const areaSelect = document.getElementById('area');
         areaSelect.addEventListener('change', filterTasks);
         
-        // Run once on load to show correct options, BUT DO NOT CLEAR VALUE
         filterTasks(false); 
     });
 
@@ -205,8 +204,6 @@
         const selectedArea = areaSelect.value;
         const options = typeSelect.querySelectorAll('option');
 
-        // FIX: Only reset value if explicit user interaction (resetValue = true)
-        // This prevents wiping the existing value on page load
         if(resetValue) {
             typeSelect.value = "";
         }

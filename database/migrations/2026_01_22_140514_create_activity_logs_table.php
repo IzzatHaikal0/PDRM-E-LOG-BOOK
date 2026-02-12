@@ -21,6 +21,7 @@ return new class extends Migration
             $table->date('date');                // Tarikh
             $table->time('time');                // Masa Mula
             $table->time('end_time')->nullable(); // Masa Tamat
+            $table->time('end_time')->nullable(); // Masa Tamat
             
             $table->boolean('is_off_duty')->default(false);
             
