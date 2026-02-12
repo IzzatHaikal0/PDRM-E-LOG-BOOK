@@ -7,14 +7,6 @@
 @endsection
 
 @section('content')
-@php
-    $contacts = [
-        ['id' => 1, 'name' => 'IPD Pekan', 'phone' => '06-952 6001'],
-        ['id' => 2, 'name' => 'Bomba Pekan', 'phone' => '06-951 4444'],
-        ['id' => 3, 'name' => 'Hospital Sultanah Fatimah', 'phone' => '06-952 1999'],
-        ['id' => 4, 'name' => 'APM (Pertahanan Awam)', 'phone' => '06-951 3999'],
-    ];
-@endphp
 
 <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto pb-24">
     
@@ -161,19 +153,20 @@
                         </button>
                     </div>
                     <ul class="space-y-2">
-                        @foreach($contacts as $contact)
+                        @foreach($contact_kecemasan as $contact)
                         <li class="bg-white p-3 rounded-lg border border-gray-200 flex items-center justify-between shadow-sm">
                             <div class="flex flex-col">
                                 <span class="text-sm font-medium text-gray-800">{{ $contact['name'] }}</span>
-                                <span class="text-xs text-gray-500">{{ $contact['phone'] }}</span>
+                                <span class="text-xs text-gray-500">{{ $contact['no_telefon'] }}</span>
                             </div>
                             <div class="flex items-center gap-2">
-                                <button onclick="openKecemasanModal('edit', '{{ route('Admin.Settings.UpdateKecemasan', $contact['id']) }}', '{{ $contact['name'] }}', '{{ $contact['phone'] }}')" class="text-gray-400 hover:text-blue-600">
+                                <button onclick="openKecemasanModal('edit', '{{ route('Admin.Settings.UpdateKecemasan', $contact['id']) }}', '{{ $contact['name'] }}', '{{ $contact['no_telefon'] }}')" class="text-gray-400 hover:text-blue-600">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                                 </button>
-                                <button onclick="deleteItem('{{ $contact['name'] }}', 'kecemasan')" class="text-gray-400 hover:text-red-600">
+                                <button onclick="deleteKecemasan('{{ route('Admin.Settings.DeleteKecemasan', $contact->id) }}', '{{ $contact->name }}')" class="text-gray-400 hover:text-red-600">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                 </button>
+                            
                             </div>
                         </li>
                         @endforeach
@@ -269,12 +262,12 @@
                 <form id="kecemasanForm" action="" method="POST" class="space-y-4">
                     @csrf
                     <div>
-                        <label for="kecemasanName" class="block text-sm font-medium text-gray-700 mb-1">Nama Agensi/Individu</label>
-                        <input type="text" id="kecemasanName" name="name" class="block w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 text-sm transition-all" placeholder="Masukkan nama..." required>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nama Agensi/Individu</label>
+                        <input type="text" id="name" name="name" class="block w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 text-sm transition-all" placeholder="Masukkan nama..." required>
                     </div>
                     <div>
-                        <label for="kecemasanPhone" class="block text-sm font-medium text-gray-700 mb-1">No. Telefon</label>
-                        <input type="text" id="kecemasanPhone" name="phone" class="block w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 text-sm transition-all" placeholder="012-3456789" required>
+                        <label for="no_telefon" class="block text-sm font-medium text-gray-700 mb-1">No. Telefon</label>
+                        <input type="text" id="no_telefon" name="no_telefon" class="block w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 text-sm transition-all" placeholder="012-3456789" required>
                     </div>
                     <div class="flex justify-end gap-3 pt-4">
                         <button type="button" onclick="closeKecemasanModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none transition-colors">Batal</button>
@@ -369,8 +362,8 @@
         const modal = document.getElementById('kecemasanModal');
         const form = document.getElementById('kecemasanForm');
         const title = document.getElementById('kecemasanModalTitle');
-        const nameInput = document.getElementById('kecemasanName');
-        const phoneInput = document.getElementById('kecemasanPhone');
+        const nameInput = document.getElementById('name');
+        const phoneInput = document.getElementById('no_telefon');
 
         modal.style.display = 'block';
         form.action = routeUrl;
@@ -443,6 +436,37 @@
 
     // SPECIFIC: DELETE PENUGASAN WITH SERVER CALL
     function deletePenugasan(routeUrl, name) {
+        Swal.fire({
+            title: 'Padam Tugasan?',
+            text: "Adakah anda pasti mahu memadam '" + name + "'?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, Padam',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = routeUrl;
+                const csrf = document.createElement('input');
+                csrf.type = 'hidden';
+                csrf.name = '_token';
+                csrf.value = '{{ csrf_token() }}';
+                const method = document.createElement('input');
+                method.type = 'hidden';
+                method.name = '_method';
+                method.value = 'DELETE';
+                form.appendChild(csrf);
+                form.appendChild(method);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+
+    function deleteKecemasan(routeUrl, name) {
         Swal.fire({
             title: 'Padam Tugasan?',
             text: "Adakah anda pasti mahu memadam '" + name + "'?",

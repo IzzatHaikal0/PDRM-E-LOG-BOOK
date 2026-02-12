@@ -151,8 +151,16 @@
         @foreach($users as $user)
         <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 relative">
             <div class="flex items-start gap-3">
-                 <div class="h-12 w-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-900 font-bold text-sm border border-blue-100 flex-shrink-0">
-                    {{ substr($user->name, 0, 2) }}
+                <div class="h-10 w-10 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
+                    @if($user->gambar_profile)
+                        <img src="{{ asset('storage/' . $user->gambar_profile) }}"
+                            alt="{{ $user->name }}"
+                            class="h-full w-full object-cover">
+                    @else
+                        <span class="text-sm font-bold text-gray-600">
+                            {{ strtoupper(substr($user->name, 0, 2)) }}
+                        </span>
+                    @endif
                 </div>
                 <div class="flex-1 min-w-0">
                     <h4 class="text-sm font-bold text-gray-900 truncate">{{ $user->name }}</h4>

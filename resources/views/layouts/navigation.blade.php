@@ -97,7 +97,7 @@
                          style="display: none;">
                         
                         {{-- Profile Link based on Role --}}
-                        <a href="{{ $role === 'penyelia' ? route('Penyelia.Profile') : ($role === 'anggota' ? route('Users.Profile') : '#') }}" 
+                        <a href="{{ route('admin.profile') }}" 
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                             {{ __('Profil Saya') }}
                         </a>

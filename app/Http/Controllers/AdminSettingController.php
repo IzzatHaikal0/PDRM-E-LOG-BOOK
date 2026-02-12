@@ -6,6 +6,7 @@
     use App\Models\User;
     use App\Models\Pangkat; 
     use App\Models\Penugasan;
+    use App\Models\Kecemasan;
     use Illuminate\Support\Facades\Hash;
     use Illuminate\Support\Facades\Validator;
     use Illuminate\Support\Str;
@@ -17,8 +18,9 @@
         {
             $all_pangkat = Pangkat::orderBy('level', 'asc')->get();
             $all_penugasan = Penugasan::all();
+            $contact_kecemasan = Kecemasan::all();
 
-            return view('Admin.Settings', compact('all_pangkat', 'all_penugasan'));
+            return view('Admin.Settings', compact('all_pangkat', 'all_penugasan', 'contact_kecemasan'));
         }
 
         //add a new pangkat
@@ -37,7 +39,7 @@
             ]);
 
             return redirect()->back()->with('success', 'Pangkat berjaya ditambah!');
-}
+        }
 
         // 2. UPDATE
         public function updatePangkat(Request $request, $id)
@@ -127,5 +129,44 @@
             $task->delete();
 
             return redirect()->back()->with('success', 'Jenis penugasan berjaya dipadam.');
+        }
+
+        public function storeKecemasan(Request $request)
+        {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'no_telefon' => 'required|string|max:255',
+            ]);
+
+            Kecemasan::create([
+                'name' => $request->name,
+                'no_telefon' => $request->no_telefon 
+            ]);
+
+            return redirect()->back()->with('success', 'Nombor kecemasan berjaya ditambah!');
+        }
+
+        public function updateKecemasan(Request $request, $id)
+        {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'no_telefon' => 'required|string|max:255',
+            ]);
+
+            $contact_kecemasan = Kecemasan::findOrFail($id);
+            $contact_kecemasan->update([
+                'name' => $request->name,
+                'no_telefon' => $request->no_telefon
+            ]);
+
+            return redirect()->back()->with('success', 'Nombor kecemasan berjaya dikemaskini!');
+        }
+
+        public function deleteKecemasan(Request $request, $id)
+        {
+            $contact = Kecemasan::findOrFail($id);
+            $contact->delete();
+
+            return redirect()->back()->with('success', 'Nombor kecemasan berjaya dipadam.');
         }
     }

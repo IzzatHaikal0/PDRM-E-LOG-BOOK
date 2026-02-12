@@ -9,7 +9,8 @@ use App\Models\Pangkat;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-    use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rules\Password;
 
 class ProfileController extends Controller
 {   
@@ -104,6 +105,22 @@ class ProfileController extends Controller
         }
 
         return redirect()->back()->with('success', 'Gambar profil berjaya dikemaskini!');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        // 1. Capture the validated array here
+        $validated = $request->validate([
+            'current_password' => 'required|current_password',
+            'password' => ['required', 'confirmed', Password::defaults()],
+        ]);
+
+        // 2. Use the array variable '$validated'
+        $request->user()->update([
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        return redirect()->back()->with('success', 'Kata laluan berjaya ditukar!');
     }
     
 }

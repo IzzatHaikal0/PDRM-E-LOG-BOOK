@@ -65,6 +65,8 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         Route::get('/profil', function() {
             return view('Admin.Profile');
         })->name('admin.profile');
+        
+        Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('Admin.Profile.UpdatePassword');
 
         Route::get('/kemaskini-anggota/{id}', [RegistrationController::class, 'edit'])->name('Admin.EditUser');
         Route::post('/kemaskini-anggota/{id}/simpan', [RegistrationController::class, 'update'])->name('Admin.UpdateUser');
@@ -91,7 +93,7 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
             [AdminSettingController::class, 'storeKecemasan']
         )->name('Admin.Settings.StoreKecemasan');
 
-        Route::put('/settings/kecemasan/{id}',
+        Route::post('/settings/kecemasan/{id}',
             [AdminSettingController::class, 'updateKecemasan']
         )->name('Admin.Settings.UpdateKecemasan');
 
@@ -134,6 +136,7 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 
         // Edit Profile
         Route::get('/profile/ubah/{id}', [ProfileController::class, 'view_edit_form'])->name('Users.EditProfile');
+        Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('Users.Profile.UpdatePassword');
 
         Route::put('/profile/ubah/{id}/simpan', [ProfileController::class, 'update_profile'])->name('Users.UpdateProfile');
 

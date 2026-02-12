@@ -100,6 +100,29 @@
         </div>
     </div>
 
+    
+    {{-- [NEW SECTION] 3. TETAPAN KESELAMATAN (CHANGE PASSWORD) --}}
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
+        <div class="px-5 py-4 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                <h4 class="font-bold text-gray-800 text-sm uppercase tracking-wide">Tetapan Keselamatan</h4>
+            </div>
+        </div>
+        
+        <div class="p-2">
+            <button onclick="openPasswordModal()" class="w-full flex items-center justify-between p-3 hover:bg-blue-50 rounded-xl transition group text-left">
+                <div>
+                    <span class="block text-sm font-bold text-gray-800">Tukar Kata Laluan</span>
+                    <span class="block text-[10px] text-gray-400">Kemaskini kata laluan untuk keselamatan akaun.</span>
+                </div>
+                <div class="bg-gray-100 p-2 rounded-lg group-hover:bg-blue-200 transition">
+                    <svg class="w-4 h-4 text-gray-500 group-hover:text-blue-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </div>
+            </button>
+        </div>
+    </div>
+
     {{-- 4. LOGOUT BUTTON --}}
     <form method="POST" action="{{ route('logout') }}">
         @csrf
@@ -113,6 +136,70 @@
         <p class="text-[10px] text-gray-300">PDRM EP5 System v1.0 (Supervisor Access)</p>
     </div>
 
+</div>
+
+{{-- [NEW] PASSWORD MODAL --}}
+<div id="passwordModal" style="display: none;" class="fixed inset-0 z-[100] w-screen h-screen overflow-hidden" role="dialog" aria-modal="true">
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+        {{-- Backdrop --}}
+        <div class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity" onclick="closePasswordModal()"></div>
+        
+        {{-- Modal Content --}}
+        <div class="relative z-10 w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden ring-1 ring-black/5 transform transition-all">
+            <div class="bg-gray-50 px-4 py-4 border-b border-gray-100 flex items-center gap-3">
+                <div class="p-2 bg-blue-100 rounded-lg text-blue-900 shrink-0">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800">Tukar Kata Laluan</h3>
+            </div>
+
+            <div class="p-6">
+                {{-- Make sure Route 'Profile.UpdatePassword' exists --}}
+                <form action="{{ route('Users.Profile.UpdatePassword') }}" method="POST" class="space-y-4">
+                    @csrf
+                    @method('PUT')
+
+                    {{-- Current Password --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Kata Laluan Semasa</label>
+                        <div class="relative">
+                            <input type="password" id="current_password" name="current_password" class="block w-full px-4 py-2.5 pr-10 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 text-sm transition-all" required>
+                            <button type="button" onclick="togglePassword('current_password')" class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-400 hover:text-gray-600">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- New Password --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Kata Laluan Baru</label>
+                        <div class="relative">
+                            <input type="password" id="password" name="password" class="block w-full px-4 py-2.5 pr-10 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 text-sm transition-all" required>
+                            <button type="button" onclick="togglePassword('password')" class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-400 hover:text-gray-600">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- Confirm Password --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Sahkan Kata Laluan Baru</label>
+                        <div class="relative">
+                            <input type="password" id="password_confirmation" name="password_confirmation" class="block w-full px-4 py-2.5 pr-10 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 text-sm transition-all" required>
+                            <button type="button" onclick="togglePassword('password_confirmation')" class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-400 hover:text-gray-600">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-3 pt-4">
+                        <button type="button" onclick="closePasswordModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none transition-colors">Batal</button>
+                        <button type="submit" class="px-4 py-2 text-sm font-bold text-white bg-[#00205B] rounded-lg hover:bg-blue-900 focus:outline-none shadow-lg shadow-blue-900/20 transition-all transform hover:scale-105">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 {{-- SCRIPT & STYLES --}}
@@ -140,6 +227,61 @@
             document.getElementById('photoForm').submit();
         }
     }
+
+    // 2. MODAL FUNCTIONS (New)
+    function openPasswordModal() {
+        document.getElementById('passwordModal').style.display = 'block';
+    }
+
+    function closePasswordModal() {
+        document.getElementById('passwordModal').style.display = 'none';
+    }
+
+    // 3. TOGGLE PASSWORD VISIBILITY (New)
+    function togglePassword(inputId) {
+        const input = document.getElementById(inputId);
+        if (input.type === "password") {
+            input.type = "text";
+        } else {
+            input.type = "password";
+        }
+    }
+
+    // 4. EVENT LISTENERS
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closePasswordModal();
+        }
+    });
+
+    // 5. ALERT LOGIC
+    document.addEventListener('DOMContentLoaded', function() {
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berjaya!',
+                text: "{{ session('success') }}",
+                confirmButtonColor: '#00205B',
+                timer: 3000
+            });
+        @endif
+
+        @if ($errors->any())
+            let errorHtml = '<ul class="text-left text-sm list-disc pl-5">';
+            @foreach ($errors->all() as $error)
+                errorHtml += '<li>{{ $error }}</li>';
+            @endforeach
+            errorHtml += '</ul>';
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Ralat!',
+                html: errorHtml,
+                confirmButtonColor: '#d33'
+            });
+            openPasswordModal(); // Re-open if error
+        @endif
+    });
 </script>
 
 <style>
