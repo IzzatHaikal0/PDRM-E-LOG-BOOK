@@ -69,11 +69,36 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         Route::delete('/padam/{id}', [RegistrationController::class, 'softdelete'])->name('Admin.DeleteUser');
 
         Route::get('/tetapan-sistem', [AdminSettingController::class, 'getAllSettings'])->name('Admin.Settings');
-        Route::post('/admin/settings/penugasan', [AdminSettingController::class, 'storePenugasan'])->name('Admin.Settings.StorePenugasan');
-        // Update (New)
-        Route::put('/admin/settings/penugasan/{id}', [AdminSettingController::class, 'updatePenugasan'])->name('Admin.Settings.UpdatePenugasan');
-        // Delete (New)
-        Route::delete('/admin/settings/penugasan/{id}', [AdminSettingController::class, 'deletePenugasan'])->name('Admin.Settings.DeletePenugasan');
+        
+        Route::post('/settings/penugasan', [AdminSettingController::class, 'storePenugasan'])->name('Admin.Settings.StorePenugasan');
+        Route::put('/settings/penugasan/{id}', [AdminSettingController::class, 'updatePenugasan'])->name('Admin.Settings.UpdatePenugasan');
+        Route::delete('/settings/penugasan/{id}', [AdminSettingController::class, 'deletePenugasan'])->name('Admin.Settings.DeletePenugasan');
+
+        // pangkat
+        Route::post('/settings/pangkat', 
+            [AdminSettingController::class, 'storePangkat']
+        )->name('Admin.Settings.StorePangkat');
+        Route::post('/settings/pangkat/{id}', 
+            [AdminSettingController::class, 'updatePangkat']
+        )->name('Admin.Settings.UpdatePangkat');
+        Route::delete('/settings/pangkat/{id}', 
+            [AdminSettingController::class, 'deletePangkat']
+        )->name('Admin.Settings.DeletePangkat');
+
+
+        //kecemasan
+        Route::post('/settings/kecemasan',
+            [AdminSettingController::class, 'storeKecemasan']
+        )->name('Admin.Settings.StoreKecemasan');
+
+        Route::put('/settings/kecemasan/{id}',
+            [AdminSettingController::class, 'updateKecemasan']
+        )->name('Admin.Settings.UpdateKecemasan');
+
+        Route::delete('/settings/kecemasan/{id}',
+            [AdminSettingController::class, 'deleteKecemasan']
+        )->name('Admin.Settings.DeleteKecemasan');
+
     });
 
     /*

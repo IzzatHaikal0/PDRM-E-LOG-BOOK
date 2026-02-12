@@ -68,4 +68,14 @@
 
             return redirect()->back()->with('success', 'Jenis penugasan berjaya dipadam.');
         }
+
+        public function storePangkat()
+        {
+
+        }
+
+        public function updatePangkat()
+        {
+            
+        }
     }

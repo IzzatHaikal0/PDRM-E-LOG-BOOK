@@ -112,11 +112,6 @@
                                 <label for="no_telefon" class="block text-sm font-medium text-gray-700 mb-1">Nombor Telefon</label>
                                 <input type="tel" name="no_telefon" id="no_telefon" value="{{ old('no_telefon') }}" placeholder="Contoh: 012-3456789" class="block w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 sm:text-sm">
                             </div>
-                            <div class="md:col-span-2">
-                                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Alamat Emel</label>
-                                <input type="email" name="email" id="email" value="{{ old('email') }}" placeholder="nama@pdrm.gov.my" class="block w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-blue-900 focus:border-blue-900 sm:text-sm">
-                                @error('email') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
-                            </div>
                         </div>
                     </div>
 

@@ -35,7 +35,6 @@ class RegistrationController extends Controller
             'no_badan'      => 'required|string|unique:users,no_badan',
             'no_ic'         => 'required|string|unique:users,no_ic',
             'no_telefon'    => 'required|string',
-            'email'         => 'required|email',
         ], [
             'no_badan.unique' => 'Nombor badan ini telah didaftarkan.',
             'no_ic.unique'    => 'No. Kad Pengenalan ini telah wujud.',
@@ -52,7 +51,6 @@ class RegistrationController extends Controller
         // Note: No random password generation needed anymore.
         $user = User::create([
             'name'           => $request->name,
-            'email'          => $request->email,
             'role'           => $request->role, 
             'no_badan'       => $request->no_badan,
             'no_ic'          => $request->no_ic,
@@ -125,7 +123,7 @@ class RegistrationController extends Controller
             'no_badan'      => 'required|string|unique:users,no_badan,' . $user->id,
             'no_ic'         => 'required|string|unique:users,no_ic,' . $user->id,
             'no_telefon'    => 'required|string',
-            'email'         => 'required|email|unique:users,email,' . $user->id,
+            'email'         => 'nullable|email|unique:users,email,' . $user->id,
             'alamat'        => 'nullable|string',
         ]);
 
