@@ -20,17 +20,17 @@ return new class extends Migration
             $table->string('type');              // Jenis Penugasan
             $table->date('date');                // Tarikh
             $table->time('time');                // Masa Mula
-            $table->time('end_time')->nullable(); // Added: Masa Tamat
+            $table->time('end_time')->nullable(); // Masa Tamat
             
             // Fixed: Changed from time() to boolean()
             $table->boolean('is_off_duty')->default(false);
             
             $table->text('remarks')->nullable(); // Catatan
 
-            // Added: Store images as JSON array ["img1.jpg", "img2.jpg"]
+            // Store images as JSON array ["img1.jpg", "img2.jpg"]
             $table->json('images')->nullable();
 
-            // 3. Approval System
+            // Approval System
             // Fixed: Made nullable() because officer is not selected during creation anymore
             $table->foreignId('officer_id')->nullable()->constrained('users')->onDelete('cascade');
             
