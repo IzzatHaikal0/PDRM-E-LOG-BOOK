@@ -65,7 +65,7 @@
         </div>
     </div>
 
-    {{-- 3. ACTIONABLE STATS GRID (Unchanged) --}}
+    {{-- 3. ACTIONABLE STATS GRID --}}
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         
         {{-- Card 1: Pending Verification --}}
@@ -73,7 +73,7 @@
             <div class="absolute right-0 top-0 w-16 h-16 bg-red-50 rounded-bl-full -mr-2 -mt-2 transition group-hover:bg-red-100"></div>
             <div>
                 <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider relative z-10">Perlu Disahkan</p>
-                <h3 class="text-2xl font-bold text-red-600 mt-1 relative z-10">{{ $count_penugasan_unverified }}</h3>
+                <h3 class="text-2xl font-bold text-red-600 mt-1 relative z-10">{{ $count_penugasan_unverified ?? 0 }}</h3>
             </div>
             <div class="mt-3 flex items-center gap-1 text-[10px] text-red-400 font-medium">
                 <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
@@ -86,7 +86,7 @@
             <div class="absolute right-0 top-0 w-16 h-16 bg-green-50 rounded-bl-full -mr-2 -mt-2 transition group-hover:bg-green-100"></div>
             <div>
                 <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider relative z-10">Anggota Bertugas</p>
-                <h3 class="text-2xl font-bold text-green-700 mt-1 relative z-10">{{ $count_anggota }}</h3>
+                <h3 class="text-2xl font-bold text-green-700 mt-1 relative z-10">{{ $count_anggota ?? 0 }}</h3>
             </div>
             <div class="mt-3 text-[10px] text-green-500">
                 Jumlah Anggota
@@ -98,7 +98,7 @@
              <div class="absolute right-0 top-0 w-16 h-16 bg-blue-50 rounded-bl-full -mr-2 -mt-2 transition group-hover:bg-blue-100"></div>
             <div>
                 <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider relative z-10">Log Saya</p>
-                <h3 class="text-2xl font-bold text-blue-900 mt-1 relative z-10">{{ $my_logs }}</h3>
+                <h3 class="text-2xl font-bold text-blue-900 mt-1 relative z-10">{{ $my_logs ?? 0 }}</h3>
             </div>
              <div class="mt-3 text-[10px] text-blue-400">
                 Hari Ini
@@ -110,10 +110,10 @@
              <div class="absolute right-0 top-0 w-16 h-16 bg-indigo-50 rounded-bl-full -mr-2 -mt-2 transition group-hover:bg-indigo-100"></div>
             <div>
                 <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider relative z-10">Jawatan Saya</p>
-                <h3 class="text-l font-bold text-indigo-900 mt-1 relative z-10">{{ Auth::user()->role }}</h3>
+                <h3 class="text-l font-bold text-indigo-900 mt-1 relative z-10">{{ Auth::user()->role ?? 'N/A' }}</h3>
             </div>
             <div class="mt-3 text-[10px] text-indigo-400">
-                {{$pangkat_name}}
+                {{ $pangkat_name ?? 'N/A' }}
             </div>
         </div>
     </div>
@@ -123,24 +123,22 @@
         <div class="flex items-center justify-between px-1">
             <h3 class="text-base font-bold text-gray-800 flex items-center gap-2">
                 Log Aktiviti Terkini
-                {{-- Optional: Show count if needed, or remove span --}}
                 <span class="bg-blue-100 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full">
-                    {{ $recent_logs->count() }}
+                    {{ isset($recent_logs) ? $recent_logs->count() : 0 }}
                 </span>
             </h3>
-            {{-- Link to view all logs (adjust route as needed) --}}
             <a href="{{ route('Penyelia.VerifyList') }}" class="text-xs font-bold text-blue-800 hover:text-blue-600 uppercase tracking-wide">Lihat Semua</a>
         </div>
 
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden divide-y divide-gray-100">
             
-            @forelse($recent_logs as $log)
+            @forelse($recent_logs ?? [] as $log)
             <div class="p-4 hover:bg-gray-50 transition group">
                 <div class="flex justify-between items-start mb-2">
                     <div class="flex items-center gap-3">
                         {{-- Dynamic Avatar --}}
                         <div class="h-10 w-10 rounded-full bg-gray-200 flex-shrink-0 overflow-hidden border border-gray-100">
-                            @if($log->user && $log->user->gambar_profile)
+                            @if(isset($log->user) && $log->user && $log->user->gambar_profile)
                                 <img src="{{ asset('storage/' . $log->user->gambar_profile) }}" class="w-full h-full object-cover">
                             @else
                                 <img src="https://ui-avatars.com/api/?name={{ urlencode($log->user->name ?? 'User') }}&background=random&color=fff&size=128" class="w-full h-full object-cover">
@@ -150,7 +148,7 @@
                         <div>
                             {{-- Name & Rank --}}
                             <h4 class="text-sm font-bold text-gray-900 leading-tight">
-                                {{ $log->user->pangkat->pangkat_name ?? '' }} {{ $log->user->name ?? 'Pengguna Tidak Dikenali' }}
+                                {{ isset($log->user->pangkat) ? $log->user->pangkat->pangkat_name : '' }} {{ $log->user->name ?? 'Pengguna Tidak Dikenali' }}
                             </h4>
                             {{-- Log Type / Badge No --}}
                             <p class="text-[10px] text-gray-500 mt-0.5">
@@ -160,7 +158,7 @@
                     </div>
                     {{-- Time Ago --}}
                     <span class="text-[10px] text-gray-400 font-medium whitespace-nowrap">
-                        {{ $log->created_at->diffForHumans() }}
+                        {{ isset($log->created_at) ? $log->created_at->diffForHumans() : '-' }}
                     </span>
                 </div>
 
@@ -220,7 +218,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     // 1. INJECT ALL LOGS FROM LARAVEL
-    const allLogs = @json($allLogs); 
+    const allLogs = @json($allLogs ?? []); 
 
     // 2. SETUP DATES
     let currentStartOfWeek = new Date(); // Start with today
@@ -269,7 +267,6 @@
         
         for (let i = 0; i < 7; i++) {
             // Create YYYY-MM-DD string for lookup
-            // Note: dateIterator.toISOString() uses UTC, we need local Y-m-d manually to match PHP
             const year = dateIterator.getFullYear();
             const month = String(dateIterator.getMonth() + 1).padStart(2, '0');
             const dt = String(dateIterator.getDate()).padStart(2, '0');
@@ -356,10 +353,9 @@
                             <span class="text-[10px] px-2 py-0.5 rounded ${badgeClass} font-bold capitalize">${task.status || 'Log'}</span>
                         </div>
                         
-                        {{-- USE 'remarks' HERE --}}
-                        <h4 class="text-sm font-bold text-gray-900">${task.remarks || task.type}</h4>
+                        <h4 class="text-sm font-bold text-gray-900">${task.remarks || task.type || 'No description'}</h4>
                         
-                        <p class="text-xs text-gray-500 capitalize">${task.type}</p>
+                        <p class="text-xs text-gray-500 capitalize">${task.type || 'Log Sistem'}</p>
                     </div>`;
             });
             html += '</div>';
