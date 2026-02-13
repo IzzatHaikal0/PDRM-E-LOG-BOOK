@@ -231,6 +231,7 @@ private function groupLogsByUser($logs)
                         'location' => $log->area ?? $log->balai,
                         'desc' => $log->remarks,
                         'status' => $log->status,
+                        'is_off_duty' => $log->is_off_duty,
                         'rejection_reason' => $log->rejection_reason,
                         // Get Officer Name (who verified it)
                         'officer_name' => $officerName,

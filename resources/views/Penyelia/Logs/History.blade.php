@@ -109,7 +109,7 @@
                             <div class="log-card-item p-4 flex gap-4 hover:bg-gray-50 transition relative overflow-hidden bg-gray-50/50">
                                 
                                 {{-- Visual Indicator --}}
-                                <div class="absolute left-0 top-0 bottom-0 w-1 bg-gray-300"></div>
+                               <div class="absolute left-0 top-0 bottom-0 w-1 {{ $log->is_off_duty ? 'bg-red-500' : 'bg-gray-300' }}"></div>
 
                                 {{-- Time Display --}}
                                 <div class="flex flex-col items-center gap-1 shrink-0 w-12 pt-1">
@@ -122,10 +122,27 @@
                                 {{-- Content Area --}}
                                 <div class="flex-1 min-w-0">
                                     <div class="flex justify-between items-start mb-1">
-                                        <h4 class="text-sm font-bold text-gray-800 truncate">{{ $log->type }}</h4>
+                                        <div class="flex items-center gap-2 overflow-hidden">
+                                        {{-- Red Text if Off Duty --}}
+                                        <h4 class="text-sm font-bold truncate {{ $log->is_off_duty ? 'text-red-600' : 'text-gray-800' }}">
+                                            {{ $log->type }}
+                                        </h4>
+
+                                        {{-- Off Duty Badge --}}
+                                        @if($log->is_off_duty)
+                                            <span class="shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-600 border border-red-200">
+                                                OFF DUTY
+                                            </span>
+                                        @endif
+
+                                        </div>
+
+
                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-gray-200 text-gray-600">Draf</span>
                                     </div>
-                                    <p class="text-xs text-gray-500 line-clamp-2 mt-1">{{ $log->remarks }}</p>
+                                    <p class="text-xs line-clamp-2 mt-1 {{ $log->is_off_duty ? 'text-red-600 font-medium' : 'text-gray-500' }}">
+                                        {{ $log->remarks }}
+                                    </p>
                                     
                                     {{-- [RESTORED] END TIME INPUTS --}}
                                     <div class="mt-4 pt-3 border-t border-gray-200/60">
@@ -194,7 +211,7 @@
                     <div class="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden divide-y divide-gray-100">
                         @foreach($sentItems as $log)
                             <div class="log-card-item p-4 flex gap-4 hover:bg-gray-50 transition relative overflow-hidden">
-                                <div class="absolute left-0 top-0 bottom-0 w-1 bg-yellow-400"></div>
+                                <div class="absolute left-0 top-0 bottom-0 w-1 {{ $log->is_off_duty ? 'bg-red-500' : 'bg-yellow-400' }}"></div>
 
                                 <div class="flex flex-col items-center gap-1 shrink-0 w-12 pt-1">
                                     <span class="text-sm font-bold text-gray-900">{{ \Carbon\Carbon::parse($log->time)->format('H:i') }}</span>
@@ -202,12 +219,26 @@
 
                                 <div class="flex-1 min-w-0">
                                     <div class="flex justify-between items-start mb-1">
-                                        <h4 class="text-sm font-bold text-gray-900 truncate">{{ $log->type }}</h4>
+                                        <div class="flex items-center gap-2 overflow-hidden">
+                                            {{-- [UPDATED] Red Text --}}
+                                            <h4 class="text-sm font-bold truncate {{ $log->is_off_duty ? 'text-red-600' : 'text-gray-900' }}">
+                                                {{ $log->type }}
+                                            </h4>
+
+                                            {{-- [NEW] Badge --}}
+                                            @if($log->is_off_duty)
+                                                <span class="shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-600 border border-red-200">
+                                                    OFF DUTY
+                                                </span>
+                                            @endif
+                                        </div>
                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-yellow-100 text-yellow-800">
                                             Menunggu Pengesahan
                                         </span>
                                     </div>
-                                    <p class="text-xs text-gray-500 line-clamp-2 mt-1">{{ $log->remarks }}</p>
+                                    <p class="text-xs line-clamp-2 mt-1 {{ $log->is_off_duty ? 'text-red-600 font-medium' : 'text-gray-500' }}">
+                                        {{ $log->remarks }}
+                                    </p>
 
                                     <div class="mt-3 flex justify-end">
                                         <a href="{{ route('logs.edit', $log->id) }}" class="flex items-center gap-1 px-3 py-1.5 bg-white hover:bg-gray-50 text-gray-700 rounded-lg border border-gray-200 text-xs font-bold transition shadow-sm">
@@ -263,12 +294,26 @@
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <div class="flex justify-between items-start mb-1">
-                                        <h4 class="text-sm font-bold text-gray-900 truncate">{{ $log->type }}</h4>
+                                        <div class="flex items-center gap-2 overflow-hidden">
+                                            {{-- [UPDATED] Red Text --}}
+                                            <h4 class="text-sm font-bold truncate {{ $log->is_off_duty ? 'text-red-600' : 'text-gray-900' }}">
+                                                {{ $log->type }}
+                                            </h4>
+
+                                            {{-- [NEW] Badge --}}
+                                            @if($log->is_off_duty)
+                                                <span class="shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-600 border border-red-200">
+                                                    OFF DUTY
+                                                </span>
+                                            @endif
+                                        </div>
                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium {{ $badgeClass }}">
                                             {{ $badgeText }}
                                         </span>
                                     </div>
-                                    <p class="text-xs text-gray-500 line-clamp-2 mt-1">{{ $log->remarks }}</p>
+                                    <p class="text-xs line-clamp-2 mt-1 {{ $log->is_off_duty ? 'text-red-600 font-medium' : 'text-gray-500' }}">
+                                        {{ $log->remarks }}
+                                    </p>
                                     
                                     <div class="mt-2 text-[10px] text-gray-400 flex items-center gap-1">
                                         @if($isApproved)

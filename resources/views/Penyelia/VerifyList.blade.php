@@ -111,17 +111,31 @@
                                     
                                     <div class="pl-3">
                                         <div class="flex justify-between items-start mb-1">
-                                            <div class="flex items-center gap-2">
+                                            <div class="flex flex-wrap items-center gap-2">
                                                 <span class="text-xs font-bold text-gray-900">{{ $task['time'] }}</span>
                                                 <span class="text-[10px] text-gray-400">&bull;</span>
-                                                <span class="text-xs font-semibold text-gray-700">{{ $task['type'] }}</span>
+                                                
+                                                {{-- [UPDATED] Red Text if Off Duty --}}
+                                                <span class="text-xs font-semibold {{ $task['is_off_duty'] ? 'text-red-600' : 'text-gray-700' }}">
+                                                    {{ $task['type'] }}
+                                                </span>
+
+                                                {{-- [NEW] Off Duty Badge --}}
+                                                @if($task['is_off_duty'])
+                                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-600 border border-red-200">
+                                                        OFF DUTY
+                                                    </span>
+                                                @endif
                                             </div>
-                                            <span id="badge-{{ $task['id'] }}" class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-yellow-100 text-yellow-800">
+
+                                            <span id="badge-{{ $task['id'] }}" class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-yellow-100 text-yellow-800 shrink-0">
                                                 Menunggu
                                             </span>
                                         </div>
                                         
-                                        <p class="text-xs text-gray-600 line-clamp-2 mb-2">{{ $task['desc'] }}</p>
+                                        <p class="text-xs line-clamp-2 mt-1 {{ $task['is_off_duty'] ? 'text-red-600 font-medium' : 'text-gray-500' }}">
+                                            {{ $task['desc'] }}
+                                        </p>
 
                                         <div id="actions-{{ $task['id'] }}" class="flex gap-2 mt-2">
                                             <button onclick="openVerificationModal({{ $task['id'] }}, '{{ $user['name'] }}', {{ $user['id'] }})" class="flex-1 bg-[#00205B] text-white text-[10px] font-bold py-1.5 rounded hover:bg-blue-900 transition">
@@ -206,18 +220,33 @@
                                     <div class="bg-white border border-gray-200 rounded-xl p-3 shadow-sm relative overflow-hidden">
                                         <div class="absolute left-0 top-0 bottom-0 w-1 {{ $statusColor }}"></div>
                                         <div class="pl-3">
+                                            {{-- INSIDE VERIFIED LOOP --}}
                                             <div class="flex justify-between items-start mb-1">
-                                                <div class="flex items-center gap-2">
+                                                <div class="flex flex-wrap items-center gap-2">
                                                     <span class="text-xs font-bold text-gray-900">{{ $task['time'] }}</span>
                                                     <span class="text-[10px] text-gray-400">&bull;</span>
-                                                    <span class="text-xs font-semibold text-gray-700">{{ $task['type'] }}</span>
+                                                    
+                                                    {{-- [UPDATED] Red Text if Off Duty --}}
+                                                    <span class="text-xs font-semibold {{ $task['is_off_duty'] ? 'text-red-600' : 'text-gray-700' }}">
+                                                        {{ $task['type'] }}
+                                                    </span>
+
+                                                    {{-- [NEW] Off Duty Badge --}}
+                                                    @if($task['is_off_duty'])
+                                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-600 border border-red-200">
+                                                            OFF DUTY
+                                                        </span>
+                                                    @endif
                                                 </div>
-                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium {{ $badgeClass }}">
+                                                
+                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium {{ $badgeClass }} shrink-0">
                                                     {{ $statusText }}
                                                 </span>
                                             </div>
 
-                                            <p class="text-xs text-gray-600 line-clamp-2 mb-2">{{ $task['desc'] }}</p>
+                                            <p class="text-xs line-clamp-2 mt-1 {{ $task['is_off_duty'] ? 'text-red-600 font-medium' : 'text-gray-500' }}">
+                                                {{ $task['desc'] }}
+                                            </p>
 
                                             @if(!$isApproved && $task['rejection_reason'])
                                                 <div class="mb-2 p-2 bg-red-50 border border-red-100 rounded-lg text-[10px] text-red-700">
