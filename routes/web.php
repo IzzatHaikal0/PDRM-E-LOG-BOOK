@@ -94,9 +94,7 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::prefix('anggota')->group(function () {
 
         // Utama
-        Route::get('/dashboard', function() {
-            return view('Users.Dashboard');
-        })->name('Users.Dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'getAnggotaDashboard'])->name('Users.Dashboard');
 
         // Hubungi (Contacts)
         Route::get('/hubungi', [ContactsController::class, 'index'])->name('contacts');

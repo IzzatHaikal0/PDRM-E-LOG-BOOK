@@ -56,4 +56,19 @@
                 'pangkat_name', 'recent_logs', 'allLogs' 
             ));
         }
+
+        public function getAnggotaDashboard()
+        {
+            $user = Auth::user();
+            $my_logs = ActivityLog::where('user_id', $user->id)->count();
+            $pangkat_name = Pangkat::where('id', $user->pangkat_id)->value('pangkat_name');
+            $recent_logs = ActivityLog::with('user.pangkat')->where('user_id', $user->id)->latest()->take(3)->get();
+            $allLogs = ActivityLog::where('user_id', $user->id)
+                ->get()
+                ->groupBy(function($date) {
+                    return \Carbon\Carbon::parse($date->date)->format('Y-m-d');
+                });
+
+            return view('Users.Dashboard', compact('my_logs', 'pangkat_name', 'recent_logs', 'allLogs'));
+        }
     }

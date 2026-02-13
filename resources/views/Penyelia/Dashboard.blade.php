@@ -11,7 +11,7 @@
     
     {{-- 1. WELCOME HEADER --}}
     <div class="mb-6 flex flex-col gap-1">
-        <h1 class="text-2xl font-bold text-[#00205B]">Selamat Datang, Tuan.</h1>
+        <h1 class="text-2xl font-bold text-[#00205B]">Selamat Datang,</h1>
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-sm font-semibold text-gray-700">{{ Auth::user()->name ?? 'Sjn. Mejar Halim' }}</p> 
