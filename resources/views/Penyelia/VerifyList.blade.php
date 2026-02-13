@@ -47,9 +47,17 @@
             <div onclick="toggleGroup({{ $user['id'] }})" class="p-4 flex items-center justify-between cursor-pointer bg-white hover:bg-gray-50 transition select-none group">
                 <div class="flex items-center gap-3">
                     {{-- Avatar --}}
-                    <div class="w-10 h-10 rounded-full bg-[#00205B] flex items-center justify-center text-white text-xs font-bold shadow-sm shrink-0">
-                        {{ $user['initials'] }}
-                    </div>
+                    @if($user['profile_picture'])
+                        {{-- Option A: Show Profile Picture --}}
+                        <img src="{{ $user['profile_picture'] }}" 
+                            alt="{{ $user['name'] }}" 
+                            class="w-10 h-10 rounded-full object-cover shadow-sm shrink-0 border border-gray-200">
+                    @else
+                        {{-- Option B: Show Initials (Fallback) --}}
+                        <div class="w-10 h-10 rounded-full bg-[#00205B] flex items-center justify-center text-white text-xs font-bold shadow-sm shrink-0">
+                            {{ $user['initials'] }}
+                        </div>
+                    @endif
                     
                     {{-- User Info & Bulk Action --}}
                     <div class="flex flex-col sm:flex-row sm:items-center sm:gap-3">
