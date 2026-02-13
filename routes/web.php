@@ -154,13 +154,13 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         // 1. Show Verification List
         Route::get('/sahkan-tugasan', [LogsController::class, 'verifyList'])->name('Penyelia.VerifyList');
 
-        // 2. Process Verification (Single or Batch)
-        Route::post('/sahkan-tugasan/simpan', [LogsController::class, 'verifyStore'])->name('Penyelia.VerifyStore');
+    // 2. Process Verification (Single or Batch)
+    Route::post('/sahkan-tugasan/simpan', [LogsController::class, 'verifyStore'])->name('Penyelia.VerifyStore');
+    //Route::get('/penyelia/rekod/baru', [LogsController::class, 'create'])->name('logs.create');
 
         // 3. Rekod (Create Log)
-        Route::get('/rekod/baru', function() {
-            return view('Penyelia.Logs.Create');
-        })->name('Penyelia.Logs.Create');
+        Route::post('/rekod/simpan', [LogsController::class, 'store'])->name('Penyelia.Logs.Store');
+        Route::get('/rekod/baru', [LogsController::class, 'create'])->name('Penyelia.Logs.Create');
 
         // 4. Sejarah (History)
         Route::get('/rekod/sejarah', [LogsController::class, 'index'])->name('Penyelia.Logs.History');

@@ -11,104 +11,40 @@ use Carbon\Carbon;
 
 class LogsController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // --- TOGGLE THIS TO FALSE LATER TO USE REAL DATABASE ---
-        $testMode = false;
-
-        
-
-        if ($testMode) {
             // ==========================================
-            //  DUMMY DATA (FOR UI TESTING)
+            // DATABASE (REQUIRE AUTH)
             // ==========================================
-            $logs = collect([
-                // 1. TODAY - Approved Log
-                (object)[
-                    'id' => 1,
-                    'date' => Carbon::today()->format('Y-m-d'),
-                    'time' => '08:00:00',
-                    'end_time' => '16:00:00',
-                    'type' => 'Lapor Masuk',
-                    'status' => 'pending',
-                    'remarks' => 'Melapor diri masuk tugas Sif A di Balai.',
-                    'rejection_reason' => null,
-                    'officer' => (object)['name' => 'Sistem']
-                ],
-                // 2. TODAY - Pending Log
-                (object)[
-                    'id' => 2,
-                    'date' => Carbon::today()->format('Y-m-d'),
-                    'time' => '10:30:00',
-                    'end_time' => '12:00:00',
-                    'type' => 'Rondaan MPV',
-                    'status' => 'ongoing',
-                    'remarks' => 'Rondaan sektor A dan B bersama Kpl. Muthu.',
-                    'rejection_reason' => null,
-                    'officer' => (object)['name' => 'Insp. Razak']
-                ],
-                // 3. YESTERDAY - Rejected Log
-                (object)[
-                    'id' => 3,
-                    'date' => Carbon::yesterday()->format('Y-m-d'),
-                    'time' => '14:00:00',
-                    'end_time' => '16:00:00',
-                    'type' => 'Latihan Menembak',
-                    'status' => 'ongoing',
-                    'remarks' => 'Latihan tahunan di lapang sasar.',
-                    'rejection_reason' => 'Gambar kehadiran tidak jelas. Sila hantar semula.',
-                    'officer' => (object)['name' => 'Asp. Tiong']
-                ],
-                // 4. OLDER DATE - Approved
-                (object)[
-                    'id' => 4,
-                    'date' => Carbon::now()->subDays(2)->format('Y-m-d'),
-                    'time' => '22:00:00',
-                    'end_time' => '23:00:00',
-                    'type' => 'Tugas Pejabat',
-                    'status' => 'approved',
-                    'remarks' => 'Mengemaskini fail siasatan.',
-                    'rejection_reason' => null,
-                    'officer' => (object)['name' => 'Sjn. Mejar Halim']
-                ]
-                
-            ])->groupBy('date');
-
-        } else {
-            // ==========================================
-            // REAL DATABASE (REQUIRE AUTH)
-            // ==========================================
+            $month = $request->input('month', now()->format('Y-m'));
             $user = Auth::user();
-            
-            // If Supervisor, maybe fetch ALL pending logs or their specific unit's logs
-            if ($user && ($user->role === 'penyelia' || $user->role === 'admin')) {
-                // Example: Fetch all logs for verification (Adjust query as needed)
-                $logs = ActivityLog::with('user', 'officer') // Eager load user relationship
-                    ->orderBy('date', 'desc')
-                    ->orderBy('time', 'desc')
-                    ->get()
-                    ->groupBy(function($val) {
-                        return Carbon::parse($val->date)->format('Y-m-d');
-                    });
+
+            // 2. Build Query
+            // We want to show the history of the LOGGED-IN user (Personal History)
+            // regardless of whether they are Anggota or Penyelia.
+            $logs = ActivityLog::where('user_id', $user->id)
+                ->where('date', 'like', "$month%") // Filter by YYYY-MM
+                ->with('officer') // Eager load officer details
+                ->orderBy('date', 'desc')
+                ->orderBy('time', 'desc')
+                ->get()
+                ->groupBy('date'); // Group by date for the view
+
+            // 3. Return View based on Role
+            // We MUST pass 'logs' and 'month' to the view using compact()
+            if ($user->role === 'penyelia') {
+                return view('Penyelia.Logs.History', compact('logs', 'month')); 
             } else {
-                // If Anggota, fetch ONLY their own logs
-                $logs = ActivityLog::where('user_id', $user->id)
-                    ->with('officer') 
-                    ->orderBy('date', 'desc')
-                    ->orderBy('time', 'desc')
-                    ->get()
-                    ->groupBy(function($val) {
-                        return Carbon::parse($val->date)->format('Y-m-d');
-                    });
+                return view('Users.Logs.History', compact('logs', 'month'));
             }
-        }
+        
+        
 
         
 
         // ==========================================
         // DYNAMIC VIEW RETURN
         // ==========================================
-        $user = Auth::user();
 
         // Check if user is Supervisor or Admin
         if ($user && ($user->role === 'penyelia')) {
@@ -131,8 +67,34 @@ class LogsController extends Controller
             ->whereNull('deleted_at')
             ->get();
 
-        return view('Users.Logs.Create', compact('penugasans'));
+            // 2. Check the User's Role to decide which View to load
+            // Assuming your users table has a 'role' column. 
+            // Change 'penyelia' to whatever value you use in your DB (e.g. 'supervisor', 'admin', 1, etc.)
+            $user = Auth::user();
+            //dd($penugasans, auth()->user()->role);
+            if (auth()->user()->role === 'penyelia') {
+                // Return Penyelia View
+                return view('Penyelia.Logs.Create', compact('penugasans'));
+            } else {
+                // Return Anggota View
+                return view('Users.Logs.Create', compact('penugasans'));
+            }
+
+       // return view('Users.Logs.Create', compact('penugasans'));
     }
+
+    /*public function create()
+{
+    $penugasans = \Illuminate\Support\Facades\DB::table('penugasan')
+        ->whereNull('deleted_at')
+        ->get();
+
+    $view = auth()->user()->role === 'penyelia' 
+        ? 'Penyelia.Logs.Create' 
+        : 'Users.Logs.Create';
+
+    return view($view, ['penugasans' => $penugasans]);
+}*/
 
 
     // 2. HANDLE THE FORM SUBMISSION (WITH IMAGES)
@@ -405,6 +367,54 @@ public function deleteImage(Request $request, $id)
         }
 
         return back()->with('success', 'Gambar dipadam.');
+    }
+
+    public function history(Request $request)
+    {
+        // Get selected month or default to current month
+        $month = $request->input('month', now()->format('Y-m'));
+        
+        // Fetch logs ONLY for the currently logged-in Penyelia
+        // Grouped by Date for the view structure
+        $logs = ActivityLog::where('user_id', Auth::id())
+            ->where('date', 'like', "$month%")
+            ->orderBy('date', 'desc')
+            ->orderBy('time', 'desc')
+            ->get()
+            ->groupBy('date');
+
+        return view('Penyelia.History', compact('logs', 'month'));
+    }
+
+    public function batchSubmit(Request $request)
+    {
+        $request->validate([
+            'log_ids' => 'required|array',
+            'log_ids.*' => 'exists:activity_logs,id'
+        ]);
+
+        // Logic: Update status from 'draft' to 'pending'
+        // We DO NOT approve it here. It goes to the pool for OTHER Penyelia to see.
+        ActivityLog::whereIn('id', $request->log_ids)
+            ->where('user_id', Auth::id()) // Security: Ensure they own the logs
+            ->where('status', 'draft')
+            ->update([
+                'status' => 'pending',
+                'updated_at' => now()
+            ]);
+
+        return back()->with('success', 'Semua tugasan draf berjaya dihantar untuk pengesahan.');
+    }
+
+    public function verificationList()
+    {
+        $logsToVerify = ActivityLog::where('status', 'pending')
+            ->where('user_id', '!=', Auth::id()) // <--- KEY LOGIC: Exclude self
+            ->orderBy('date', 'asc')
+            ->get()
+            ->groupBy('user_id');
+
+        return view('Penyelia.VerifyList', compact('logsToVerify'));
     }
 
 
