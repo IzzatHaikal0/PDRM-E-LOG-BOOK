@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\DB;
 //use Illuminate\Support\Facades\Route;
 
@@ -48,10 +49,7 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     */
     Route::prefix('admin')->group(function () {
         
-        Route::get('/dashboard', function() {
-            return view('Admin.Dashboard');
-        })->name('Admin.Dashboard');
-
+        Route::get('/dashboard', [DashboardController::class, 'getAdminDashboard'])->name('Admin.Dashboard');
         // 1. Show Form
         Route::get('/daftar-pengguna', [RegistrationController::class, 'showForm'])->name('Admin.Registration');
         // 2. Save Data (This was missing)
@@ -62,10 +60,7 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 
         Route::get('/senarai-anggota', [RegistrationController::class, 'listUsers'])->name('Admin.ListAnggota');
 
-        Route::get('/profil', function() {
-            return view('Admin.Profile');
-        })->name('admin.profile');
-        
+        Route::get('/profil', function() {return view('Admin.Profile');})->name('admin.profile');
         Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('Admin.Profile.UpdatePassword');
 
         Route::get('/kemaskini-anggota/{id}', [RegistrationController::class, 'edit'])->name('Admin.EditUser');
@@ -79,27 +74,15 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         Route::delete('/settings/penugasan/{id}', [AdminSettingController::class, 'deletePenugasan'])->name('Admin.Settings.DeletePenugasan');
 
         // pangkat
-        // Store (Existing)
         Route::post('/settings/pangkat', [AdminSettingController::class, 'addNewPangkat'])->name('Admin.Settings.StorePangkat');
-        // Update (New)
         Route::put('/settings/pangkat/{id}', [AdminSettingController::class, 'updatePangkat'])->name('Admin.Settings.UpdatePangkat');
-        // Delete (New)
         Route::delete('/settings/pangkat/{id}', [AdminSettingController::class, 'deletePangkat'])->name('Admin.Settings.DeletePangkat');
-        // Reorder Pangkat (New)
         Route::post('/admin/settings/pangkat/reorder', [AdminSettingController::class, 'reorderPangkat'])->name('Admin.Settings.ReorderPangkat');
 
         //kecemasan
-        Route::post('/settings/kecemasan',
-            [AdminSettingController::class, 'storeKecemasan']
-        )->name('Admin.Settings.StoreKecemasan');
-
-        Route::post('/settings/kecemasan/{id}',
-            [AdminSettingController::class, 'updateKecemasan']
-        )->name('Admin.Settings.UpdateKecemasan');
-
-        Route::delete('/settings/kecemasan/{id}',
-            [AdminSettingController::class, 'deleteKecemasan']
-        )->name('Admin.Settings.DeleteKecemasan');
+        Route::post('/settings/kecemasan',[AdminSettingController::class, 'storeKecemasan'])->name('Admin.Settings.StoreKecemasan');
+        Route::post('/settings/kecemasan/{id}',[AdminSettingController::class, 'updateKecemasan'])->name('Admin.Settings.UpdateKecemasan');
+        Route::delete('/settings/kecemasan/{id}',[AdminSettingController::class, 'deleteKecemasan'])->name('Admin.Settings.DeleteKecemasan');
 
     });
 
@@ -168,12 +151,11 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
             return view('Penyelia.VerifyList'); 
         })->name('Penyelia.VerifyList');
 
-
         // 1. Show Verification List
-    Route::get('/sahkan-tugasan', [LogsController::class, 'verifyList'])->name('Penyelia.VerifyList');
+        Route::get('/sahkan-tugasan', [LogsController::class, 'verifyList'])->name('Penyelia.VerifyList');
 
-    // 2. Process Verification (Single or Batch)
-    Route::post('/sahkan-tugasan/simpan', [LogsController::class, 'verifyStore'])->name('Penyelia.VerifyStore');
+        // 2. Process Verification (Single or Batch)
+        Route::post('/sahkan-tugasan/simpan', [LogsController::class, 'verifyStore'])->name('Penyelia.VerifyStore');
 
         // 3. Rekod (Create Log)
         Route::get('/rekod/baru', function() {
@@ -198,4 +180,4 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         Route::post('/profile/update-photo/{id}', [ProfileController::class, 'update_photo'])->name('Penyelia.update_photo');
     });
 
-}); // End of Middleware Group
+}); 
