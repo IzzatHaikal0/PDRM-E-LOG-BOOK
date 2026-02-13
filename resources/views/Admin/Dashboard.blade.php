@@ -28,7 +28,7 @@
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Pegawai</p>
-                    <h3 class="text-2xl font-bold text-gray-800 mt-1">{{$count_penyelia}}</h3>
+                    <h3 class="text-2xl font-bold text-gray-800 mt-1">{{$count_penyelia ?? 0}}</h3>
                 </div>
                 <div class="p-2 bg-blue-50 rounded-lg text-blue-900">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
@@ -44,7 +44,7 @@
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Anggota</p>
-                    <h3 class="text-2xl font-bold text-gray-800 mt-1">{{ $count_anggota }}</h3>
+                    <h3 class="text-2xl font-bold text-gray-800 mt-1">{{ $count_anggota ?? 0}}</h3>
                 </div>
                 <div class="p-2 bg-indigo-50 rounded-lg text-indigo-900">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
@@ -52,7 +52,7 @@
             </div>
             <div class="mt-2 flex items-center text-xs text-green-600">
                 <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
-                <span>{{$new_anggota_today}} anggota baru hari ini</span>
+                <span>{{$new_anggota_today ?? 0}} anggota baru hari ini</span>
             </div>
         </div>
 
@@ -60,7 +60,7 @@
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Jenis Penugasan</p>
-                    <h3 class="text-2xl font-bold text-gray-800 mt-1">{{ $count_penugasan }}</h3>
+                    <h3 class="text-2xl font-bold text-gray-800 mt-1">{{ $count_penugasan ?? 0}}</h3>
                 </div>
                 <div class="p-2 bg-emerald-50 rounded-lg text-emerald-900">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
@@ -68,7 +68,7 @@
             </div>
             <div class="mt-2 flex items-center text-xs text-green-600">
                 <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
-                <span>{{$new_penugasan_today}} penambahan baru hari ini</span>
+                <span>{{$new_penugasan_today ?? 0}} penambahan baru hari ini</span>
             </div>
         </div>
 
@@ -76,7 +76,7 @@
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Laporan</p>
-                    <h3 class="text-2xl font-bold text-gray-800 mt-1">{{$all_logs}}</h3>
+                    <h3 class="text-2xl font-bold text-gray-800 mt-1">{{$all_logs ?? 0}}</h3>
                 </div>
                 <div class="p-2 bg-red-50 rounded-lg text-red-900">
                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
@@ -84,7 +84,7 @@
             </div>
             <div class="mt-2 flex items-center text-xs text-green-600">
                 <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
-                <span>{{$new_logs_today}} tugasan baru hari ini</span>
+                <span>{{$new_logs_today ?? 0}} tugasan baru hari ini</span>
             </div>
         </div>
     </div>
