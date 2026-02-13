@@ -139,7 +139,7 @@ class LogsController extends Controller
             'images' => $imagePaths,
         ]);
 
-        return redirect()->route('logs.history')->with('success', 'Laporan berjaya dihantar!');
+        return redirect()->route('logs.history')->with('success', 'Tugasan berjaya dihantar!');
     }
 
 

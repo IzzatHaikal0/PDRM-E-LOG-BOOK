@@ -346,3 +346,39 @@
     }
 </style>
 @endsection
+
+{{-- SWEETALERT 2 SCRIPT --}}
+{{-- Place this at the bottom of History.blade.php --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. SUCCESS ALERT (Triggered by 'with(success)' in Controller)
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berjaya',
+                text: '{{ session('success') }}', // Uses the message from your Controller
+                timer: 1500,
+                showConfirmButton: false,
+                background: '#fff',
+                iconColor: '#00205B', // Matches your theme color
+                customClass: {
+                    title: 'text-[#00205B] font-bold text-lg',
+                    popup: 'rounded-xl shadow-2xl border border-gray-100'
+                }
+            });
+        @endif
+
+        // 2. ERROR ALERT (Triggered by validation errors or manual error session)
+        @if(session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Ralat',
+                text: '{{ session('error') }}',
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Tutup'
+            });
+        @endif
+    });
+</script>
