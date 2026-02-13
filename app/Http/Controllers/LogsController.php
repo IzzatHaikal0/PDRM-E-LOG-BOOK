@@ -78,7 +78,7 @@ class LogsController extends Controller
                 return view('Users.Logs.Create', compact('penugasans'));
             }
 
-       // return view('Users.Logs.Create', compact('penugasans'));
+      
     }
 
     /*public function create()
