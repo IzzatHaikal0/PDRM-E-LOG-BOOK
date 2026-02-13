@@ -33,5 +33,27 @@
             $recent_users = User::with('pangkat')->whereIn('role', ['anggota', 'penyelia'])->latest()->take(3) ->get();
             
             return view('Admin.Dashboard', compact('all_logs', 'count_anggota', 'count_penyelia', 'new_anggota_today', 'new_penyelia_today', 'new_logs_today', 'recent_logs', 'recent_users', 'count_penugasan', 'new_penugasan_today'));
-        }           
+        }  
+        
+        public function getPenyeliaDashboard()
+        {
+            $user = Auth::user();
+            $count_penugasan_unverified = ActivityLog::where('status', 'pending')->where('user_id', '!=', $user->id)->count();
+
+            $count_anggota = User::where('role', 'anggota')->count();
+            $my_logs = ActivityLog::where('user_id', $user->id)->count();
+            $pangkat_name = Pangkat::where('id', $user->pangkat_id)->value('pangkat_name');
+            $recent_logs = ActivityLog::with('user.pangkat')->where('user_id', '!=', $user->id)->latest()->take(3)->get();
+
+            $allLogs = ActivityLog::where('user_id', $user->id)
+                ->get()
+                ->groupBy(function($date) {
+                    return \Carbon\Carbon::parse($date->date)->format('Y-m-d');
+                });
+
+            return view('Penyelia.Dashboard', compact(
+                'count_penugasan_unverified', 'count_anggota', 'my_logs', 
+                'pangkat_name', 'recent_logs', 'allLogs' 
+            ));
+        }
     }

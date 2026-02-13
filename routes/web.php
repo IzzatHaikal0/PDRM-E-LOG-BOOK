@@ -142,9 +142,7 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::prefix('penyelia')->group(function () {
 
         // 1. Dashboard
-        Route::get('/dashboard', function() {
-            return view('Penyelia.Dashboard'); 
-        })->name('Penyelia.Dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'getPenyeliaDashboard'])->name('Penyelia.Dashboard');
 
         // 2. Sahkan (Verify Task)
         Route::get('/sahkan-tugasan', function() {
@@ -154,9 +152,9 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         // 1. Show Verification List
         Route::get('/sahkan-tugasan', [LogsController::class, 'verifyList'])->name('Penyelia.VerifyList');
 
-    // 2. Process Verification (Single or Batch)
-    Route::post('/sahkan-tugasan/simpan', [LogsController::class, 'verifyStore'])->name('Penyelia.VerifyStore');
-    //Route::get('/penyelia/rekod/baru', [LogsController::class, 'create'])->name('logs.create');
+        // 2. Process Verification (Single or Batch)
+        Route::post('/sahkan-tugasan/simpan', [LogsController::class, 'verifyStore'])->name('Penyelia.VerifyStore');
+        //Route::get('/penyelia/rekod/baru', [LogsController::class, 'create'])->name('logs.create');
 
         // 3. Rekod (Create Log)
         Route::post('/rekod/simpan', [LogsController::class, 'store'])->name('Penyelia.Logs.Store');
