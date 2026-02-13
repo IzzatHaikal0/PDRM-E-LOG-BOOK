@@ -15,7 +15,7 @@
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-sm font-semibold text-gray-700">{{ Auth::user()->name ?? 'Sjn. Mejar Halim' }}</p> 
-                <p class="text-xs text-gray-400">Penyelia Bertugas • Balai Polis Muar</p>
+                <p class="text-xs text-gray-400">Penyelia Bertugas • Ibu Pejabat Polis Pekan</p>
             </div>
             <div class="text-xs font-medium text-blue-800 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
                 {{ \Carbon\Carbon::now()->translatedFormat('l, d M') }}
@@ -35,68 +35,32 @@
             
             {{-- Week Navigation Controls --}}
             <div class="flex items-center gap-1 bg-gray-50 rounded-lg p-0.5 border border-gray-100">
-                <button onclick="changeWeek('prev')" class="p-1 text-gray-400 hover:text-[#00205B] hover:bg-white rounded transition">
+                <button onclick="changeWeek(-1)" class="p-1 text-gray-400 hover:text-[#00205B] hover:bg-white rounded transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                 </button>
-                <span class="text-[10px] font-bold text-gray-600 px-2 uppercase tracking-wide" id="currentWeekLabel">Minggu Ini</span>
-                <button onclick="changeWeek('next')" class="p-1 text-gray-400 hover:text-[#00205B] hover:bg-white rounded transition">
+                {{-- Dynamic Label --}}
+                <span class="text-[10px] font-bold text-gray-600 px-2 uppercase tracking-wide w-24 text-center" id="currentWeekLabel">
+                    Minggu Ini
+                </span>
+                <button onclick="changeWeek(1)" class="p-1 text-gray-400 hover:text-[#00205B] hover:bg-white rounded transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                 </button>
             </div>
         </div>
 
-        {{-- Calendar Grid --}}
+        {{-- Calendar Grid (Empty container, filled by JS) --}}
         <div class="grid grid-cols-7 gap-2 text-center transition-all duration-300" id="calendarGrid">
-            @php
-                // Default View (Current Week)
-                $days = [
-                    ['day' => 'Isnin', 'date' => '20', 'status' => 'green'],
-                    ['day' => 'Selasa', 'date' => '21', 'status' => 'green'],
-                    ['day' => 'Rabu', 'date' => '22', 'status' => 'red'], // Missed
-                    ['day' => 'Khamis', 'date' => '23', 'status' => 'green'],
-                    ['day' => 'Jumaat', 'date' => '24', 'status' => 'green'],
-                    ['day' => 'Sabtu', 'date' => '25', 'status' => 'green'],
-                    ['day' => 'Ahad', 'date' => '26', 'status' => 'today'], // Today
-                ];
-            @endphp
-
-            @foreach($days as $day)
-                {{-- CLICKABLE CELL --}}
-                <div onclick="openDayModal('{{ $day['date'] }}', '{{ $day['status'] }}', '{{ $day['day'] }}')" 
-                     class="calendar-cell flex flex-col items-center gap-1 cursor-pointer group transition transform hover:scale-105 active:scale-95">
-                    
-                    <span class="text-[10px] text-gray-400 font-medium group-hover:text-[#00205B]">{{ substr($day['day'], 0, 3) }}</span>
-                    
-                    @if($day['status'] == 'green')
-                        <div class="w-8 h-8 rounded-full bg-green-100 border border-green-200 flex items-center justify-center text-xs font-bold text-green-700 shadow-sm group-hover:bg-green-200">
-                            {{ $day['date'] }}
-                        </div>
-                    @elseif($day['status'] == 'red')
-                        <div class="w-8 h-8 rounded-full bg-red-100 border border-red-200 flex items-center justify-center text-xs font-bold text-red-700 shadow-sm group-hover:bg-red-200">
-                            {{ $day['date'] }}
-                        </div>
-                    @elseif($day['status'] == 'today')
-                        <div class="w-8 h-8 rounded-full bg-[#00205B] border border-[#00205B] flex items-center justify-center text-xs font-bold text-white shadow-lg ring-2 ring-blue-100 transform scale-110">
-                            {{ $day['date'] }}
-                        </div>
-                    @else
-                        <div class="w-8 h-8 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center text-xs font-medium text-gray-400">
-                            {{ $day['date'] }}
-                        </div>
-                    @endif
-                </div>
-            @endforeach
-        </div>
+            </div>
         
         {{-- Legend --}}
         <div class="flex items-center justify-center gap-4 mt-4 pt-3 border-t border-gray-50">
             <div class="flex items-center gap-1.5">
                 <div class="w-2 h-2 rounded-full bg-green-500"></div>
-                <span class="text-[10px] text-gray-500">Hadir / Ada Log</span>
+                <span class="text-[10px] text-gray-500">Ada Rekod</span>
             </div>
             <div class="flex items-center gap-1.5">
                 <div class="w-2 h-2 rounded-full bg-red-500"></div>
-                <span class="text-[10px] text-gray-500">Tiada Rekod</span>
+                <span class="text-[10px] text-gray-500">Tiada Rekod (Lepas)</span>
             </div>
         </div>
     </div>
@@ -109,7 +73,7 @@
             <div class="absolute right-0 top-0 w-16 h-16 bg-red-50 rounded-bl-full -mr-2 -mt-2 transition group-hover:bg-red-100"></div>
             <div>
                 <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider relative z-10">Perlu Disahkan</p>
-                <h3 class="text-2xl font-bold text-red-600 mt-1 relative z-10">5</h3>
+                <h3 class="text-2xl font-bold text-red-600 mt-1 relative z-10">{{ $count_penugasan_unverified }}</h3>
             </div>
             <div class="mt-3 flex items-center gap-1 text-[10px] text-red-400 font-medium">
                 <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
@@ -122,10 +86,10 @@
             <div class="absolute right-0 top-0 w-16 h-16 bg-green-50 rounded-bl-full -mr-2 -mt-2 transition group-hover:bg-green-100"></div>
             <div>
                 <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider relative z-10">Anggota Bertugas</p>
-                <h3 class="text-2xl font-bold text-green-700 mt-1 relative z-10">12</h3>
+                <h3 class="text-2xl font-bold text-green-700 mt-1 relative z-10">{{ $count_anggota }}</h3>
             </div>
             <div class="mt-3 text-[10px] text-green-500">
-                Sif Semasa (08:00 - 16:00)
+                Jumlah Anggota
             </div>
         </div>
 
@@ -133,8 +97,8 @@
         <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between relative overflow-hidden group">
              <div class="absolute right-0 top-0 w-16 h-16 bg-blue-50 rounded-bl-full -mr-2 -mt-2 transition group-hover:bg-blue-100"></div>
             <div>
-                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider relative z-10">Jumlah Log</p>
-                <h3 class="text-2xl font-bold text-blue-900 mt-1 relative z-10">42</h3>
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider relative z-10">Log Saya</p>
+                <h3 class="text-2xl font-bold text-blue-900 mt-1 relative z-10">{{ $my_logs }}</h3>
             </div>
              <div class="mt-3 text-[10px] text-blue-400">
                 Hari Ini
@@ -145,80 +109,81 @@
         <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between relative overflow-hidden group">
              <div class="absolute right-0 top-0 w-16 h-16 bg-indigo-50 rounded-bl-full -mr-2 -mt-2 transition group-hover:bg-indigo-100"></div>
             <div>
-                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider relative z-10">Kehadiran</p>
-                <h3 class="text-2xl font-bold text-indigo-900 mt-1 relative z-10">100%</h3>
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider relative z-10">Jawatan Saya</p>
+                <h3 class="text-l font-bold text-indigo-900 mt-1 relative z-10">{{ Auth::user()->role }}</h3>
             </div>
-             <div class="mt-3 text-[10px] text-indigo-400">
-                Tiada MC / Cuti Kecemasan
+            <div class="mt-3 text-[10px] text-indigo-400">
+                {{$pangkat_name}}
             </div>
         </div>
     </div>
 
-    {{-- 4. QUICK VERIFICATION LIST --}}
+    {{-- 4. QUICK VERIFICATION LIST (DYNAMIC) --}}
     <div class="space-y-4 mb-8">
         <div class="flex items-center justify-between px-1">
             <h3 class="text-base font-bold text-gray-800 flex items-center gap-2">
-                Tugasan Menunggu Pengesahan
-                <span class="bg-red-100 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded-full">5</span>
+                Log Aktiviti Terkini
+                {{-- Optional: Show count if needed, or remove span --}}
+                <span class="bg-blue-100 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                    {{ $recent_logs->count() }}
+                </span>
             </h3>
+            {{-- Link to view all logs (adjust route as needed) --}}
             <a href="{{ route('Penyelia.VerifyList') }}" class="text-xs font-bold text-blue-800 hover:text-blue-600 uppercase tracking-wide">Lihat Semua</a>
         </div>
 
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden divide-y divide-gray-100">
-            {{-- Item 1 --}}
-            <div class="p-4 hover:bg-gray-50 transition">
+            
+            @forelse($recent_logs as $log)
+            <div class="p-4 hover:bg-gray-50 transition group">
                 <div class="flex justify-between items-start mb-2">
                     <div class="flex items-center gap-3">
-                        <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-600">KA</div>
+                        {{-- Dynamic Avatar --}}
+                        <div class="h-10 w-10 rounded-full bg-gray-200 flex-shrink-0 overflow-hidden border border-gray-100">
+                            @if($log->user && $log->user->gambar_profile)
+                                <img src="{{ asset('storage/' . $log->user->gambar_profile) }}" class="w-full h-full object-cover">
+                            @else
+                                <img src="https://ui-avatars.com/api/?name={{ urlencode($log->user->name ?? 'User') }}&background=random&color=fff&size=128" class="w-full h-full object-cover">
+                            @endif
+                        </div>
+                        
                         <div>
-                            <h4 class="text-sm font-bold text-gray-900">Kpl. Abu Bakar</h4>
-                            <p class="text-[10px] text-gray-500">Rondaan MPV • Sektor A</p>
+                            {{-- Name & Rank --}}
+                            <h4 class="text-sm font-bold text-gray-900 leading-tight">
+                                {{ $log->user->pangkat->pangkat_name ?? '' }} {{ $log->user->name ?? 'Pengguna Tidak Dikenali' }}
+                            </h4>
+                            {{-- Log Type / Badge No --}}
+                            <p class="text-[10px] text-gray-500 mt-0.5">
+                                {{ $log->user->no_badan ?? '-' }} • <span class="uppercase tracking-wider font-semibold text-blue-800">{{ $log->type ?? 'Log Sistem' }}</span>
+                            </p>
                         </div>
                     </div>
-                    <span class="text-[10px] text-gray-400 font-medium">10 min lepas</span>
+                    {{-- Time Ago --}}
+                    <span class="text-[10px] text-gray-400 font-medium whitespace-nowrap">
+                        {{ $log->created_at->diffForHumans() }}
+                    </span>
                 </div>
-                <div class="pl-13 ml-13">
-                    <p class="text-sm text-gray-600 mb-3 bg-gray-50 p-3 rounded-lg border border-gray-100 italic">
-                        "Membuat rondaan di kawasan perumahan Taman Bahagia. Keadaan terkawal dan tiada aktiviti mencurigakan."
-                    </p>
-                    <div class="flex gap-2">
-                        <button class="flex-1 bg-[#00205B] text-white text-xs font-bold py-2 rounded-lg hover:bg-blue-900 transition shadow-sm">
-                            Sahkan
-                        </button>
-                        <button class="px-4 bg-white border border-gray-200 text-gray-600 text-xs font-bold py-2 rounded-lg hover:bg-gray-50 transition">
-                            Butiran
-                        </button>
+
+                <div class="pl-[3.25rem]">
+                    {{-- Description Box --}}
+                    <div class="text-sm text-gray-600 mb-3 bg-gray-50 p-3 rounded-lg border border-gray-100 italic relative">
+                        {{-- Tiny triangle pointer for speech bubble effect --}}
+                        <div class="absolute -top-1.5 left-4 w-3 h-3 bg-gray-50 border-t border-l border-gray-100 transform rotate-45"></div>
+                        "{{ $log->remarks ?? 'Tiada butiran log.' }}"
                     </div>
                 </div>
             </div>
+            @empty
+            <div class="p-8 text-center">
+                <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-3">
+                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <p class="text-sm text-gray-500 font-medium">Tiada log aktiviti terkini.</p>
+            </div>
+            @endforelse
+
         </div>
     </div>
-
-    {{-- 5. TEAM OVERVIEW TABLE --}}
-    <div class="hidden md:block">
-        <h3 class="text-base font-bold text-gray-800 mb-4">Senarai Anggota Bawah Seliaan</h3>
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tugasan Terkini</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Masa Log</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Kpl. Abu Bakar</td>
-                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Bertugas</span></td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Rondaan MPV</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">10:30 AM</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
 </div>
 
 {{-- DAY DETAILS MODAL (Pop-up) --}}
@@ -250,131 +215,159 @@
     </div>
 </div>
 
+
+{{-- JAVASCRIPT --}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    // --- CALENDAR WEEK NAVIGATION DATA ---
-    const calendarWeeks = {
-        'prev': [ // Previous Week
-            { day: 'Isnin', date: '13', status: 'green' },
-            { day: 'Selasa', date: '14', status: 'green' },
-            { day: 'Rabu', date: '15', status: 'green' },
-            { day: 'Khamis', date: '16', status: 'red' },
-            { day: 'Jumaat', date: '17', status: 'green' },
-            { day: 'Sabtu', date: '18', status: 'green' },
-            { day: 'Ahad', date: '19', status: 'green' }
-        ],
-        'curr': [ // Current Week
-            { day: 'Isnin', date: '20', status: 'green' },
-            { day: 'Selasa', date: '21', status: 'green' },
-            { day: 'Rabu', date: '22', status: 'red' },
-            { day: 'Khamis', date: '23', status: 'green' },
-            { day: 'Jumaat', date: '24', status: 'green' },
-            { day: 'Sabtu', date: '25', status: 'green' },
-            { day: 'Ahad', date: '26', status: 'today' }
-        ],
-        'next': [ // Next Week
-            { day: 'Isnin', date: '27', status: 'gray' },
-            { day: 'Selasa', date: '28', status: 'gray' },
-            { day: 'Rabu', date: '29', status: 'gray' },
-            { day: 'Khamis', date: '30', status: 'gray' },
-            { day: 'Jumaat', date: '31', status: 'gray' },
-            { day: 'Sabtu', date: '01', status: 'gray' },
-            { day: 'Ahad', date: '02', status: 'gray' }
-        ]
-    };
+    // 1. INJECT ALL LOGS FROM LARAVEL
+    const allLogs = @json($allLogs); 
 
-    let currentWeekState = 'curr';
+    // 2. SETUP DATES
+    let currentStartOfWeek = new Date(); // Start with today
+    // Adjust to Monday (1) of current week
+    const day = currentStartOfWeek.getDay();
+    const diff = currentStartOfWeek.getDate() - day + (day == 0 ? -6 : 1); 
+    currentStartOfWeek.setDate(diff);
+    currentStartOfWeek.setHours(0,0,0,0); // Clear time
 
-    // --- CHANGE WEEK FUNCTION ---
-    function changeWeek(direction) {
-        const label = document.getElementById('currentWeekLabel');
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+        renderCalendar();
+    });
+
+    // 3. CHANGE WEEK FUNCTION
+    function changeWeek(offset) {
+        // Add or subtract 7 days
+        currentStartOfWeek.setDate(currentStartOfWeek.getDate() + (offset * 7));
+        renderCalendar();
+    }
+
+    // 4. RENDER CALENDAR GRID
+    function renderCalendar() {
         const grid = document.getElementById('calendarGrid');
+        const label = document.getElementById('currentWeekLabel');
+        grid.innerHTML = '';
 
-        if (currentWeekState === 'curr') {
-            currentWeekState = direction === 'next' ? 'next' : 'prev';
-        } else if (currentWeekState === 'prev' && direction === 'next') {
-            currentWeekState = 'curr';
-        } else if (currentWeekState === 'next' && direction === 'prev') {
-            currentWeekState = 'curr';
+        // Update Label (e.g., "12 Feb - 18 Feb")
+        const endOfWeek = new Date(currentStartOfWeek);
+        endOfWeek.setDate(endOfWeek.getDate() + 6);
+        
+        // Check if it's "This Week" for nicer label
+        const today = new Date();
+        const isCurrentWeek = (today >= currentStartOfWeek && today <= endOfWeek);
+        
+        if(isCurrentWeek) {
+            label.innerText = "Minggu Ini";
         } else {
-            return;
+            // Format: DD MMM
+            const options = { day: 'numeric', month: 'short' };
+            label.innerText = `${currentStartOfWeek.toLocaleDateString('ms-MY', options)} - ${endOfWeek.toLocaleDateString('ms-MY', options)}`;
         }
 
-        if (currentWeekState === 'curr') label.innerText = 'Minggu Ini';
-        else if (currentWeekState === 'prev') label.innerText = 'Minggu Lepas';
-        else label.innerText = 'Minggu Depan';
+        // Loop 7 Days
+        let dateIterator = new Date(currentStartOfWeek);
+        
+        for (let i = 0; i < 7; i++) {
+            // Create YYYY-MM-DD string for lookup
+            // Note: dateIterator.toISOString() uses UTC, we need local Y-m-d manually to match PHP
+            const year = dateIterator.getFullYear();
+            const month = String(dateIterator.getMonth() + 1).padStart(2, '0');
+            const dt = String(dateIterator.getDate()).padStart(2, '0');
+            const fullDate = `${year}-${month}-${dt}`;
+            
+            // Determine Status
+            let status = 'gray';
+            const isToday = (dateIterator.toDateString() === new Date().toDateString());
+            const isFuture = (dateIterator > new Date());
+            const hasLog = allLogs[fullDate] ? true : false;
 
-        renderGrid(calendarWeeks[currentWeekState]);
-    }
+            if (isToday) status = 'today';
+            else if (isFuture) status = 'gray';
+            else status = hasLog ? 'green' : 'red';
 
-    function renderGrid(days) {
-        const grid = document.getElementById('calendarGrid');
-        grid.innerHTML = ''; 
+            // Day Name (Isnin, etc)
+            const dayName = dateIterator.toLocaleDateString('ms-MY', { weekday: 'long' });
+            const dayShort = dayName.substring(0, 3);
+            const dateNum = dateIterator.getDate();
+            const monthYear = dateIterator.toLocaleDateString('ms-MY', { month: 'long', year: 'numeric' });
 
-        days.forEach(day => {
-            let bubbleClass = '';
-            if (day.status === 'green') bubbleClass = 'bg-green-100 border-green-200 text-green-700 group-hover:bg-green-200';
-            else if (day.status === 'red') bubbleClass = 'bg-red-100 border-red-200 text-red-700 group-hover:bg-red-200';
-            else if (day.status === 'today') bubbleClass = 'bg-[#00205B] border-[#00205B] text-white shadow-lg ring-2 ring-blue-100 transform scale-110';
-            else bubbleClass = 'bg-gray-50 border-gray-100 text-gray-400';
+            // HTML Strings for bubbles
+            let bubbleHtml = '';
+            if(status === 'green') {
+                bubbleHtml = `<div class="w-8 h-8 rounded-full bg-green-100 border border-green-200 flex items-center justify-center text-xs font-bold text-green-700 shadow-sm group-hover:bg-green-200">${dateNum}</div>`;
+            } else if(status === 'red') {
+                bubbleHtml = `<div class="w-8 h-8 rounded-full bg-red-100 border border-red-200 flex items-center justify-center text-xs font-bold text-red-700 shadow-sm group-hover:bg-red-200">${dateNum}</div>`;
+            } else if(status === 'today') {
+                bubbleHtml = `<div class="w-8 h-8 rounded-full bg-[#00205B] border border-[#00205B] flex items-center justify-center text-xs font-bold text-white shadow-lg ring-2 ring-blue-100 transform scale-110">${dateNum}</div>`;
+            } else {
+                bubbleHtml = `<div class="w-8 h-8 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center text-xs font-medium text-gray-400">${dateNum}</div>`;
+            }
 
-            const html = `
-                <div onclick="openDayModal('${day.date}', '${day.status}', '${day.day}')" 
-                     class="calendar-cell flex flex-col items-center gap-1 cursor-pointer group transition transform hover:scale-105 active:scale-95 animate-fade-in">
-                    <span class="text-[10px] text-gray-400 font-medium group-hover:text-[#00205B]">${day.day.substring(0, 3)}</span>
-                    <div class="w-8 h-8 rounded-full border flex items-center justify-center text-xs font-bold shadow-sm ${bubbleClass}">
-                        ${day.date}
-                    </div>
-                </div>
+            // Append to Grid
+            const cell = document.createElement('div');
+            cell.className = "calendar-cell flex flex-col items-center gap-1 cursor-pointer group transition transform hover:scale-105 active:scale-95";
+            cell.onclick = () => openDayModal(fullDate, status, dayName, monthYear);
+            cell.innerHTML = `
+                <span class="text-[10px] text-gray-400 font-medium group-hover:text-[#00205B]">${dayShort}</span>
+                ${bubbleHtml}
             `;
-            grid.innerHTML += html;
-        });
+            grid.appendChild(cell);
+
+            // Increment Day
+            dateIterator.setDate(dateIterator.getDate() + 1);
+        }
     }
 
-    // --- MOCK DATA FOR SUPERVISOR MODAL ---
-    const mockDailyTasks = {
-        '20': [
-            { time: '08:00 AM', title: 'Lapor Masuk Penyelia', type: 'Sistem', status: 'Disahkan' },
-            { time: '09:00 AM', title: 'Semakan Anggota (Roll Call)', type: 'Pentadbiran', status: 'Selesai' },
-            { time: '02:00 PM', title: 'Pemantauan Sektor A', type: 'Penyeliaan', status: 'Disahkan' }
-        ],
-        '21': [
-            { time: '08:00 AM', title: 'Lapor Masuk Penyelia', type: 'Sistem', status: 'Disahkan' },
-            { time: '11:00 AM', title: 'Mesyuarat Ketua Balai', type: 'Mesyuarat', status: 'Selesai' }
-        ],
-        '26': [
-            { time: '07:45 AM', title: 'Lapor Masuk Penyelia', type: 'Sistem', status: 'Menunggu' },
-            { time: '10:00 AM', title: 'Semakan Buku Log MPV', type: 'Penyeliaan', status: 'Dalam Proses' }
-        ]
-    };
-
-    // --- MODAL LOGIC ---
-    function openDayModal(date, status, dayName) {
+    // 5. MODAL LOGIC
+    function openDayModal(fullDate, status, dayName, monthYear) {
         if (status === 'red') {
-            Swal.fire({ icon: 'info', title: 'Tiada Rekod', text: 'Tiada log tugasan direkodkan.', confirmButtonColor: '#00205B', confirmButtonText: 'Tutup' });
+            Swal.fire({ icon: 'info', title: 'Tiada Rekod', text: `Tiada tugasan pada ${dayName}, ${fullDate}.`, confirmButtonColor: '#00205B' });
             return;
         }
         if (status === 'gray') {
-             Swal.fire({ icon: 'info', title: 'Akan Datang', text: 'Tarikh ini belum tiba.', confirmButtonColor: '#00205B', confirmButtonText: 'Tutup' });
+             Swal.fire({ icon: 'info', title: 'Akan Datang', text: 'Tarikh ini belum tiba.', confirmButtonColor: '#00205B' });
             return;
         }
 
-        const tasks = mockDailyTasks[date];
+        // Fetch logs from JSON
+        const tasks = allLogs[fullDate] || [];
+
+        // Update UI
         document.getElementById('modal-day').innerText = dayName;
-        document.getElementById('modal-date').innerText = date;
+        document.getElementById('modal-date').innerText = new Date(fullDate).getDate();
+        
         const listContainer = document.getElementById('modal-task-list');
         
-        if (tasks && tasks.length > 0) {
+        if (tasks.length > 0) {
             let html = '<div class="relative border-l-2 border-gray-100 ml-3 space-y-6">';
+            
             tasks.forEach(task => {
-                let badgeClass = task.status === 'Disahkan' || task.status === 'Selesai' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-800';
-                html += `<div class="relative pl-6"><span class="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-2 border-white bg-[#00205B] shadow-sm"></span><div class="flex items-center justify-between mb-1"><span class="text-xs font-bold text-gray-400">${task.time}</span><span class="text-[10px] px-2 py-0.5 rounded ${badgeClass} font-bold">${task.status}</span></div><h4 class="text-sm font-bold text-gray-900">${task.title}</h4><p class="text-xs text-gray-500">${task.type}</p></div>`;
+                let badgeClass = task.status === 'approved' ? 'bg-green-100 text-green-700' : 
+                                (task.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-600');
+
+                const timeObj = new Date(task.created_at);
+                const timeStr = timeObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                html += `
+                    <div class="relative pl-6">
+                        <span class="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-2 border-white bg-[#00205B] shadow-sm"></span>
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-xs font-bold text-gray-400">${timeStr}</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded ${badgeClass} font-bold capitalize">${task.status || 'Log'}</span>
+                        </div>
+                        
+                        {{-- USE 'remarks' HERE --}}
+                        <h4 class="text-sm font-bold text-gray-900">${task.remarks || task.type}</h4>
+                        
+                        <p class="text-xs text-gray-500 capitalize">${task.type}</p>
+                    </div>`;
             });
             html += '</div>';
             listContainer.innerHTML = html;
         } else {
-            listContainer.innerHTML = '<p class="text-center text-gray-500 text-sm py-4">Maklumat tidak ditemui.</p>';
+            listContainer.innerHTML = '<p class="text-center text-gray-500 text-sm py-4">Tiada butiran.</p>';
         }
+
         document.getElementById('dayModal').classList.remove('hidden');
     }
 
