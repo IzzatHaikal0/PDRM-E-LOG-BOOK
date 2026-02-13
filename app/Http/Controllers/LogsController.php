@@ -30,8 +30,6 @@ class LogsController extends Controller
                 ->get()
                 ->groupBy('date'); // Group by date for the view
 
-            // 3. Return View based on Role
-            // We MUST pass 'logs' and 'month' to the view using compact()
             if ($user->role === 'penyelia') {
                 return view('Penyelia.Logs.History', compact('logs', 'month')); 
             } else {
@@ -133,12 +131,12 @@ class LogsController extends Controller
             'type' => $request->type,
             'date' => $request->date,
             'time' => $request->time,
-            'end_time' => null, // Empty initially
+            'end_time' => null,
             'officer_id' => null,
             'is_off_duty' => $request->has('is_off_duty') ? 1:0,
             'remarks' => $request->remarks,
             'status' => 'draft', // Default status
-            'images' => $imagePaths, // Laravel casts this array to JSON automatically
+            'images' => $imagePaths,
         ]);
 
         return redirect()->route('logs.history')->with('success', 'Laporan berjaya dihantar!');
@@ -174,14 +172,15 @@ class LogsController extends Controller
             return back()->with('success', "$count laporan berjaya dihantar ke penyelia.");
         }
 
-    
-    // In LogsController.php
+
+
 
 // 1. SHOW THE LIST (Grouped by User)
 public function verifyList()
     {
         // --- PART A: PENDING LOGS (Existing Logic) ---
         $pendingLogs = \App\Models\ActivityLog::where('status', 'pending')
+            ->where('user_id', '!=', Auth::id()) // Exclude self-submitted logs
             ->with('user')
             ->orderBy('date', 'desc')
             ->orderBy('time', 'desc')
@@ -189,7 +188,7 @@ public function verifyList()
 
         $groupedTasks = $this->groupLogsByUser($pendingLogs);
 
-        // --- PART B: VERIFIED LOGS (New Logic) ---
+        // --- PART B: VERIFIED LOGS ---
         // Fetch logs approved or rejected (Limit to 50 recent to avoid clutter)
         $verifiedLogs = \App\Models\ActivityLog::whereIn('status', ['approved', 'rejected'])
             ->with(['user', 'officer']) // Load officer for signature info
@@ -274,7 +273,9 @@ public function verifyStore(Request $request)
     }
 
     // Update the logs
-    \App\Models\ActivityLog::whereIn('id', $request->task_ids)->update([
+    \App\Models\ActivityLog::whereIn('id', $request->task_ids)
+    ->where('user_id', '!=', Auth::id()) // Security: NOT the current user
+    ->update([
         'status' => 'approved',
         'officer_id' => Auth::id(), // The currently logged-in supervisor
         'rejection_reason' => $request->comment, // Using this field for general comments/remarks
