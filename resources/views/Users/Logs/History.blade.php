@@ -297,12 +297,15 @@
                                             {{ $badgeText }}
                                         </span>
                                     </div>
+                                    <p class="text-xs line-clamp-2 mt-1 text-black">
+                                        {{ $log->updated_at ? 'Disahkan pada ' . \Carbon\Carbon::parse($log->updated_at)->translatedFormat('d M Y, H:i') : 'Belum disahkan' }}
+                                    </p>
                                     <p class="text-xs line-clamp-2 mt-1 {{ $log->is_off_duty ? 'text-red-600 font-medium' : 'text-gray-500' }}">
                                         {{ $log->remarks }}
                                     </p>
                                     <p class="text-xs line-clamp-2 mt-1 {{ $log->is_off_duty ? 'text-red-600 font-medium' : 'text-gray-500' }}">
                                         <b>ULASAN: </b>
-                                        {{ $log->rejection_reason }}
+                                        {{ $log->rejection_reason ?? 'Tiada ulasan penyelia.'  }}
                                     </p>
                                     
                                     @if($log->end_time)

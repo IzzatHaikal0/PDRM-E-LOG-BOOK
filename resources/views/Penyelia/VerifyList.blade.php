@@ -224,7 +224,7 @@
                                             <div class="flex justify-between items-start mb-1">
                                                 <div class="flex flex-wrap items-center gap-2">
                                                     <span class="text-xs font-bold text-gray-900">{{ $task['time'] }}</span>
-                                                    <span class="text-xs font-bold text-gray-900">Verified At {{ $task['verified_at'] }}</span>
+                                                    <span class="text-xs font-bold text-gray-900">Disahkan pada {{ $task['verified_at'] }}</span>
                                                     <span class="text-[10px] text-gray-400">&bull;</span>
                                                     <br>
                                                     {{-- [UPDATED] Red Text if Off Duty --}}
