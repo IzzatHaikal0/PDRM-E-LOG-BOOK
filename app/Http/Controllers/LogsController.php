@@ -19,6 +19,29 @@ class LogsController extends Controller
             $month = $request->input('month', now()->format('Y-m'));
             $user = Auth::user();
 
+
+            // Date Input
+            // If user clears the filter, this will be null
+            $filterDate = $request->input('filter_date');
+            $query = ActivityLog::where('user_id', $user->id)
+                ->with('officer')
+                ->orderBy('date', 'desc')
+                ->orderBy('time', 'desc');
+            if ($filterDate) {
+                // CASE A: User selected a specific date -> Show ONLY that day
+                $query->whereDate('date', $filterDate);
+            } else {
+                // CASE B: Filter is empty -> Show current MONTH (Default view)
+                $query->where('date', 'like', now()->format('Y-m') . '%');
+            }
+
+            $logs = $query->get()->groupBy('date');
+
+            // 4. Return View
+            $viewName = ($user->role === 'penyelia') ? 'Penyelia.Logs.History' : 'Users.Logs.History';
+
+            return view($viewName, compact('logs', 'filterDate', 'month'));
+
             // 2. Build Query
             // We want to show the history of the LOGGED-IN user (Personal History)
             // regardless of whether they are Anggota or Penyelia.

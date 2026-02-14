@@ -48,12 +48,10 @@
                 <div class="flex items-center gap-3">
                     {{-- Avatar --}}
                     @if($user['profile_picture'])
-                        {{-- Option A: Show Profile Picture --}}
                         <img src="{{ $user['profile_picture'] }}" 
                             alt="{{ $user['name'] }}" 
                             class="w-10 h-10 rounded-full object-cover shadow-sm shrink-0 border border-gray-200">
                     @else
-                        {{-- Option B: Show Initials (Fallback) --}}
                         <div class="w-10 h-10 rounded-full bg-[#00205B] flex items-center justify-center text-white text-xs font-bold shadow-sm shrink-0">
                             {{ $user['initials'] }}
                         </div>
@@ -68,7 +66,7 @@
                             </p>
                         </div>
 
-                        {{-- [NEW] BULK VERIFY BUTTON (Only show if count > 1) --}}
+                        {{-- BULK VERIFY BUTTON --}}
                         @if($user['pending_count'] > 1)
                         <button onclick="event.stopPropagation(); verifyAllUserTasks({{ $user['id'] }}, '{{ $user['name'] }}')" 
                                 id="btn-verify-all-{{ $user['id'] }}"
@@ -88,77 +86,110 @@
 
             {{-- BODY: LIST OF TASKS --}}
             <div id="group-body-{{ $user['id'] }}" class="hidden border-t border-gray-100 bg-gray-50/50">
+                
+                {{-- [NEW] DATE FILTER INPUT (Specific to Pending Tab) --}}
+                <div class="px-4 py-3 bg-white border-b border-gray-100 flex items-center justify-between shadow-sm sticky top-0 z-10">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                        <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Tapis Tarikh</span>
+                    </div>
+                    
+                    <div class="flex items-center gap-1">
+                        {{-- Date Input --}}
+                        <input type="date" 
+                               id="date-pending-{{ $user['id'] }}"
+                               onchange="filterPendingTasks(this, '{{ $user['id'] }}')"
+                               class="block w-32 py-1 px-2 text-xs font-bold text-gray-700 border border-gray-300 rounded-lg focus:ring-[#00205B] focus:border-[#00205B] shadow-sm">
+                        
+                        {{-- Clear Button --}}
+                        <button onclick="clearPendingFilter('{{ $user['id'] }}')" 
+                                class="p-1.5 bg-gray-100 hover:bg-gray-200 text-gray-500 rounded-lg transition" 
+                                title="Kosongkan Tapis">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
                 <div class="p-3 space-y-3" id="task-list-{{ $user['id'] }}">
                     
-                    {{-- Loop through Dates first --}}
+                    {{-- Loop through Dates --}}
                     @foreach($user['tasks'] as $date => $dailyTasks)
                         
-                        {{-- Date Header --}}
-                        <div class="px-4 pt-4 pb-2">
-                            <h5 class="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2">
-                                <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
-                                {{ \Carbon\Carbon::parse($date)->translatedFormat('d F Y, l') }}
-                            </h5>
-                        </div>
+                        {{-- [NEW] DATE GROUP WRAPPER --}}
+                        <div class="pending-date-group-{{ $user['id'] }}" data-date="{{ $date }}">
 
-                        {{-- Task List for this Date --}}
-                        <div class="px-3 pb-2 space-y-3">
-                            @foreach($dailyTasks as $task)
-                                {{-- Task Card (Same as before) --}}
-                                <div id="task-{{ $task['id'] }}" data-task-id="{{ $task['id'] }}" class="user-task-item bg-white border border-gray-200 rounded-xl p-3 shadow-sm relative">
-                                    {{-- Status Stripe --}}
-                                    <div id="stripe-{{ $task['id'] }}" class="absolute left-0 top-0 bottom-0 w-1 bg-yellow-400 rounded-l-xl transition-colors duration-500"></div>
-                                    
-                                    <div class="pl-3">
-                                        <div class="flex justify-between items-start mb-1">
-                                            <div class="flex flex-wrap items-center gap-2">
-                                                <span class="text-xs font-bold text-gray-900">{{ $task['time'] }}</span>
-                                                <span class="text-[10px] text-gray-400">&bull;</span>
-                                                
-                                                {{-- [UPDATED] Red Text if Off Duty --}}
-                                                <span class="text-xs font-semibold {{ $task['is_off_duty'] ? 'text-red-600' : 'text-gray-700' }}">
-                                                    {{ $task['type'] }}
-                                                </span>
+                            {{-- Date Header --}}
+                            <div class="px-4 pt-4 pb-2">
+                                <h5 class="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+                                    {{ \Carbon\Carbon::parse($date)->translatedFormat('d F Y, l') }}
+                                </h5>
+                            </div>
 
-                                                {{-- [NEW] Off Duty Badge --}}
-                                                @if($task['is_off_duty'])
-                                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-600 border border-red-200">
-                                                        OFF DUTY
+                            {{-- Task List for this Date --}}
+                            <div class="px-3 pb-2 space-y-3">
+                                @foreach($dailyTasks as $task)
+                                    {{-- Task Card --}}
+                                    <div id="task-{{ $task['id'] }}" data-task-id="{{ $task['id'] }}" class="user-task-item bg-white border border-gray-200 rounded-xl p-3 shadow-sm relative">
+                                        {{-- Status Stripe --}}
+                                        <div id="stripe-{{ $task['id'] }}" class="absolute left-0 top-0 bottom-0 w-1 {{ $task['is_off_duty'] ? 'bg-red-500' : 'bg-yellow-400' }} rounded-l-xl transition-colors duration-500"></div>
+                                        
+                                        <div class="pl-3">
+                                            <div class="flex justify-between items-start mb-1">
+                                                <div class="flex flex-wrap items-center gap-2">
+                                                    <span class="text-xs font-bold text-gray-900">{{ $task['time'] }}</span>
+                                                    <span class="text-[10px] text-gray-400">&bull;</span>
+                                                    
+                                                    <span class="text-xs font-semibold {{ $task['is_off_duty'] ? 'text-red-600' : 'text-gray-700' }}">
+                                                        {{ $task['type'] }}
                                                     </span>
-                                                @endif
+
+                                                    @if($task['is_off_duty'])
+                                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-600 border border-red-200">
+                                                            OFF DUTY
+                                                        </span>
+                                                    @endif
+                                                </div>
+
+                                                <span id="badge-{{ $task['id'] }}" class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-yellow-100 text-yellow-800 shrink-0">
+                                                    Menunggu
+                                                </span>
+                                            </div>
+                                            
+                                            <p class="text-xs line-clamp-2 mt-1 {{ $task['is_off_duty'] ? 'text-red-600 font-medium' : 'text-gray-500' }}">
+                                                {{ $task['desc'] }}
+                                            </p>
+
+                                            <div id="actions-{{ $task['id'] }}" class="flex gap-2 mt-2">
+                                                <button onclick="openVerificationModal({{ $task['id'] }}, '{{ $user['name'] }}', {{ $user['id'] }})" class="flex-1 bg-[#00205B] text-white text-[10px] font-bold py-1.5 rounded hover:bg-blue-900 transition">
+                                                    Sahkan
+                                                </button>
+                                                <button type="button" onclick="openDetailModal(this)"
+                                                    data-task='{{ json_encode($task) }}'
+                                                    data-user-name="{{ $user['name'] }}"
+                                                    data-user-initials="{{ $user['initials'] }}"
+                                                    data-user-id="{{ $user['id'] }}"
+                                                    class="px-4 bg-white border border-gray-300 text-gray-600 text-[10px] font-bold py-1.5 rounded hover:bg-gray-50 transition">
+                                                    Butiran
+                                                </button>
                                             </div>
 
-                                            <span id="badge-{{ $task['id'] }}" class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-yellow-100 text-yellow-800 shrink-0">
-                                                Menunggu
-                                            </span>
+                                            <div id="signature-{{ $task['id'] }}" class="hidden mt-2 pt-2 border-t border-gray-50 animate-fade-in"></div>
                                         </div>
-                                        
-                                        <p class="text-xs line-clamp-2 mt-1 {{ $task['is_off_duty'] ? 'text-red-600 font-medium' : 'text-gray-500' }}">
-                                            {{ $task['desc'] }}
-                                        </p>
-
-                                        <div id="actions-{{ $task['id'] }}" class="flex gap-2 mt-2">
-                                            <button onclick="openVerificationModal({{ $task['id'] }}, '{{ $user['name'] }}', {{ $user['id'] }})" class="flex-1 bg-[#00205B] text-white text-[10px] font-bold py-1.5 rounded hover:bg-blue-900 transition">
-                                                Sahkan
-                                            </button>
-                                            <button type="button" onclick="openDetailModal(this)"
-                                                data-task='{{ json_encode($task) }}'
-                                                data-user-name="{{ $user['name'] }}"
-                                                data-user-initials="{{ $user['initials'] }}"
-                                                data-user-id="{{ $user['id'] }}"
-                                                class="px-4 bg-white border border-gray-300 text-gray-600 text-[10px] font-bold py-1.5 rounded hover:bg-gray-50 transition">
-                                                Butiran
-                                            </button>
-                                        </div>
-
-                                        <div id="signature-{{ $task['id'] }}" class="hidden mt-2 pt-2 border-t border-gray-50 animate-fade-in"></div>
                                     </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endforeach
+                                @endforeach
+                            </div>
+                        </div> 
+                        {{-- END DATE GROUP WRAPPER --}}
 
+                    @endforeach
                 </div>
+                
+                {{-- [NEW] No Records Message --}}
+                <div id="no-pending-msg-{{ $user['id'] }}" class="hidden py-8 text-center">
+                    <p class="text-xs text-gray-400 italic">Tiada tugasan pada tarikh ini.</p>
+                </div>
+
             </div>
         </div>
         @endforeach
@@ -606,20 +637,27 @@
 
     // --- [3] SAVE LOGIC (HANDLES BOTH) ---
     function saveVerification() {
-        const mode = document.getElementById('verify-mode').value; // 'single' or 'batch'
+        const mode = document.getElementById('verify-mode').value;
         const userId = document.getElementById('verify-user-id').value;
         const signatureData = getSignatureData();
         const comment = document.getElementById('modal-comment').value;
         
-        // Determine which Task IDs to send
+        // Collect IDs
         let taskIds = [];
         if (mode === 'single') {
             taskIds.push(document.getElementById('verify-task-id').value);
         } else {
-            // Find all task IDs for this user currently visible in the list
             const container = document.getElementById(`task-list-${userId}`);
-            const tasks = container.querySelectorAll('.user-task-item');
-            tasks.forEach(t => taskIds.push(t.getAttribute('data-task-id')));
+            // Safety check: ensure container exists
+            if (container) {
+                const tasks = container.querySelectorAll('.user-task-item');
+                tasks.forEach(t => taskIds.push(t.getAttribute('data-task-id')));
+            }
+        }
+
+        if (taskIds.length === 0) {
+            Swal.fire({ icon: 'warning', title: 'Ralat', text: 'Tiada tugasan dipilih.' });
+            return;
         }
 
         if (!signatureData) {
@@ -630,7 +668,6 @@
         // Show Loading
         Swal.fire({ title: 'Sedang Proses...', didOpen: () => Swal.showLoading() });
 
-        // Send to Backend
         fetch("{{ route('Penyelia.VerifyStore') }}", {
             method: "POST",
             headers: {
@@ -643,84 +680,118 @@
                 comment: comment
             })
         })
-        .then(res => res.json())
+        .then(async res => {
+            // 1. Check if Server responded with OK (200)
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error("Server Error: " + res.status);
+            }
+            // 2. Parse JSON safely
+            return res.json();
+        })
         .then(data => {
             if(data.success) {
                 closeVerificationModal();
                 Swal.fire({ icon: 'success', title: 'Berjaya', text: 'Tugasan telah disahkan.', timer: 1500, showConfirmButton: false });
                 
-                // Update UI (Remove cards or change color)
-                if (mode === 'single') {
-                    // Update single card UI (Same logic you had)
-                    updateCardUI(taskIds[0], userId, signatureData, true);
-                } else {
-                    // Update all cards for user
-                    taskIds.forEach(id => updateCardUI(id, userId, signatureData, false));
-                    updateUserCountUI(userId, 0);
+                // 3. UI UPDATES (Wrapped in try/catch so they don't trigger the "Server Error" alert)
+                try {
+                    if (mode === 'single') {
+                        updateCardUI(taskIds[0], userId, signatureData, true);
+                    } else {
+                        taskIds.forEach(id => updateCardUI(id, userId, signatureData, false));
+                        updateUserCountUI(userId, 0);
+                    }
+                } catch (uiError) {
+                    console.error("UI Update Failed:", uiError);
+                    // We don't alert the user because the data WAS saved successfully.
                 }
+            } else {
+                throw new Error(data.message || 'Unknown error');
             }
         })
         .catch(err => {
-            Swal.fire({ icon: 'error', title: 'Ralat', text: 'Gagal menghubungi pelayan.' });
-            console.error(err);
+            console.error("Verification Error:", err);
+            Swal.fire({ 
+                icon: 'error', 
+                title: 'Ralat', 
+                text: 'Berlaku ralat. Sila semak console browser.' 
+            });
         });
     }
 
-    // Helper: Updates visual state of ONE card
-    function updateCardUI(taskId, userId, signatureImage, updateCount) {
-        // Change colors
-        document.getElementById(`stripe-${taskId}`).classList.replace('bg-yellow-400', 'bg-green-500');
+function updateCardUI(taskId, userId, signatureImage, updateCount) {
+        // 1. Update Status Stripe (Yellow -> Green)
+        const stripe = document.getElementById(`stripe-${taskId}`);
+        if(stripe) {
+            stripe.classList.remove('bg-yellow-400');
+            stripe.classList.add('bg-green-500');
+        }
+
+        // 2. Update Status Badge (Yellow -> Green)
         const badge = document.getElementById(`badge-${taskId}`);
-        badge.classList.replace('bg-yellow-100', 'bg-green-100');
-        badge.classList.replace('text-yellow-800', 'text-green-800');
-        badge.innerText = 'Disahkan';
-        
-        // Remove buttons
+        if(badge) {
+            // Keep existing layout, just swap colors and text
+            badge.classList.remove('bg-yellow-100', 'text-yellow-800');
+            badge.classList.add('bg-green-100', 'text-green-800');
+            badge.innerText = 'Disahkan';
+        }
+
+        // 3. Remove Action Buttons (Sahkan & Butiran container)
+        // We remove this because the card is no longer "pending"
         const actionDiv = document.getElementById(`actions-${taskId}`);
         if(actionDiv) actionDiv.remove();
 
-        // Show Signature
+        // 4. Show Signature Section
         const signatureDiv = document.getElementById(`signature-${taskId}`);
-        signatureDiv.classList.remove('hidden');
-        signatureDiv.innerHTML = `
-            <div class="flex flex-col gap-2">
-                <div class="flex items-center text-[10px] text-gray-500 bg-gray-50 px-2 py-1 rounded border border-gray-100">
-                    <svg class="w-3 h-3 mr-1 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                    <span>Disahkan oleh <strong>Sjn. Mejar Halim</strong></span>
+        if(signatureDiv) {
+            signatureDiv.classList.remove('hidden');
+            // Using your exact styling structure
+            signatureDiv.innerHTML = `
+                <div class="flex flex-col gap-2">
+                    <div class="flex items-center text-[10px] text-gray-500 bg-gray-50 px-2 py-1 rounded border border-gray-100">
+                        <svg class="w-3 h-3 mr-1 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <span>Disahkan oleh <strong>{{ Auth::user()->name }}</strong></span>
+                    </div>
+                    <img src="${signatureImage}" alt="Tandatangan" class="h-12 w-auto self-start border border-gray-100 rounded p-1 bg-white">
                 </div>
-                <img src="${signatureImage}" alt="Tandatangan" class="h-12 w-auto self-start border border-gray-100 rounded p-1 bg-white">
-            </div>
-        `;
+            `;
+        }
 
-        // If single mode, decrement count
+        // 5. Update the Counter (Only if requested)
+        // We skip this during the loop of 'Batch Verify' to prevent math errors
         if(updateCount) {
             decrementUserCount(userId);
         }
     }
 
-    // Helper: Decrease count by 1
     function decrementUserCount(userId) {
         const countSpan = document.getElementById(`count-${userId}`);
+        if(!countSpan) return; // Safety check
+        
         let currentCount = parseInt(countSpan.innerText);
         if (currentCount > 1) {
+            // Just decrease number
             updateUserCountUI(userId, currentCount - 1);
         } else {
+            // Count reached 0
             updateUserCountUI(userId, 0);
         }
     }
 
-    // Helper: Update Header Count/Status
     function updateUserCountUI(userId, count) {
         const countSpan = document.getElementById(`count-${userId}`);
         const statusText = document.getElementById(`status-text-${userId}`);
         const verifyAllBtn = document.getElementById(`btn-verify-all-${userId}`);
 
-        countSpan.innerText = count;
+        // Update the number
+        if(countSpan) countSpan.innerText = count;
 
-        if (count === 0) {
-            // Show "Semua Disahkan" green text
+        // If count is 0, change the text to green "Semua Disahkan"
+        if (count === 0 && statusText) {
             statusText.innerHTML = `<span class="text-green-600 font-bold flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Semua Disahkan</span>`;
-            // Remove the bulk button if it exists
+            
+            // Remove the "Sahkan Semua" button since there is nothing left to verify
             if(verifyAllBtn) verifyAllBtn.remove();
         }
     }
@@ -830,40 +901,6 @@
         if (signaturePad) signaturePad.clear();
     }
 
-    function updateCardUI(taskId, userId, signatureImage) {
-        // 1. Update Task Card Visuals
-        document.getElementById(`stripe-${taskId}`).classList.replace('bg-yellow-400', 'bg-green-500');
-        const badge = document.getElementById(`badge-${taskId}`);
-        badge.classList.replace('bg-yellow-100', 'bg-green-100');
-        badge.classList.replace('text-yellow-800', 'text-green-800');
-        badge.innerText = 'Disahkan';
-        document.getElementById(`actions-${taskId}`).remove(); 
-
-        // Add Signature Display
-        const signatureDiv = document.getElementById(`signature-${taskId}`);
-        signatureDiv.classList.remove('hidden');
-        signatureDiv.innerHTML = `
-            <div class="flex flex-col gap-2">
-                <div class="flex items-center text-[10px] text-gray-500 bg-gray-50 px-2 py-1 rounded border border-gray-100">
-                    <svg class="w-3 h-3 mr-1 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                    <span>Disahkan oleh <strong>Sjn. Mejar Halim</strong></span>
-                </div>
-                <img src="${signatureImage}" alt="Tandatangan" class="h-12 w-auto self-start border border-gray-100 rounded p-1 bg-white">
-            </div>
-        `;
-
-        // 2. Update Parent Group Count
-        const countSpan = document.getElementById(`count-${userId}`);
-        const statusText = document.getElementById(`status-text-${userId}`);
-        let currentCount = parseInt(countSpan.innerText);
-        
-        if (currentCount > 1) {
-            countSpan.innerText = currentCount - 1;
-        } else {
-            countSpan.innerText = 0;
-            statusText.innerHTML = `<span class="text-green-600 font-bold flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Semua Disahkan</span>`;
-        }
-    }
 
     function switchTab(tab) {
         const pending = document.getElementById('content-pending');
@@ -879,6 +916,48 @@
             verified.classList.remove('hidden'); pending.classList.add('hidden');
             btnV.classList.add('bg-white', 'text-gray-900', 'shadow-sm', 'font-bold'); btnV.classList.remove('text-gray-500');
             btnP.classList.remove('bg-white', 'text-gray-900', 'shadow-sm', 'font-bold'); btnP.classList.add('text-gray-500');
+        }
+    }
+
+    // --- PENDING LIST DATE FILTER ---
+    function filterPendingTasks(input, userId) {
+        const selectedDate = input.value; // Format: YYYY-MM-DD
+        
+        // 1. Target the DATE GROUPS (not the cards directly)
+        const groups = document.querySelectorAll(`.pending-date-group-${userId}`);
+        let hasVisibleItems = false;
+
+        groups.forEach(group => {
+            const groupDate = group.getAttribute('data-date');
+
+            if (!selectedDate || groupDate === selectedDate) {
+                group.style.display = 'block';
+                hasVisibleItems = true;
+            } else {
+                group.style.display = 'none';
+            }
+        });
+
+        // 2. Show/Hide Empty Message
+        const emptyMsg = document.getElementById(`no-pending-msg-${userId}`);
+        if (emptyMsg) {
+            if (hasVisibleItems) {
+                emptyMsg.classList.add('hidden');
+            } else {
+                emptyMsg.classList.remove('hidden');
+            }
+        }
+    
+    }
+    function clearPendingFilter(userId) {
+        // 1. Find the input by ID
+        const input = document.getElementById(`date-pending-${userId}`);
+        if (input) {
+            // 2. Clear the value
+            input.value = ''; 
+            
+            // 3. Trigger the filter function manually to reset the view (show all)
+            filterPendingTasks(input, userId);
         }
     }
 </script>
