@@ -10,8 +10,19 @@
             <div>
                 <h2 class="font-bold text-xl text-[#00205B]">Sejarah Aktiviti</h2>
                 <div class="text-xs text-gray-400">
-                    {{ now()->translatedFormat('F Y') }}
                 </div>
+                {{-- MONTH PICKER --}}
+                <form action="{{ route('logs.history') }}" method="GET" class="mt-1">
+                    <div class="relative max-w-[150px]">
+                        <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <input type="month" name="month" 
+                               value="{{ $month }}" 
+                               onchange="this.form.submit()" 
+                               class="block w-full pl-8 pr-2 py-1 text-xs font-bold text-gray-600 bg-gray-100 border-none rounded-lg focus:ring-0 cursor-pointer hover:bg-gray-200 transition">
+                    </div>
+                </form>
             </div>
 
             <a href="{{ route('Users.Logs.Report') }}" class="flex items-center gap-2 px-4 py-2 bg-white border border-blue-200 text-blue-700 text-xs font-bold rounded-xl hover:bg-blue-50 transition shadow-sm active:scale-95">
