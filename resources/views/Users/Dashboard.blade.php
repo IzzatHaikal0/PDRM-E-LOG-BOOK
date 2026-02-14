@@ -93,7 +93,7 @@
     <div class="space-y-4 mb-6">
         <div class="flex items-center justify-between px-1">
             <h3 class="text-base font-bold text-gray-800">Log Terkini Saya</h3>
-            <a href="#" class="text-xs font-bold text-blue-800 hover:text-blue-600 uppercase tracking-wide">Lihat Semua</a>
+            <a href="{{route('logs.history')}}" class="text-xs font-bold text-blue-800 hover:text-blue-600 uppercase tracking-wide">Lihat Semua</a>
         </div>
         
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
