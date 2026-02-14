@@ -224,11 +224,12 @@
                                             <div class="flex justify-between items-start mb-1">
                                                 <div class="flex flex-wrap items-center gap-2">
                                                     <span class="text-xs font-bold text-gray-900">{{ $task['time'] }}</span>
+                                                    <span class="text-xs font-bold text-gray-900">Verified At {{ $task['verified_at'] }}</span>
                                                     <span class="text-[10px] text-gray-400">&bull;</span>
-                                                    
+                                                    <br>
                                                     {{-- [UPDATED] Red Text if Off Duty --}}
                                                     <span class="text-xs font-semibold {{ $task['is_off_duty'] ? 'text-red-600' : 'text-gray-700' }}">
-                                                        {{ $task['type'] }}
+                                                    {{ $task['type'] }}
                                                     </span>
 
                                                     {{-- [NEW] Off Duty Badge --}}
@@ -246,6 +247,10 @@
 
                                             <p class="text-xs line-clamp-2 mt-1 {{ $task['is_off_duty'] ? 'text-red-600 font-medium' : 'text-gray-500' }}">
                                                 {{ $task['desc'] }}
+                                            </p>
+                                            <p class="text-xs line-clamp-2 mt-1 {{ $task['is_off_duty'] ? 'text-red-600 font-medium' : 'text-gray-500' }}">
+                                                <b>ULASAN: </b>    
+                                                {{ $task['rejection_reason'] ?? 'Tiada ulasan penyelia.' }}
                                             </p>
 
                                             @if(!$isApproved && $task['rejection_reason'])
@@ -442,6 +447,15 @@
                         Keterangan tugasan...
                     </p>
                 </div>
+
+                <div class="mb-6">
+                    <h5 class="text-sm font-bold text-gray-900 mb-2">Catatan Penyelia</h5>
+                    <p class="text-sm text-gray-600 leading-relaxed bg-white border border-gray-100 p-3 rounded-lg shadow-sm" id="detail-comment">
+                        Ulasan penyelia...
+                    </p>
+                </div>
+
+                
 
                 {{-- SIGNATURE SECTION --}}
                 <div id="detail-signature-section" class="mb-6 hidden">
@@ -726,6 +740,7 @@
         document.getElementById('detail-time').innerText = task.time;
         document.getElementById('detail-location').innerText = task.location;
         document.getElementById('detail-description').innerText = task.desc;
+        document.getElementById('detail-comment').innerText = task.rejection_reason || "Tiada ulasan penyelia.";
 
         // --- NEW: HANDLE SIGNATURE ---
         const sigSection = document.getElementById('detail-signature-section');

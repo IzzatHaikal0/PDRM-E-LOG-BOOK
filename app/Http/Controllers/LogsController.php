@@ -178,7 +178,7 @@ class LogsController extends Controller
 // 1. SHOW THE LIST (Grouped by User)
 public function verifyList()
     {
-        // --- PART A: PENDING LOGS (Existing Logic) ---
+        // --- PART A: PENDING LOGS ---
         $pendingLogs = \App\Models\ActivityLog::where('status', 'pending')
             ->where('user_id', '!=', Auth::id()) // Exclude self-submitted logs
             ->with('user')
@@ -201,7 +201,7 @@ public function verifyList()
         return view('Penyelia.VerifyList', compact('groupedTasks', 'verifiedGroups'));
     }
 
-// Helper function to keep code clean (Put this at bottom of Controller)
+
 private function groupLogsByUser($logs)
     {
         return $logs->groupBy('user_id')->map(function ($userLogs) {

@@ -300,6 +300,10 @@
                                     <p class="text-xs line-clamp-2 mt-1 {{ $log->is_off_duty ? 'text-red-600 font-medium' : 'text-gray-500' }}">
                                         {{ $log->remarks }}
                                     </p>
+                                    <p class="text-xs line-clamp-2 mt-1 {{ $log->is_off_duty ? 'text-red-600 font-medium' : 'text-gray-500' }}">
+                                        <b>ULASAN: </b>
+                                        {{ $log->rejection_reason }}
+                                    </p>
                                     
                                     @if($log->end_time)
                                         <div class="mt-1 text-[10px] text-gray-400">
