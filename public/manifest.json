@@ -10,13 +10,13 @@
     "orientation": "portrait-primary",
     "icons": [
         {
-            "src": "/images/icons/pdrm_logo.jpg",
+            "src": "/images/icons/app_icon.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "any"
         },
         {
-            "src": "/images/icons/pdrm_logo.jpg",
+            "src": "/images/icons/app_icon.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "maskable"
