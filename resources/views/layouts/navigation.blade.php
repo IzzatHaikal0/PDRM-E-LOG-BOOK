@@ -55,12 +55,12 @@
                             Sejarah
                         </a>
                     @endif
-                    
+
                     {{-- Hubungi Penyelia(Anggota) --}}
                     @if(in_array($role, ['anggota']))
                         <a href="{{ route('contacts') }}" 
                            class="inline-flex items-center px-4 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-blue-200 hover:text-white hover:border-blue-300 transition duration-150 ease-in-out">
-                            Hubungi Penyelia
+                            Direktori Perhubungan
                         </a>
                     @endif
 
