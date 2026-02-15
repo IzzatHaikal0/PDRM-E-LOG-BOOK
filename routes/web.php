@@ -151,8 +151,8 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         // 1. Show Verification List
         Route::get('/sahkan-tugasan', [LogsController::class, 'verifyList'])->name('Penyelia.VerifyList');
 
-        Route::get('/penyelia/pengesahan', [LogsController::class, 'verifyList'])->name('penyelia.verify');
-        Route::post('/penyelia/pengesahan/simpan', [LogsController::class, 'verifyStore'])->name('Penyelia.VerifyStore');
+        Route::get('/pengesahan', [LogsController::class, 'verifyList'])->name('penyelia.verify');
+        Route::post('/pengesahan/simpan', [LogsController::class, 'verifyStore'])->name('Penyelia.VerifyStore');
 
         // 2. Process Verification (Single or Batch)
         Route::post('/sahkan-tugasan/simpan', [LogsController::class, 'verifyStore'])->name('Penyelia.VerifyStore');
