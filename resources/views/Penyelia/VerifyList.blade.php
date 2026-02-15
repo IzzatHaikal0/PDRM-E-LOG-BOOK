@@ -681,12 +681,12 @@
             })
         })
         .then(async res => {
-            // 1. Check if Server responded with OK (200)
+
             if (!res.ok) {
                 const text = await res.text();
                 throw new Error("Server Error: " + res.status);
             }
-            // 2. Parse JSON safely
+
             return res.json();
         })
         .then(data => {
@@ -694,7 +694,7 @@
                 closeVerificationModal();
                 Swal.fire({ icon: 'success', title: 'Berjaya', text: 'Tugasan telah disahkan.', timer: 1500, showConfirmButton: false });
                 
-                // 3. UI UPDATES (Wrapped in try/catch so they don't trigger the "Server Error" alert)
+                
                 try {
                     if (mode === 'single') {
                         updateCardUI(taskIds[0], userId, signatureData, true);
@@ -704,7 +704,6 @@
                     }
                 } catch (uiError) {
                     console.error("UI Update Failed:", uiError);
-                    // We don't alert the user because the data WAS saved successfully.
                 }
             } else {
                 throw new Error(data.message || 'Unknown error');

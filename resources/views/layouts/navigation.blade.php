@@ -40,11 +40,38 @@
                         </a>
                     @endif
 
-                    {{-- 3. LOG HARIAN (Staff/Officer) --}}
+                    {{-- 3. TAMBAH AKTIVITY (Penyelia & Anggota) --}}
                     @if(in_array($role, ['penyelia', 'anggota']))
-                        <a href="#" 
+                        <a href="{{ route('logs.create') }}" 
                            class="inline-flex items-center px-4 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-blue-200 hover:text-white hover:border-blue-300 transition duration-150 ease-in-out">
-                            Log Harian
+                            + Laporan Baru
+                        </a>
+                    @endif
+
+                    {{-- 3. Sejarah (Penyelia & Anggota) --}}
+                    @if(in_array($role, ['penyelia', 'anggota']))
+                        <a href="{{ route('logs.history') }}" 
+                           class="inline-flex items-center px-4 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-blue-200 hover:text-white hover:border-blue-300 transition duration-150 ease-in-out">
+                            Sejarah
+                        </a>
+                    @endif
+                    
+                    {{-- Hubungi Penyelia(Anggota) --}}
+                    @if(in_array($role, ['anggota']))
+                        <a href="{{ route('contacts') }}" 
+                           class="inline-flex items-center px-4 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-blue-200 hover:text-white hover:border-blue-300 transition duration-150 ease-in-out">
+                            Hubungi Penyelia
+                        </a>
+                    @endif
+
+                    
+
+                    {{-- 4. PENGESAHAN (Only for Penyelia) --}}
+                    @if($role === 'penyelia')
+                        <a href="{{ route('penyelia.verify') }}" 
+                        class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out
+                                {{ request()->routeIs('penyelia.verify') ? 'border-white text-white' : 'border-transparent text-gray-300 hover:text-white hover:border-gray-300' }}">
+                            {{ __('Pengesahan') }}
                         </a>
                     @endif
 
@@ -97,10 +124,22 @@
                          style="display: none;">
                         
                         {{-- Profile Link based on Role --}}
+                        @if($role === 'admin')
                         <a href="{{ route('admin.profile') }}" 
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                             {{ __('Profil Saya') }}
                         </a>
+                        @elseif($role === 'penyelia')
+                        <a href="{{ route('Penyelia.Profile') }}" 
+                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            {{ __('Profil Saya') }}
+                        </a>
+                        @else
+                        <a href="{{ route('Users.Profile') }}" 
+                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            {{ __('Profil Saya') }}
+                        </a>
+                        @endif
 
                         <div class="border-t border-gray-100"></div>
 
