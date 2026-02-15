@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User; // Assuming User model holds officer info
 use Illuminate\Support\Facades\Auth;
-   use App\Models\Kecemasan;
+use App\Models\Kecemasan;
+
 class ContactsController extends Controller
 {
     /** 

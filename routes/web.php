@@ -21,6 +21,7 @@ use App\Http\Controllers\ContactsController;
 use App\Http\Controllers\RegistrationController; 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminSettingController;
+use App\Http\Controllers\ReportController;
 /*
 |--------------------------------------------------------------------------
 | 1. Public Routes (Login & Logout)
@@ -105,10 +106,9 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 
         // Sejarah (History)
         Route::get('/rekod/sejarah', [LogsController::class, 'index'])->name('logs.history');
-        Route::get('/rekod/sejarah/report', function() {
-            return view ('Users.Logs.Report');
-        })->name('Users.Logs.Report');
 
+        Route::get('/rekod/sejarah/report', [ReportController::class, 'GetAnggotaReportPage'])->name('Users.Logs.Report');
+        Route::post('/rekod/sejarah/report/generate-pdf', [ReportController::class, 'generatePDF'])->name('Users.Logs.GeneratePDF');
         // Logic to update end time
         Route::patch('/rekod/tamat/{id}', [LogsController::class, 'updateEndTime'])->name('logs.end_task');
 
@@ -130,6 +130,7 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         // Route to delete a specific image from an existing log
         Route::delete('/rekod/gambar/{id}', [LogsController::class, 'deleteImage'])->name('logs.delete_image');
 
+    
     });
 
     /*
@@ -161,9 +162,8 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         // 4. Sejarah (History)
         Route::get('/rekod/sejarah', [LogsController::class, 'index'])->name('Penyelia.Logs.History');
         
-        Route::get('/rekod/sejarah/report', function() {
-            return view ('Penyelia.Logs.Report');
-        })->name('Penyelia.Logs.Report');
+        Route::get('/rekod/sejarah/report', [ReportController::class, 'GetPenyeliaReportPage'])->name('Penyelia.Logs.Report');
+        Route::post('/rekod/sejarah/report/generate-pdf', [ReportController::class, 'generatePDF'])->name('Penyelia.Logs.GeneratePDF');
 
         // 5. Profil
         Route::get('/profil', [ProfileController::class, 'index'])->name('Penyelia.Profile');
