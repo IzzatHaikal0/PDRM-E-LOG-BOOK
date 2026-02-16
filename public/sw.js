@@ -29,13 +29,24 @@ self.addEventListener('activate', event => {
 });
 
 // 3. Fetch Event (The Typo Fix)
-self.addEventListener('fetch', event => {
+
+self.addEventListener('fetch', function(event) {
+    // 1. If it's a page navigation (like opening the app or clicking a link)
+    if (event.request.mode === 'navigate') {
+        event.respondWith(
+            // ALWAYS try the live server first so Laravel can check the Remember Token
+            fetch(event.request).catch(() => {
+                // Only if the server is completely dead/offline, show the offline fallback
+                return caches.match('/offline.html'); 
+            })
+        );
+        return;
+    }
+
+    // 2. For all other things (CSS, Images, JS), use your normal cache strategy
     event.respondWith(
-        caches.open(CACHE_NAME).then(cache => {
-            // FIXED SPELLING: event.request
-            return cache.match(event.request).then(response => {
-                return response || fetch(event.request);
-            });
+        caches.match(event.request).then(function(response) {
+            return response || fetch(event.request);
         })
     );
 });
