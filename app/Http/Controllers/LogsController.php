@@ -336,6 +336,9 @@ public function edit($id)
 public function update(Request $request, $id)
     {
         $log = \App\Models\ActivityLog::findOrFail($id);
+        if ($log->user_id !== Auth::id()) {
+        abort(403, 'Unauthorized action.');
+        }
 
         // 1. Validation
         $request->validate([
@@ -368,8 +371,12 @@ public function update(Request $request, $id)
             'remarks' => $request->remarks,
             'images' => $currentImages, // Save merged array
             // Optionally reset status to draft/pending if it was rejected
-            'status' => 'pending', 
+            //'status' => 'pending', 
         ]);
+        if ($log->status === 'rejected') {
+        $updateData['status'] = 'pending';
+        $log->update($updateData);
+        }
 
         return redirect()->route('logs.history')->with('success', 'Laporan berjaya dikemaskini!');
     }
