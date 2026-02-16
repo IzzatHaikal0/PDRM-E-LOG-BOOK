@@ -103,7 +103,17 @@
                 <div>
                     <h3 class="text-sm font-bold text-blue-900">Tugasan Belum Dihantar</h3>
                     <p class="text-xs text-blue-600 mt-0.5">
-                        Terdapat <span class="font-bold">{{ $allDrafts->count() }}</span> tugasan draf.
+                        Terdapat <span class="font-bold">{{ $allDrafts->count() }}</span> tugasan draf
+                        {{-- Conditional Text for Month Filter --}}
+                        @if($filterMonth)
+                            pada bulan <span class="font-bold uppercase">{{ \Carbon\Carbon::parse($filterMonth)->translatedFormat('F') }}</span>
+                        @endif
+
+                        {{-- Optional: Handle Date Filter too if you want --}}
+                        @if($filterDate)
+                            pada <span class="font-bold">{{ \Carbon\Carbon::parse($filterDate)->translatedFormat('d M') }}</span>
+                        @endif
+                        .
                     </p>
                 </div>
 
