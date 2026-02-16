@@ -10,9 +10,15 @@
         if ($role === 'admin') {
             $headerColor = 'bg-gray-900'; // Dark for Admin
             $roleLabel = 'Panel Admin';
+            $titleLable = 'PDRM EP5';
         } elseif ($role === 'penyelia' || $role === 'supervisor') {
             $headerColor = 'bg-indigo-900'; // Indigo for Penyelia
             $roleLabel = 'Panel Penyelia';
+            $titleLable = 'PDRM EP4';
+        }elseif ($role === 'anggota') {
+            $headerColor; 
+            $roleLabel = 'Panel Anggota';
+            $titleLable = 'PDRM EP5';
         }
 
     } else {
@@ -37,7 +43,7 @@
 
         {{-- Text & Label --}}
         <div class="flex flex-col">
-            <span class="text-white font-bold tracking-wider text-sm leading-none">PDRM EP5</span>
+            <span class="text-white font-bold tracking-wider text-sm leading-none">{{ $titleLable }}</span>
             <span class="text-[10px] text-white/80 uppercase tracking-widest leading-none mt-0.5">{{ $roleLabel }}</span>
         </div>
     </div>

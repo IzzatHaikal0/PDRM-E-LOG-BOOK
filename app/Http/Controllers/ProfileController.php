@@ -75,7 +75,11 @@ class ProfileController extends Controller
             'alamat'     => $request->alamat,
         ]);
 
-        return redirect()->route('Users.Profile')->with('success', 'Profil berjaya dikemaskini.');
+        if (Auth::user()->role === 'anggota') {
+            return redirect()->route('Users.Profile')->with('success', 'Profil berjaya dikemaskini.');
+        }elseif(Auth::user()->role === 'penyelia'){
+            return redirect()->route('Penyelia.Profile')->with('success', 'Profil berjaya dikemaskini.');
+        }
     }
 
     public function update_photo(Request $request, $id)

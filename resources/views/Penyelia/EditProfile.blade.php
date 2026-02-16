@@ -17,7 +17,8 @@
 
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         
-        <form action="#" method="POST">
+        {{-- Updated Form Action --}}
+        <form action="{{ route('Penyelia.UpdateProfile', $user->id) }}" method="POST">
             @csrf
             @method('PUT')
             
@@ -37,16 +38,16 @@
                 <div class="grid grid-cols-1 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
                     <div>
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Nama Penuh</label>
-                        <p class="text-sm font-bold text-gray-700">{{ Auth::user()->name ?? 'Insp. Razak Bin Karim' }}</p>
+                        <p class="text-sm font-bold text-gray-700">{{ Auth::user()->name }}</p>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">No. Badan</label>
-                            <p class="text-sm font-bold text-gray-700">{{ Auth::user()->badge_number ?? 'G/12999' }}</p>
+                            <p class="text-sm font-bold text-gray-700">{{ Auth::user()->no_badan }}</p>
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">No. KP</label>
-                            <p class="text-sm font-bold text-gray-700">820505-01-9999</p>
+                            <p class="text-sm font-bold text-gray-700">{{ Auth::user()->no_ic }}</p>
                         </div>
                     </div>
                     
@@ -54,7 +55,7 @@
                     <div class="pt-2 border-t border-gray-200 mt-2">
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Jawatan Rasmi</label>
                         <div class="flex items-center gap-2">
-                            <span class="text-sm font-bold text-gray-700">Ketua Polis Balai (KPB) - IPD Muar</span>
+                            <span class="text-sm font-bold text-gray-700">{{ Auth::user()->pangkat->pangkat_name ?? 'Tiada Maklumat' }}</span>
                             <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                         </div>
                     </div>
@@ -62,34 +63,38 @@
 
                 <hr class="border-gray-100">
 
-                {{-- Editable Fields (Contact Info) --}}
+                {{-- Editable Fields --}}
                 <div class="space-y-5">
                     
                     {{-- Phone --}}
                     <div>
-                        <label for="phone" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">No. Telefon Bimbit</label>
+                        <label for="no_telefon" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">No. Telefon</label>
                         <div class="relative">
-                            <input type="text" name="phone" id="phone" value="019-9988776" 
+                            {{-- INPUT NAME: no_telefon --}}
+                            <input type="text" name="no_telefon" id="no_telefon" value="{{ old('no_telefon', $user->no_telefon) }}" 
                                 class="block w-full pl-4 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-blue-900 focus:border-blue-900 text-sm font-medium transition shadow-sm placeholder-gray-300">
                         </div>
-                        <p class="text-[10px] text-gray-400 mt-1">Digunakan untuk notifikasi SMS/WhatsApp segera.</p>
+                        @error('no_telefon') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                     </div>
 
                     {{-- Email --}}
                     <div>
                         <label for="email" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Emel Rasmi</label>
                         <div class="relative">
-                            <input type="email" name="email" id="email" value="razak.karim@pdrm.gov.my" 
+                            {{-- INPUT NAME: email --}}
+                            <input type="email" name="email" id="email" value="{{ old('email', $user->email) }}" 
                                 class="block w-full pl-4 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-blue-900 focus:border-blue-900 text-sm font-medium transition shadow-sm placeholder-gray-300">
                         </div>
-                        <p class="text-[10px] text-gray-400 mt-1">Laporan harian anggota akan dihantar ke emel ini.</p>
+                        @error('email') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                     </div>
 
                     {{-- Address --}}
                     <div>
-                        <label for="address" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Alamat Tetap</label>
-                        <textarea name="address" id="address" rows="4"
-                            class="block w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-blue-900 focus:border-blue-900 text-sm font-medium transition shadow-sm placeholder-gray-300 leading-relaxed">No. 12, Jalan Bunga Raya 4, Taman Cempaka, 84000 Muar, Johor.</textarea>
+                        <label for="alamat" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Alamat Tetap</label>
+                        {{-- INPUT NAME: alamat --}}
+                        <textarea name="alamat" id="alamat" rows="4"
+                            class="block w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-blue-900 focus:border-blue-900 text-sm font-medium transition shadow-sm placeholder-gray-300 leading-relaxed">{{ old('alamat', $user->alamat) }}</textarea>
+                        @error('alamat') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                     </div>
 
                 </div>

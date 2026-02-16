@@ -170,11 +170,9 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 
         // 5. Profil
         Route::get('/profil', [ProfileController::class, 'index'])->name('Penyelia.Profile');
-
         // 6. Edit Profile
-        Route::get('/profile/ubah', function() {
-            return view('Penyelia.EditProfile');
-        })->name('Penyelia.EditProfile');
+        Route::get('/profile/ubah/{id}', [ProfileController::class, 'view_edit_form'])->name('Penyelia.EditProfile');
+        Route::put('/profile/ubah/{id}/simpan', [ProfileController::class, 'update_profile'])->name('Penyelia.UpdateProfile');
 
         Route::post('/profile/update-photo/{id}', [ProfileController::class, 'update_photo'])->name('Penyelia.update_photo');
     });
