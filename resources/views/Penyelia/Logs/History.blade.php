@@ -45,13 +45,13 @@
                     </div>
 
                     {{-- Clear Button --}}
-                    @if($filterDate || ($filterMonth && $filterMonth !== now()->format('Y-m')))
+
                         <a href="{{ route('logs.history') }}" 
                         class="p-1.5 rounded-full bg-gray-200 hover:bg-red-100 text-gray-500 hover:text-red-600 transition shadow-sm self-start sm:self-center" 
                         title="Reset ke Bulan Semasa">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                         </a>
-                    @endif
+
                 </form>
             </div>
 
