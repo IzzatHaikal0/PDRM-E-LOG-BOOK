@@ -40,7 +40,7 @@
             <div class="flex-1 z-10">
                 <h3 class="text-sm font-bold text-red-800">Amaran Keselamatan</h3>
                 <p class="text-xs text-red-600 mt-0.5 leading-relaxed">
-                    Sila tukar kata laluan anda dengan segera. Anda masih menggunakan No. Kad Pengenalan sebagai kata laluan lalai.
+                    Sila tukar kata laluan anda dengan segera. Anda masih menggunakan No. Kad Pengenalan sebagai kata laluan anda.
                 </p>
             </div>
             
