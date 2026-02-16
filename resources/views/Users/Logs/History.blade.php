@@ -10,26 +10,46 @@
             <div>
                 <h2 class="font-bold text-xl text-[#00205B]">Sejarah Aktiviti</h2>
                 <div class="text-xs text-gray-400">
+                    {{-- Optional description --}}
                 </div>
-                {{-- DATE PICKER WITH CLEAR BUTTON --}}
-                <form action="{{ route('logs.history') }}" method="GET" class="mt-1 flex items-center gap-2">
+                
+                {{-- DATE & MONTH PICKER WITH CLEAR BUTTON --}}
+                <form action="{{ route('logs.history') }}" method="GET" class="mt-1 flex flex-col sm:flex-row sm:items-center gap-2">
+                    
+                    {{-- 1. MONTH PICKER --}}
+                    <div class="relative max-w-[150px]" title="Tapis ikut Bulan">
+                        <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <input type="month" 
+                            name="filter_month" 
+                            id="monthInput"
+                            value="{{ $filterMonth }}" 
+                            {{-- FIX: Added check to ensure dateInput exists before clearing --}}
+                            onchange="document.getElementById('dateInput').value = ''; this.form.submit()" 
+                            class="block w-full pl-8 pr-2 py-1 text-xs font-bold text-gray-600 bg-gray-100 border-none rounded-lg focus:ring-0 cursor-pointer hover:bg-gray-200 transition">
+                    </div>
+
+                    {{-- 2. DATE PICKER --}}
                     <div class="relative max-w-[150px]">
-                        {{-- Calendar Icon --}}
                         <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
                             <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                         </div>
                         
-                        {{-- Date Input --}}
-                        {{-- On change, we submit the form automatically --}}
-                        <input type="date" name="filter_date" 
+                        {{-- FIX: Added id="dateInput" here --}}
+                        <input type="date" 
+                            name="filter_date" 
+                            id="dateInput"
                             value="{{ $filterDate }}" 
-                            onchange="this.form.submit()" 
+                            onchange="document.getElementById('monthInput').value = ''; this.form.submit()" 
                             class="block w-full pl-8 pr-2 py-1 text-xs font-bold text-gray-600 bg-gray-100 border-none rounded-lg focus:ring-0 cursor-pointer hover:bg-gray-200 transition">
                     </div>
 
-                    {{-- Clear Button (Only show if date is selected) --}}
-                    @if($filterDate)
-                        <a href="{{ route('logs.history') }}" class="p-1 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-500 transition" title="Kosongkan Tapisan">
+                    {{-- Clear Button --}}
+                    @if($filterDate || ($filterMonth && $filterMonth !== now()->format('Y-m')))
+                        <a href="{{ route('logs.history') }}" 
+                        class="p-1.5 rounded-full bg-gray-200 hover:bg-red-100 text-gray-500 hover:text-red-600 transition shadow-sm self-start sm:self-center" 
+                        title="Reset ke Bulan Semasa">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                         </a>
                     @endif
