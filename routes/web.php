@@ -102,7 +102,7 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 
         // Rekod (Create Log)
         Route::post('/rekod/simpan', [LogsController::class, 'store'])->name('logs.store');
-        Route::get('/rekod/baru', [LogsController::class, 'create'])->name('logs.create');// Handle form submission
+        Route::get('/rekod/baru', [LogsController::class, 'create'])->name('logs.create');
 
         // Sejarah (History)
         Route::get('/rekod/sejarah', [LogsController::class, 'index'])->name('logs.history');
