@@ -124,10 +124,6 @@
                         <div class="relative w-full h-20 rounded-lg overflow-hidden border border-gray-200 group">
                             <img src="{{ asset('storage/'.$img) }}" class="w-full h-full object-cover">
                             
-                            {{-- 
-                               FIX: Button points to EXTERNAL form using form="id" attribute 
-                               This prevents nested form issues
-                            --}}
                             <button type="submit" form="delete-img-form-{{ $index }}" 
                                     class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-0.5 shadow hover:bg-red-600"
                                     onclick="return confirm('Padam gambar ini?')">
@@ -139,14 +135,16 @@
             @else
                 <p class="text-xs text-gray-400 italic mb-4">Tiada gambar.</p>
             @endif
-
-            <label for="image_upload" class="flex flex-col items-center justify-center w-full h-24 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition">
-                <div class="flex flex-col items-center justify-center pt-2 pb-3">
-                    <svg class="w-6 h-6 mb-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    <p class="text-xs text-gray-500 font-medium">Tambah Gambar Baru</p>
-                </div>
-                <input id="image_upload" name="images[]" type="file" class="hidden" accept="image/*" multiple />
-            </label>
+            <div class="space-y-3">
+                <label for="image_upload" class="flex flex-col items-center justify-center w-full h-24 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition">
+                    <div class="flex flex-col items-center justify-center pt-2 pb-3">
+                        <svg class="w-6 h-6 mb-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        <p class="text-xs text-gray-500 font-medium">Tambah Gambar Baru</p>
+                    </div>
+                    <input id="image_upload" name="images[]" type="file" class="hidden" accept="image/*" multiple onchange="previewNewImages(this)"/>
+                </label>
+                <div id="new-preview-container" class="grid grid-cols-4 gap-2 empty:hidden"></div>
+            </div>
         </div>
 
         {{-- SUBMIT --}}
@@ -218,6 +216,38 @@
                 option.style.display = "none"; 
             }
         });
+    }
+
+    function previewNewImages(input) {
+        const container = document.getElementById('new-preview-container');
+        
+        // 1. Clear previous previews (so they don't stack if you select again)
+        container.innerHTML = '';
+
+        // 2. Loop through selected files
+        if (input.files && input.files.length > 0) {
+            Array.from(input.files).forEach(file => {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    // Create wrapper div
+                    const div = document.createElement('div');
+                    div.className = "relative w-full h-20 rounded-lg overflow-hidden border-2 border-green-500 shadow-sm";
+                    
+                    // Create Image + "Baru" Badge
+                    div.innerHTML = `
+                        <img src="${e.target.result}" class="w-full h-full object-cover opacity-90">
+                        <div class="absolute top-1 left-1 bg-green-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-sm">
+                            Baru
+                        </div>
+                    `;
+                    
+                    container.appendChild(div);
+                }
+                
+                reader.readAsDataURL(file);
+            });
+        }
     }
 </script>
 @endsection
