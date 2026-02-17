@@ -85,7 +85,7 @@ class ProfileController extends Controller
         }elseif(Auth::user()->role === 'penyelia'){
             return redirect()->route('Penyelia.Profile')->with('success', 'Profil berjaya dikemaskini.');
         }elseif(Auth::user()->role === 'admin'){
-            return redirect()->route('admin.profile')->with('success', 'Profil berjaya dikemaskini.');
+            return redirect()->route('Admin.Profile')->with('success', 'Profil berjaya dikemaskini.');
         }
     }
 
