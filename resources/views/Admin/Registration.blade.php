@@ -245,5 +245,36 @@
             switchTab('manual');
         @endif
     });
+
+    // This function runs the moment a user selects a file
+    function showFileName(input) {
+        const display = document.getElementById('file-name-display');
+        const dropzoneBox = document.querySelector('label[for="dropzone-file"]');
+        const icon = dropzoneBox.querySelector('svg');
+
+        // Check if a file was actually selected
+        if (input.files && input.files.length > 0) {
+            const fileName = input.files[0].name;
+            
+            // 1. Update the text below the box
+            display.innerText = "✓ Fail sedia untuk dimuat naik: " + fileName;
+            
+            // 2. Add some green styling to the dropzone box to show success
+            dropzoneBox.classList.remove('bg-gray-50', 'border-gray-300');
+            dropzoneBox.classList.add('bg-green-50', 'border-green-400');
+            
+            // 3. Turn the icon green
+            icon.classList.remove('text-gray-400');
+            icon.classList.add('text-green-500');
+        } else {
+            // If they cancel/remove the file, reset everything back to normal
+            display.innerText = "";
+            dropzoneBox.classList.add('bg-gray-50', 'border-gray-300');
+            dropzoneBox.classList.remove('bg-green-50', 'border-green-400');
+            
+            icon.classList.add('text-gray-400');
+            icon.classList.remove('text-green-500');
+        }
+    }
 </script>
 @endsection
