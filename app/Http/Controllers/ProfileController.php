@@ -34,7 +34,7 @@ class ProfileController extends Controller
             return view('Users.Profile', compact('user'));
         }
         else{
-            return view('admin.profile', compact('user'));
+            return view('Admin.Profile', compact('user'));
         }
     }
 

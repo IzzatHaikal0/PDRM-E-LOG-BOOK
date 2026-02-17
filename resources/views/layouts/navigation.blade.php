@@ -125,7 +125,7 @@
                         
                         {{-- Profile Link based on Role --}}
                         @if($role === 'admin')
-                        <a href="{{ route('admin.profile') }}" 
+                        <a href="{{ route('Admin.Profile') }}" 
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                             {{ __('Profil Saya') }}
                         </a>
