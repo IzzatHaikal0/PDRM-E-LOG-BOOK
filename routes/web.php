@@ -61,8 +61,11 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 
         Route::get('/senarai-anggota', [RegistrationController::class, 'listUsers'])->name('Admin.ListAnggota');
 
-        Route::get('/profil', function() {return view('Admin.Profile');})->name('admin.profile');
+        Route::get('/profil', [ProfileController::class, 'index'])->name('admin.profile');
         Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('Admin.Profile.UpdatePassword');
+        Route::get('/profile/ubah/{id}', [ProfileController::class, 'view_edit_form'])->name('Admin.EditProfile');
+        Route::put('/profile/ubah/{id}/simpan', [ProfileController::class, 'update_profile'])->name('Admin.UpdateProfile');
+        Route::post('/profile/update-photo/{id}', [ProfileController::class, 'update_photo'])->name('Admin.update_photo');
 
         Route::get('/kemaskini-anggota/{id}', [RegistrationController::class, 'edit'])->name('Admin.EditUser');
         Route::post('/kemaskini-anggota/{id}/simpan', [RegistrationController::class, 'update'])->name('Admin.UpdateUser');
