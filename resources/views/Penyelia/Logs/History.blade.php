@@ -16,7 +16,11 @@
                 <form action="{{ route('logs.history') }}" method="GET" class="mt-1 flex flex-col sm:flex-row sm:items-center gap-2">
                     
                     {{-- 1. MONTH PICKER --}}
-                    <div class="relative max-w-[150px]" title="Tapis ikut Bulan">
+                    <div class="relative w-full max-w-[150px]" title="Tapis ikut Bulan">
+                        <label for="monthInput" class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">
+                            Pilih Bulan
+                        </label>
+                        <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
                             <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                         </div>
@@ -27,10 +31,16 @@
                             {{-- FIX: Added check to ensure dateInput exists before clearing --}}
                             onchange="document.getElementById('dateInput').value = ''; this.form.submit()" 
                             class="block w-full pl-8 pr-2 py-1 text-xs font-bold text-gray-600 bg-gray-100 border-none rounded-lg focus:ring-0 cursor-pointer hover:bg-gray-200 transition">
+                        </div>
                     </div>
-                    
+
                     {{-- 2. DATE PICKER --}}
-                    <div class="relative max-w-[150px]">
+                    <div class="relative w-full max-w-[150px]">
+                        <label for="dateInput" class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">
+                            Pilih Tarikh
+                        </label>
+
+                        <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
                             <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                         </div>
@@ -42,6 +52,7 @@
                             value="{{ $filterDate }}" 
                             onchange="document.getElementById('monthInput').value = ''; this.form.submit()" 
                             class="block w-full pl-8 pr-2 py-1 text-xs font-bold text-gray-600 bg-gray-100 border-none rounded-lg focus:ring-0 cursor-pointer hover:bg-gray-200 transition">
+                        </div>
                     </div>
 
                     {{-- Clear Button --}}
