@@ -15,12 +15,10 @@
         <div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-[#00205B] to-blue-900"></div>
         
         <div class="relative z-10 mt-8">
-            {{-- ADDED: 'group' class here to handle hover effects --}}
             <div class="w-24 h-24 bg-white p-1 rounded-full mx-auto shadow-lg relative group">
                 
                 {{-- Avatar Container --}}
                 <div class="w-full h-full bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold text-2xl overflow-hidden relative">
-                    {{-- LOGIC UPDATE: Use 'gambar_profile' from DB and asset() helper --}}
                     @if(Auth::user() && Auth::user()->gambar_profile)
                         <img id="profileImagePreview" src="{{ asset('storage/' . Auth::user()->gambar_profile) }}" class="w-full h-full object-cover">
                     @else
@@ -28,7 +26,7 @@
                     @endif
                 </div>
 
-                {{-- === [START] CHANGE PHOTO BUTTON === --}}
+                {{-- CHANGE PHOTO BUTTON --}}
                 <label for="photoInput" class="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition cursor-pointer z-20">
                     <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
@@ -36,14 +34,10 @@
                     </svg>
                 </label>
 
-                {{-- Hidden Input Field --}}
-                {{-- CRITICAL UPDATE: Added route() to action attribute --}}
                 <form id="photoForm" action="{{ route('Penyelia.update_photo', Auth::id()) }}" method="POST" enctype="multipart/form-data">
                     @csrf
-                    {{-- Name is 'photo' to match Controller validation --}}
                     <input type="file" id="photoInput" name="photo" class="hidden" accept="image/*" onchange="previewImage(this)">
                 </form>
-                {{-- === [END] CHANGE PHOTO BUTTON === --}}
                 
                 {{-- Supervisor Badge --}}
                 <div class="absolute bottom-0 right-0 bg-yellow-400 border-4 border-white rounded-full p-1.5 text-white shadow-sm pointer-events-none z-10" title="Akaun Penyelia">
@@ -65,7 +59,7 @@
         </div>
     </div>
 
-    {{-- 3. MAKLUMAT PERIBADI --}}
+    {{-- 2. MAKLUMAT PERIBADI --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
         <div class="px-5 py-4 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
             <div class="flex items-center gap-2">
@@ -93,15 +87,28 @@
                 <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Jawatan Rasmi</label>
                 <p class="text-sm font-semibold text-gray-800">{{ $user->pangkat->pangkat_name }}</p>
             </div>
+            
+            {{-- [UPDATED] EMAIL SECTION WITH WARNING --}}
             <div>
                 <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Emel Rasmi</label>
-                <p class="text-sm font-semibold text-gray-800">{{ $user->email }}</p>
+                @if(!empty($user->email))
+                    <p class="text-sm font-semibold text-gray-800">{{ $user->email }}</p>
+                @else
+                    <div class="mt-1 flex items-start gap-2 text-amber-600 bg-amber-50 px-3 py-2 rounded-lg border border-amber-100">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                        <div>
+                            <span class="block text-xs font-bold">Tiada Emel Rasmi</span>
+                            <span class="block text-[10px] leading-tight mt-0.5 text-amber-700">Sila kemaskini untuk membolehkan fungsi "Lupa Kata Laluan".</span>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
 
-    
-    {{-- [NEW SECTION] 3. TETAPAN KESELAMATAN (CHANGE PASSWORD) --}}
+    {{-- 3. TETAPAN KESELAMATAN --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
         <div class="px-5 py-4 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
             <div class="flex items-center gap-2">
@@ -138,7 +145,7 @@
 
 </div>
 
-{{-- [NEW] PASSWORD MODAL --}}
+{{-- PASSWORD MODAL --}}
 <div id="passwordModal" style="display: none;" class="fixed inset-0 z-[100] w-screen h-screen overflow-hidden" role="dialog" aria-modal="true">
     <div class="absolute inset-0 flex items-center justify-center p-4">
         {{-- Backdrop --}}
@@ -154,7 +161,6 @@
             </div>
 
             <div class="p-6">
-                {{-- Make sure Route 'Profile.UpdatePassword' exists --}}
                 <form action="{{ route('Users.Profile.UpdatePassword') }}" method="POST" class="space-y-4">
                     @csrf
                     @method('PUT')
@@ -223,7 +229,6 @@
             });
 
             // 2. CRITICAL STEP: Submit the form to the server
-            // This sends the file to your 'update_photo' controller
             document.getElementById('photoForm').submit();
         }
     }

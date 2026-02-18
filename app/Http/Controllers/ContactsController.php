@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User; // Assuming User model holds officer info
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Kecemasan;
 
@@ -78,7 +78,7 @@ class ContactsController extends Controller
     public function index()
     {
         $kecemasans = Kecemasan::orderBy('name', 'asc')->get();
-        $contact_penyelia = User::get();
+        $contact_penyelia = User::where('role', 'penyelia')->get();
         
         return view('Users.Contacts', compact('kecemasans', 'contact_penyelia')); 
     }

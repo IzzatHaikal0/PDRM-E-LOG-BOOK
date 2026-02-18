@@ -39,17 +39,21 @@
             
             {{-- Left: Info --}}
             <div class="flex items-center gap-3 overflow-hidden">
-                {{-- Initials Avatar (Blue theme for Penyelia) --}}
-                <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-800 font-bold flex items-center justify-center text-sm shrink-0 uppercase">
-                    {{ substr($penyelia->name, 0, 2) }}
-                </div>
+                
+                {{-- DYNAMIC PROFILE PICTURE --}}
+                @if(!empty($penyelia->gambar_profile))
+                    <img src="{{ asset('storage/' . $penyelia->gambar_profile) }}" alt="Profile" class="w-10 h-10 rounded-full object-cover border border-gray-200 shrink-0 shadow-sm">
+                @else
+                    {{-- Initials Fallback (If no picture) --}}
+                    <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-800 font-bold flex items-center justify-center text-sm shrink-0 uppercase border border-blue-100">
+                        {{ substr($penyelia->name, 0, 2) }}
+                    </div>
+                @endif
                 
                 <div class="min-w-0">
                     <h4 class="font-bold text-gray-800 text-sm truncate search-name">{{ $penyelia->name }}</h4>
                     <p class="text-xs text-gray-500 truncate search-role">
                         {{ $penyelia->pangkat->pangkat_name ?? 'Pegawai PDRM' }} 
-                        {{-- Add station/department here if available in your User model --}}
-                        {{-- • {{ $penyelia->cawangan ?? 'IPD' }} --}}
                     </p>
                 </div>
             </div>
@@ -103,9 +107,16 @@
             
             {{-- Left: Info --}}
             <div class="flex items-center gap-3 overflow-hidden">
-                <div class="w-10 h-10 rounded-full bg-red-50 text-red-800 font-bold flex items-center justify-center text-sm shrink-0 uppercase">
-                    {{ substr($kecemasan->name, 0, 2) }}
-                </div>
+                
+                {{-- DYNAMIC LOGO / PICTURE FOR JABATAN --}}
+                @if(!empty($kecemasan->profile_picture))
+                    <img src="{{ asset('storage/' . $kecemasan->profile_picture) }}" alt="Logo" class="w-10 h-10 rounded-full object-cover border border-gray-200 shrink-0 shadow-sm">
+                @else
+                    {{-- Initials Fallback --}}
+                    <div class="w-10 h-10 rounded-full bg-red-50 text-red-800 font-bold flex items-center justify-center text-sm shrink-0 uppercase border border-red-100">
+                        {{ substr($kecemasan->name, 0, 2) }}
+                    </div>
+                @endif
                 
                 <div class="min-w-0">
                     <h4 class="font-bold text-gray-800 text-sm truncate search-name">{{ $kecemasan->name }}</h4>

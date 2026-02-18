@@ -5,7 +5,7 @@
 
     {{-- Header --}}
     <div class="mb-6 flex items-center gap-3">
-        <a href="{{ route('Penyelia.VerifyList') ?? '#' }}" class="p-2 bg-white rounded-full border border-gray-200 text-gray-500 hover:bg-gray-50">
+        <a href="{{ route('Penyelia.Logs.History') ?? '#' }}" class="p-2 bg-white rounded-full border border-gray-200 text-gray-500 hover:bg-gray-50">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         </a>
         <div>

@@ -46,13 +46,11 @@
         {
             $request->validate([
                 'name' => 'required|string|max:255',
-                'level' => 'required|integer'
             ]);
 
             $pangkat = Pangkat::findOrFail($id);
             $pangkat->update([
                 'pangkat_name' => $request->name,
-                'level' => $request->level
             ]);
 
             return redirect()->back()->with('success', 'Pangkat berjaya dikemaskini!');
@@ -73,7 +71,7 @@
                 'order' => 'required|array',
             ]);
 
-            $order = $request->input('order'); // Array of IDs in new order: [5, 2, 8, 1...]
+            $order = $request->input('order'); 
 
             foreach ($order as $index => $id) {
                 // Update level based on the array index (starting from 1)

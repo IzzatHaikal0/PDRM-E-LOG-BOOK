@@ -25,7 +25,7 @@
         <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between hover:shadow-md transition">
             <div class="flex items-start justify-between">
                 <div>
-                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Pegawai</p>
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Penyelia</p>
                     <h3 class="text-2xl font-bold text-gray-800 mt-1">{{ $count_penyelia ?? 0 }}</h3>
                 </div>
                 <div class="p-2 bg-blue-50 rounded-lg text-blue-900">

@@ -23,6 +23,34 @@
         </div>
     </div>
 
+    {{-- ========================================== --}}
+    {{-- AMARAN KESELAMATAN: PASSWORD REMINDER BANNER --}}
+    {{-- ========================================== --}}
+    @if(\Illuminate\Support\Facades\Hash::check(Auth::user()->no_ic, Auth::user()->password))
+        <div class="mb-6 bg-red-50 border border-red-200 rounded-2xl p-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center shadow-sm relative overflow-hidden animate-fade-in">
+            {{-- Background decorative circle --}}
+            <div class="absolute -right-4 -top-4 w-24 h-24 bg-red-100 rounded-full opacity-50 pointer-events-none"></div>
+            
+            <div class="flex-shrink-0 bg-red-100 p-2.5 rounded-full z-10">
+                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+            </div>
+            
+            <div class="flex-1 z-10">
+                <h3 class="text-sm font-bold text-red-800">Amaran Keselamatan</h3>
+                <p class="text-xs text-red-600 mt-0.5 leading-relaxed">
+                    Sila tukar kata laluan anda dengan segera. Anda masih menggunakan No. Kad Pengenalan sebagai kata laluan anda.
+                </p>
+            </div>
+            
+            <a href="{{ route('Penyelia.Profile') }}" class="z-10 shrink-0 w-full sm:w-auto text-center px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl shadow-md shadow-red-600/20 transition-all active:scale-95">
+                Tukar Sekarang
+            </a>
+        </div>
+    @endif
+    {{-- ========================================== --}}
+
     {{-- 2. INTERACTIVE CALENDAR CARD --}}
     <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-6 relative overflow-hidden">
         

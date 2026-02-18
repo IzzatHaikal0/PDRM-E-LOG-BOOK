@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
@@ -19,11 +20,17 @@ class LoginController extends Controller
         // === CHANGED: Added 'true' to force the Remember Me token ===
         if (Auth::attempt($credentials, true)) {
             $request->session()->regenerate();
+            
+            $user = Auth::user();
+
+            //NEW: Password Reminder Logic
+            if (Hash::check($user->no_ic, $user->password)) {
+                // Flash a warning to the session so the dashboard can display it
+                $request->session()->flash('password_reminder', 'Sila tukar kata laluan anda. Anda masih menggunakan No. Kad Pengenalan sebagai kata laluan lalai.');
+            }
 
             // 3. REDIRECTION LOGIC BASED ON DB ROLE
-            $role = Auth::user()->role; 
-
-            switch ($role) {
+            switch ($user->role) {
                 case 'admin':
                     return redirect()->route('Admin.Dashboard');
                 
@@ -41,7 +48,7 @@ class LoginController extends Controller
                     ]);
             }
         }
-
+        
         // 4. If login fails
         return back()->withErrors([
             'no_badan' => 'Maklumat log masuk tidak sah.',

@@ -29,9 +29,12 @@ class ProfileController extends Controller
         if ($user->role === 'penyelia') {
             return view('Penyelia.Profile', compact('user'));
         } 
-        else {
+        elseif($user->role === 'anggota') {
             // Default to Anggota (User) view
             return view('Users.Profile', compact('user'));
+        }
+        else{
+            return view('Admin.Profile', compact('user'));
         }
     }
 
@@ -48,6 +51,8 @@ class ProfileController extends Controller
         }elseif(Auth::user()->role === 'penyelia'){
             return view('Penyelia.EditProfile', compact('user'));
 
+        }elseif(Auth::user()->role === 'admin'){
+            return view('Admin.EditProfile', compact('user'));
         }
 
         // 3. Get ranks (Pangkats) for the dropdown
@@ -75,7 +80,13 @@ class ProfileController extends Controller
             'alamat'     => $request->alamat,
         ]);
 
-        return redirect()->route('Users.Profile')->with('success', 'Profil berjaya dikemaskini.');
+        if (Auth::user()->role === 'anggota') {
+            return redirect()->route('Users.Profile')->with('success', 'Profil berjaya dikemaskini.');
+        }elseif(Auth::user()->role === 'penyelia'){
+            return redirect()->route('Penyelia.Profile')->with('success', 'Profil berjaya dikemaskini.');
+        }elseif(Auth::user()->role === 'admin'){
+            return redirect()->route('Admin.Profile')->with('success', 'Profil berjaya dikemaskini.');
+        }
     }
 
     public function update_photo(Request $request, $id)

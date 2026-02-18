@@ -22,6 +22,7 @@ use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminSettingController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\Auth\PasswordResetController;
 /*
 |--------------------------------------------------------------------------
 | 1. Public Routes (Login & Logout)
@@ -36,12 +37,19 @@ Route::post('/login', [LoginController::class, 'authenticate'])->name('login.sub
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::patch('/logs/batch-submit', [App\Http\Controllers\LogsController::class, 'submitBatch'])->name('logs.batch_submit');
 
+Route::get('/lupa-kata-laluan', [PasswordResetController::class, 'requestForm'])->name('password.request');
+Route::post('/lupa-kata-laluan', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
+Route::get('/reset-kata-laluan/{token}', [PasswordResetController::class, 'resetForm'])->name('password.reset');
+Route::post('/reset-kata-laluan', [PasswordResetController::class, 'updatePassword'])->name('password.update');
+
+
 /*
 |--------------------------------------------------------------------------
 | 2. Protected Routes (Require Login & No Back History)
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'prevent-back-history'])->group(function () {
+
 
     /*
     |--------------------------------------------------------------------------
@@ -61,8 +69,11 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 
         Route::get('/senarai-anggota', [RegistrationController::class, 'listUsers'])->name('Admin.ListAnggota');
 
-        Route::get('/profil', function() {return view('Admin.Profile');})->name('admin.profile');
+        Route::get('/profil', [ProfileController::class, 'index'])->name('Admin.Profile');
         Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('Admin.Profile.UpdatePassword');
+        Route::get('/profile/ubah/{id}', [ProfileController::class, 'view_edit_form'])->name('Admin.EditProfile');
+        Route::put('/profile/ubah/{id}/simpan', [ProfileController::class, 'update_profile'])->name('Admin.UpdateProfile');
+        Route::post('/profile/update-photo/{id}', [ProfileController::class, 'update_photo'])->name('Admin.update_photo');
 
         Route::get('/kemaskini-anggota/{id}', [RegistrationController::class, 'edit'])->name('Admin.EditUser');
         Route::post('/kemaskini-anggota/{id}/simpan', [RegistrationController::class, 'update'])->name('Admin.UpdateUser');
@@ -102,7 +113,7 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 
         // Rekod (Create Log)
         Route::post('/rekod/simpan', [LogsController::class, 'store'])->name('logs.store');
-        Route::get('/rekod/baru', [LogsController::class, 'create'])->name('logs.create');// Handle form submission
+        Route::get('/rekod/baru', [LogsController::class, 'create'])->name('logs.create');
 
         // Sejarah (History)
         Route::get('/rekod/sejarah', [LogsController::class, 'index'])->name('logs.history');
@@ -170,11 +181,9 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 
         // 5. Profil
         Route::get('/profil', [ProfileController::class, 'index'])->name('Penyelia.Profile');
-
         // 6. Edit Profile
-        Route::get('/profile/ubah', function() {
-            return view('Penyelia.EditProfile');
-        })->name('Penyelia.EditProfile');
+        Route::get('/profile/ubah/{id}', [ProfileController::class, 'view_edit_form'])->name('Penyelia.EditProfile');
+        Route::put('/profile/ubah/{id}/simpan', [ProfileController::class, 'update_profile'])->name('Penyelia.UpdateProfile');
 
         Route::post('/profile/update-photo/{id}', [ProfileController::class, 'update_photo'])->name('Penyelia.update_photo');
     });
