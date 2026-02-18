@@ -9,7 +9,7 @@
 @section('content')
 <div class="py-6 px-4 max-w-lg mx-auto pb-24 relative">
 
-    {{-- 1. PROFILE HEADER CARD (KEPT AS IS) --}}
+    {{-- 1. PROFILE HEADER CARD --}}
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6 text-center relative overflow-hidden">
         {{-- Background Gradient --}}
         <div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-[#00205B] to-blue-900"></div>
@@ -51,7 +51,7 @@
     </div>
 
 
-    {{-- 2. MAKLUMAT PERIBADI (KEPT AS IS) --}}
+    {{-- 2. MAKLUMAT PERIBADI --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
         <div class="px-5 py-4 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
             <div class="flex items-center gap-2">
@@ -77,9 +77,23 @@
                 </div>
             </div>
             
+            {{-- [UPDATED] EMEL RASMI SECTION WITH WARNING --}}
             <div>
                 <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Emel Rasmi</label>
-                <p class="text-sm font-semibold text-gray-800">{{ $user->email }}</p>
+                
+                @if(!empty($user->email))
+                    <p class="text-sm font-semibold text-gray-800">{{ $user->email }}</p>
+                @else
+                    <div class="mt-1 flex items-start gap-2 text-amber-600 bg-amber-50 px-3 py-2 rounded-lg border border-amber-100">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                        <div>
+                            <span class="block text-xs font-bold">Tiada Emel Rasmi</span>
+                            <span class="block text-[10px] leading-tight mt-0.5 text-amber-700">Sila kemaskini untuk membolehkan fungsi "Lupa Kata Laluan".</span>
+                        </div>
+                    </div>
+                @endif
             </div>
 
             <div>
@@ -91,7 +105,7 @@
         </div>
     </div>
 
-    {{-- [NEW SECTION] 3. TETAPAN KESELAMATAN (CHANGE PASSWORD) --}}
+    {{-- 3. TETAPAN KESELAMATAN --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
         <div class="px-5 py-4 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
             <div class="flex items-center gap-2">
@@ -113,7 +127,7 @@
         </div>
     </div>
 
-    {{-- 4. LOGOUT BUTTON (KEPT AS IS) --}}
+    {{-- 4. LOGOUT BUTTON --}}
     <form method="POST" action="{{ route('logout') }}">
         @csrf
         <button type="submit" class="w-full flex items-center justify-center gap-2 p-4 bg-white border border-red-100 rounded-2xl shadow-sm hover:bg-red-50 transition group">
@@ -128,7 +142,7 @@
 
 </div>
 
-{{-- [NEW] PASSWORD MODAL --}}
+{{-- PASSWORD MODAL --}}
 <div id="passwordModal" style="display: none;" class="fixed inset-0 z-[100] w-screen h-screen overflow-hidden" role="dialog" aria-modal="true">
     <div class="absolute inset-0 flex items-center justify-center p-4">
         {{-- Backdrop --}}
@@ -144,7 +158,6 @@
             </div>
 
             <div class="p-6">
-                {{-- Make sure Route 'Profile.UpdatePassword' exists --}}
                 <form action="{{ route('Users.Profile.UpdatePassword') }}" method="POST" class="space-y-4">
                     @csrf
                     @method('PUT')
