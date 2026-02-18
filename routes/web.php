@@ -22,6 +22,7 @@ use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminSettingController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\Auth\PasswordResetController;
 /*
 |--------------------------------------------------------------------------
 | 1. Public Routes (Login & Logout)
@@ -36,12 +37,19 @@ Route::post('/login', [LoginController::class, 'authenticate'])->name('login.sub
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::patch('/logs/batch-submit', [App\Http\Controllers\LogsController::class, 'submitBatch'])->name('logs.batch_submit');
 
+Route::get('/lupa-kata-laluan', [PasswordResetController::class, 'requestForm'])->name('password.request');
+Route::post('/lupa-kata-laluan', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
+Route::get('/reset-kata-laluan/{token}', [PasswordResetController::class, 'resetForm'])->name('password.reset');
+Route::post('/reset-kata-laluan', [PasswordResetController::class, 'updatePassword'])->name('password.update');
+
+
 /*
 |--------------------------------------------------------------------------
 | 2. Protected Routes (Require Login & No Back History)
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'prevent-back-history'])->group(function () {
+
 
     /*
     |--------------------------------------------------------------------------
