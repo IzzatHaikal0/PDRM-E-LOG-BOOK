@@ -168,7 +168,7 @@
                                                     data-task='{{ json_encode($task) }}'
                                                     data-user-name="{{ $user['name'] }}"
                                                     data-user-initials="{{ $user['initials'] }}"
-                                                    data-user-id="{{ $user['id'] }}"
+                                                    data-user-no-badan="{{ $user['no_badan'] }}"
                                                     class="px-4 bg-white border border-gray-300 text-gray-600 text-[10px] font-bold py-1.5 rounded hover:bg-gray-50 transition">
                                                     Butiran
                                                 </button>
@@ -234,107 +234,135 @@
 
                 {{-- BODY --}}
                 <div id="group-body-v-{{ $user['id'] }}" class="hidden border-t border-gray-100 bg-gray-50/50">
+                    
+                    {{-- [NEW] DATE FILTER FOR VERIFIED TAB --}}
+                    <div class="px-4 py-3 bg-white border-b border-gray-100 flex items-center justify-between shadow-sm sticky top-0 z-10">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                            <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Tapis Tarikh</span>
+                        </div>
+                        
+                        <div class="flex items-center gap-1">
+                            {{-- Date Input --}}
+                            <input type="date" 
+                                id="date-verified-{{ $user['id'] }}"
+                                onchange="filterVerifiedTasks(this, '{{ $user['id'] }}')"
+                                class="block w-32 py-1 px-2 text-xs font-bold text-gray-700 border border-gray-300 rounded-lg focus:ring-[#00205B] focus:border-[#00205B] shadow-sm">
+                            
+                            {{-- Clear Button --}}
+                            <button onclick="clearVerifiedFilter('{{ $user['id'] }}')" 
+                                    class="p-1.5 bg-gray-100 hover:bg-gray-200 text-gray-500 rounded-lg transition" 
+                                    title="Kosongkan Tapis">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="p-3 space-y-3">
-                        {{-- [NEW] Loop through Dates first --}}
+                        {{-- Loop through Dates --}}
                         @foreach($user['tasks'] as $date => $dailyTasks)
                             
-                            {{-- Date Header --}}
-                            <div class="px-4 pt-4 pb-2">
-                                <h5 class="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-[#00205B]"></span>
-                                    {{ \Carbon\Carbon::parse($date)->translatedFormat('d F Y, l') }}
-                                </h5>
-                            </div>
+                            {{-- [NEW] WRAPPER FOR FILTERING --}}
+                            <div class="verified-date-group-{{ $user['id'] }}" data-date="{{ $date }}">
 
-                            {{-- Task List for this Date --}}
-                            <div class="px-3 pb-2 space-y-3">
-                                @foreach($dailyTasks as $task)
-                                    @php
-                                        $isApproved = $task['status'] === 'approved';
-                                        $statusColor = $isApproved ? 'bg-green-500' : 'bg-red-500';
-                                        $badgeClass = $isApproved ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
-                                        $statusText = $isApproved ? 'Disahkan' : 'Ditolak';
-                                    @endphp
+                                {{-- Date Header --}}
+                                <div class="px-4 pt-4 pb-2">
+                                    <h5 class="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-[#00205B]"></span>
+                                        {{ \Carbon\Carbon::parse($date)->translatedFormat('d F Y, l') }}
+                                    </h5>
+                                </div>
 
-                                    <div class="bg-white border border-gray-200 rounded-xl p-3 shadow-sm relative overflow-hidden">
-                                        <div class="absolute left-0 top-0 bottom-0 w-1 {{ $statusColor }}"></div>
-                                        <div class="pl-3">
-                                            {{-- INSIDE VERIFIED LOOP --}}
-                                            <div class="flex justify-between items-start mb-1">
-                                                <div class="flex flex-wrap items-center gap-2">
-                                                    <span class="text-xs font-bold text-gray-900">{{ $task['time'] }}</span>
-                                                    <span class="text-xs font-bold text-gray-900">Disahkan pada {{ $task['verified_at'] }}</span>
-                                                    <span class="text-[10px] text-gray-400">&bull;</span>
-                                                    <br>
-                                                    {{-- [UPDATED] Red Text if Off Duty --}}
-                                                    <span class="text-xs font-semibold {{ $task['is_off_duty'] ? 'text-red-600' : 'text-gray-700' }}">
-                                                    {{ $task['type'] }}
-                                                    </span>
+                                {{-- Task List for this Date --}}
+                                <div class="px-3 pb-2 space-y-3">
+                                    @foreach($dailyTasks as $task)
+                                        {{-- ... (Your existing Task Card Code) ... --}}
+                                        @php
+                                            $isApproved = $task['status'] === 'approved';
+                                            $statusColor = $isApproved ? 'bg-green-500' : 'bg-red-500';
+                                            $badgeClass = $isApproved ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+                                            $statusText = $isApproved ? 'Disahkan' : 'Ditolak';
+                                        @endphp
 
-                                                    {{-- [NEW] Off Duty Badge --}}
-                                                    @if($task['is_off_duty'])
-                                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-600 border border-red-200">
-                                                            OFF DUTY
+                                        <div class="bg-white border border-gray-200 rounded-xl p-3 shadow-sm relative overflow-hidden">
+                                            <div class="absolute left-0 top-0 bottom-0 w-1 {{ $statusColor }}"></div>
+                                            <div class="pl-3">
+                                                <div class="flex justify-between items-start mb-1">
+                                                    <div class="flex flex-wrap items-center gap-2">
+                                                        <span class="text-xs font-bold text-gray-900">{{ $task['time'] }}</span>
+                                                        <span class="text-xs font-bold text-gray-900">Disahkan pada {{ $task['verified_at'] }}</span>
+                                                        <span class="text-[10px] text-gray-400">&bull;</span>
+                                                        <br>
+                                                        <span class="text-xs font-semibold {{ $task['is_off_duty'] ? 'text-red-600' : 'text-gray-700' }}">
+                                                        {{ $task['type'] }}
                                                         </span>
-                                                    @endif
-                                                </div>
-                                                
-                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium {{ $badgeClass }} shrink-0">
-                                                    {{ $statusText }}
-                                                </span>
-                                            </div>
 
-                                            <p class="text-xs line-clamp-2 mt-1 {{ $task['is_off_duty'] ? 'text-red-600 font-medium' : 'text-gray-500' }}">
-                                                {{ $task['desc'] }}
-                                            </p>
-                                            <p class="text-xs line-clamp-2 mt-1 {{ $task['is_off_duty'] ? 'text-red-600 font-medium' : 'text-gray-500' }}">
-                                                <b>ULASAN: </b>    
-                                                {{ $task['rejection_reason'] ?? 'Tiada ulasan penyelia.' }}
-                                            </p>
-
-                                            @if(!$isApproved && $task['rejection_reason'])
-                                                <div class="mb-2 p-2 bg-red-50 border border-red-100 rounded-lg text-[10px] text-red-700">
-                                                    <strong>Sebab:</strong> {{ $task['rejection_reason'] }}
-                                                </div>
-                                            @endif
-
-                                            <div class="flex items-end justify-between mt-2 pt-2 border-t border-gray-50">
-                                                <div class="flex flex-col gap-1">
-                                                    <div class="flex items-center text-[10px] text-gray-500">
-                                                        @if($isApproved)
-                                                            <svg class="w-3 h-3 mr-1 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                                            <span>Disahkan oleh <strong>{{ $task['officer_name'] }}</strong></span>
-                                                        @else
-                                                            <svg class="w-3 h-3 mr-1 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                                            <span>Ditolak oleh <strong>{{ $task['officer_name'] }}</strong></span>
+                                                        @if($task['is_off_duty'])
+                                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-600 border border-red-200">
+                                                                OFF DUTY
+                                                            </span>
                                                         @endif
                                                     </div>
                                                     
-                                                    {{-- Show Signature on Card --}}
-                                                    @if($isApproved && isset($task['signature_url']) && $task['signature_url'])
-                                                        <div class="pl-4 mt-1">
-                                                            <img src="{{ $task['signature_url'] }}" alt="Signature" class="h-6 w-auto border border-gray-100 rounded bg-white p-0.5">
-                                                        </div>
-                                                    @endif
-
-                                                    <span class="text-[9px] text-gray-400 pl-4">{{ $task['verified_at'] }}</span>
+                                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium {{ $badgeClass }} shrink-0">
+                                                        {{ $statusText }}
+                                                    </span>
                                                 </div>
 
-                                                <button 
-                                                    onclick="openDetailModal(this)" 
-                                                    data-task='{{ json_encode($task) }}'
-                                                    data-user-name="{{ $user['name'] }}"
-                                                    data-user-initials="{{ $user['initials'] }}"
-                                                    data-user-id="{{ $user['id'] }}"
-                                                    class="px-3 py-1 bg-white border border-gray-300 text-gray-600 text-[10px] font-bold rounded hover:bg-gray-50 transition">
-                                                    Butiran
-                                                </button>
+                                                <p class="text-xs line-clamp-2 mt-1 {{ $task['is_off_duty'] ? 'text-red-600 font-medium' : 'text-gray-500' }}">
+                                                    {{ $task['desc'] }}
+                                                </p>
+                                                <p class="text-xs line-clamp-2 mt-1 {{ $task['is_off_duty'] ? 'text-red-600 font-medium' : 'text-gray-500' }}">
+                                                    <b>ULASAN: </b>    
+                                                    {{ $task['rejection_reason'] ?? 'Tiada ulasan penyelia.' }}
+                                                </p>
+
+                                                <div class="flex items-end justify-between mt-2 pt-2 border-t border-gray-50">
+                                                    <div class="flex flex-col gap-1">
+                                                        <div class="flex items-center text-[10px] text-gray-500">
+                                                            @if($isApproved)
+                                                                <svg class="w-3 h-3 mr-1 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                                <span>Disahkan oleh <strong>{{ $task['officer_name'] }}</strong></span>
+                                                            @else
+                                                                <svg class="w-3 h-3 mr-1 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                                                <span>Ditolak oleh <strong>{{ $task['officer_name'] }}</strong></span>
+                                                            @endif
+                                                        </div>
+                                                        
+                                                        @if($isApproved && isset($task['signature_url']) && $task['signature_url'])
+                                                            <div class="pl-4 mt-1">
+                                                                <img src="{{ $task['signature_url'] }}" alt="Signature" class="h-6 w-auto border border-gray-100 rounded bg-white p-0.5">
+                                                            </div>
+                                                        @endif
+
+                                                        <span class="text-[9px] text-gray-400 pl-4">{{ $task['verified_at'] }}</span>
+                                                    </div>
+
+                                                    <button 
+                                                        onclick="openDetailModal(this)" 
+                                                        data-task='{{ json_encode($task) }}'
+                                                        data-user-name="{{ $user['name'] }}"
+                                                        data-user-initials="{{ $user['initials'] }}"
+                                                        data-user-id="{{ $user['id'] }}"
+                                                        data-user-no-badan="{{ $user['no_badan'] }}"
+                                                        class="px-3 py-1 bg-white border border-gray-300 text-gray-600 text-[10px] font-bold rounded hover:bg-gray-50 transition">
+                                                        Butiran
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                @endforeach
-                            </div>
+                                        {{-- ... (End Existing Task Card) ... --}}
+                                    @endforeach
+                                </div>
+                            </div> 
+                            {{-- END VERIFIED DATE GROUP WRAPPER --}}
+
                         @endforeach
+                    </div>
+                    
+                    {{-- [NEW] No Records Message (Verified) --}}
+                    <div id="no-verified-msg-{{ $user['id'] }}" class="hidden py-8 text-center">
+                        <p class="text-xs text-gray-400 italic">Tiada rekod pada tarikh ini.</p>
                     </div>
                 </div>
             </div>
@@ -806,12 +834,17 @@ function updateCardUI(taskId, userId, signatureImage, updateCount) {
         const userName = button.getAttribute('data-user-name');
         const userInitials = button.getAttribute('data-user-initials');
         const userId = button.getAttribute('data-user-id');
+        //const noBadan = button.getAttribute('data-user-no-badan');
+        let noBadan = button.getAttribute('data-user-no-badan');
+        if (!noBadan || noBadan === 'null') {
+        noBadan = "-"; 
+        }
 
         // 2. Populate Header & User Info
         document.getElementById('detail-date').innerText = task.date; 
         document.getElementById('detail-name').innerText = userName;
         document.getElementById('detail-initials').innerText = userInitials;
-        document.getElementById('detail-id').innerText = "ID: " + userId;
+        document.getElementById('detail-id').innerText = "No Badan: " + noBadan;
 
         // 3. Populate Task Info
         document.getElementById('detail-type').innerText = task.type;
@@ -959,6 +992,51 @@ function updateCardUI(taskId, userId, signatureImage, updateCount) {
             filterPendingTasks(input, userId);
         }
     }
+    
+    // --- VERIFIED LIST DATE FILTER ---
+    function filterVerifiedTasks(input, userId) {
+        const selectedDate = input.value; // Format: YYYY-MM-DD
+        
+        // 1. Target the VERIFIED DATE GROUPS
+        const groups = document.querySelectorAll(`.verified-date-group-${userId}`);
+        let hasVisibleItems = false;
+
+        groups.forEach(group => {
+            const groupDate = group.getAttribute('data-date');
+
+            if (!selectedDate || groupDate === selectedDate) {
+                group.style.display = 'block';
+                hasVisibleItems = true;
+            } else {
+                group.style.display = 'none';
+            }
+        });
+
+        // 2. Show/Hide Empty Message
+        const emptyMsg = document.getElementById(`no-verified-msg-${userId}`);
+        if (emptyMsg) {
+            if (hasVisibleItems) {
+                emptyMsg.classList.add('hidden');
+            } else {
+                emptyMsg.classList.remove('hidden');
+            }
+        }
+    }
+
+    function clearVerifiedFilter(userId) {
+        // 1. Find the input by ID
+        const input = document.getElementById(`date-verified-${userId}`);
+        if (input) {
+            // 2. Clear the value
+            input.value = ''; 
+            
+            // 3. Trigger the filter function manually to reset the view
+            filterVerifiedTasks(input, userId);
+        }
+    }
+
+
+
 </script>
 
 <style>

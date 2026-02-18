@@ -240,6 +240,7 @@ private function groupLogsByUser($logs)
             return [
                 'id' => $user->id,
                 'name' => $user->name,
+                'no_badan' => $user->no_badan ?? 'Tiada Rekod',
                 'initials' => collect(explode(' ', $user->name))->map(fn($w) => $w[0])->take(2)->join(''),
                 'profile_picture' => $user->gambar_profile ? asset('storage/' . $user->gambar_profile) : null,
                 'count' => $userLogs->count(),

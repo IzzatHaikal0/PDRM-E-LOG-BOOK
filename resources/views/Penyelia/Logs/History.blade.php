@@ -28,7 +28,7 @@
                             onchange="document.getElementById('dateInput').value = ''; this.form.submit()" 
                             class="block w-full pl-8 pr-2 py-1 text-xs font-bold text-gray-600 bg-gray-100 border-none rounded-lg focus:ring-0 cursor-pointer hover:bg-gray-200 transition">
                     </div>
-
+                    
                     {{-- 2. DATE PICKER --}}
                     <div class="relative max-w-[150px]">
                         <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
