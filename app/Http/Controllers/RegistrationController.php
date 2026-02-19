@@ -68,15 +68,37 @@ class RegistrationController extends Controller
             ->with('success', 'Anggota berjaya didaftarkan. Kata laluan adalah No. Kad Pengenalan pengguna.');
     }
 
-    // Add this function inside your RegistrationController class
-    public function listUsers()
-    {
-        // 1. Fetch Users with their Pangkat (Eager Loading)
-        // We paginate by 10 per page
-        $users = User::with('pangkat')->latest()->paginate(10);
 
-        // 2. Calculate Stats dynamically
-        // We use whereHas to check the related 'pangkat' table
+    public function listUsers(Request $request)
+    {
+        // 1. Start the query with Eager Loading (Do not put get() or paginate() yet)
+        $query = User::with('pangkat');
+
+        // 2. Filter by Role (Admin, Penyelia, Anggota)
+        // Checks if the user selected a role from the dropdown
+        if ($request->filled('role')) {
+            $query->where('role', $request->role);
+        }
+
+        // 3. Search by Name, No Badan, No IC, or No Tel
+        // Checks if the user typed something in the search bar
+        if ($request->filled('search')) {
+            $search = $request->search;
+            
+            // We wrap the search in a logical group (WHERE role = 'X' AND (name LIKE 'Y' OR no_badan LIKE 'Y'))
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                ->orWhere('no_badan', 'LIKE', "%{$search}%")
+                ->orWhere('no_ic', 'LIKE', "%{$search}%")
+                ->orWhere('no_telefon', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // 4. Execute the query and Paginate by 10 per page
+        $users = $query->latest()->paginate(10);
+
+        // 5. Calculate Stats dynamically
+        // (We leave this querying the whole User table so the top dashboard numbers don't shrink when you search)
         $statsData = [
             'inspektor' => User::whereHas('pangkat', function($q) {
                 $q->where('pangkat_name', 'LIKE', '%Inspektor%');
@@ -87,13 +109,13 @@ class RegistrationController extends Controller
             })->count(),
 
             'koperal'   => User::whereHas('pangkat', function($q) {
-                 // Exact match to avoid counting "Lans Koperal" twice
+                // Exact match to avoid counting "Lans Koperal" twice
                 $q->where('pangkat_name', 'Koperal (Kpl)');
             })->count(),
 
             'low_rank'  => User::whereHas('pangkat', function($q) {
                 $q->where('pangkat_name', 'LIKE', '%Konstabel%')
-                  ->orWhere('pangkat_name', 'LIKE', '%Lans%');
+                ->orWhere('pangkat_name', 'LIKE', '%Lans%');
             })->count(),
         ];
 

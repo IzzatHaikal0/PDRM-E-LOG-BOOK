@@ -52,21 +52,42 @@
 
     {{-- Search & Filter --}}
     <div class="bg-white p-4 rounded-t-xl shadow-sm border border-gray-100 border-b-0 flex flex-col md:flex-row gap-4 items-center justify-between">
-        <div class="relative w-full md:w-96">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+        {{-- Search & Filter (FUNCTIONAL) --}}
+        <form method="GET" action="{{ url()->current() }}" class="bg-white p-4 rounded-t-xl shadow-sm border border-gray-100 border-b-0 flex flex-col md:flex-row gap-4 items-center justify-between">
+            
+            <div class="relative w-full md:w-96">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                {{-- Added name="search" and value preserving --}}
+                <input type="text" name="search" value="{{ request('search') }}" class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-1 focus:ring-blue-900 sm:text-sm" placeholder="Cari Nama, ID atau No. Tel...">
             </div>
-            <input type="text" class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-1 focus:ring-blue-900 sm:text-sm" placeholder="Cari Nama, ID atau No. Tel...">
-        </div>
-        <div class="w-full md:w-auto flex items-center gap-2">
-            <span class="text-xs text-gray-500 hidden md:block">Susun Ikut:</span>
-            <select class="block w-full md:w-48 pl-3 pr-10 py-2 text-base border-gray-200 focus:outline-none focus:ring-blue-900 focus:border-blue-900 sm:text-sm rounded-lg">
-                <option>Terkini</option>
-                <option>Nama (A-Z)</option>
-            </select>
-        </div>
+            
+            <div class="w-full md:w-auto flex flex-row items-center gap-2">
+                <span class="text-xs text-gray-500 hidden md:block">Tapis Peranan:</span>
+                {{-- Added name="role", onchange submit, and value preserving --}}
+                <select name="role" onchange="this.form.submit()" class="block w-full md:w-48 pl-3 pr-10 py-2 text-base border-gray-200 focus:outline-none focus:ring-blue-900 focus:border-blue-900 sm:text-sm rounded-lg">
+                    <option value="">Semua Peranan</option>
+                    <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                    <option value="penyelia" {{ request('role') == 'penyelia' ? 'selected' : '' }}>Penyelia</option>
+                    <option value="anggota" {{ request('role') == 'anggota' ? 'selected' : '' }}>Anggota</option>
+                </select>
+                
+                {{-- Added a submit button for the text search --}}
+                <button type="submit" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-bold rounded-lg transition">
+                    Cari
+                </button>
+                
+                {{-- Reset Button (Shows only if filtered) --}}
+                @if(request('search') || request('role'))
+                    <a href="{{ url()->current() }}" class="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-sm font-bold rounded-lg transition" title="Buang Tapisan">
+                        X
+                    </a>
+                @endif
+            </div>
+        </form>
     </div>
 
     {{-- DESKTOP TABLE --}}
@@ -142,7 +163,7 @@
         </table>
         
         <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
-            {{ $users->links() }}
+            {{ $users->appends(request()->query())->links() }}
         </div>
     </div>
 
