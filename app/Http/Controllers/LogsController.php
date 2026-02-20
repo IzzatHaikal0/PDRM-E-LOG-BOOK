@@ -355,7 +355,7 @@ public function update(Request $request, $id)
             'date' => 'required|date',
             'time' => 'required',
             'remarks' => 'required',
-            'images.*' => 'image|mimes:jpeg,png,jpg|max:5120', // Max 5MB
+            'images.*' => 'image|mimes:jpeg,png,jpg|max:10240', // Max 10MB
         ]);
 
         // 2. Handle New Image Uploads
