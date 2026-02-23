@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="text-center mb-8">
-        <h2 class="text-2xl font-bold text-pdrm-blue tracking-tight">PDRM EP5</h2>
+        <h2 class="text-2xl font-bold text-pdrm-blue tracking-tight">PDRM EP45</h2>
         <p class="text-xs font-semibold text-slate-500 uppercase mt-1 tracking-widest">
             {{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}
         </p>

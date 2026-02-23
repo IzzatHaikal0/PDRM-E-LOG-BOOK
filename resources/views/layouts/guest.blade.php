@@ -53,12 +53,6 @@
 
             @yield('content')
         </div>
-
-        <div class="mt-8 text-center px-6 relative z-10">
-             <p class="text-[10px] text-blue-200/80 font-medium uppercase tracking-wider drop-shadow-md">
-                Developed by FAKULTI KOMPUTERAN &bull; UMPSA
-            </p>
-        </div>
     </div>
 </body>
 </html>
