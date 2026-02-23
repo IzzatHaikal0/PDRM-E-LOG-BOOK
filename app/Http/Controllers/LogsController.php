@@ -211,6 +211,7 @@ public function verifyList()
         // --- PART A: PENDING LOGS ---
         $pendingLogs = \App\Models\ActivityLog::where('status', 'pending')
             ->where('user_id', '!=', Auth::id()) // Exclude self-submitted logs
+            ->has('user')
             ->with('user')
             ->orderBy('date', 'desc')
             ->orderBy('time', 'desc')
@@ -221,6 +222,7 @@ public function verifyList()
         // --- PART B: VERIFIED LOGS ---
         // Fetch logs approved or rejected (Limit to 50 recent to avoid clutter)
         $verifiedLogs = \App\Models\ActivityLog::whereIn('status', ['approved', 'rejected'])
+            ->has('user')
             ->with(['user', 'officer']) // Load officer for signature info
             ->orderBy('updated_at', 'desc')
             ->take(50)
